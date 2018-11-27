@@ -1,5 +1,5 @@
 /**
- * File Name : define.cuh
+ * File Name : define.cu
  * Author : Yang Fan
  * Date : 2018/11/27
  * define some functions
@@ -24,10 +24,11 @@
 }
 
 /**
- * define screen width & height
+ * define screen width & height & isFullScreen
  */
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
+#define IS_FULL_SCREEN false
 
 /**
  * sdl defined main to SDL_main , so we undef it on here

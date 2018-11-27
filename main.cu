@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-#include "Includes/common/device.cu"		
+#include "common/device.cu"		
 #include "cuda/define.cu"
 
 using namespace std;
@@ -11,7 +11,7 @@ int main()
 {
 	PRINT_DEVICE_INFORMATION();
 	auto *d = new Device();
-	d->initialize(SCREEN_WIDTH, SCREEN_HEIGHT, false);
+	d->initialize(SCREEN_WIDTH, SCREEN_HEIGHT, IS_FULL_SCREEN);
 	d->show();
 
 	while (!d->windowShouldClose())

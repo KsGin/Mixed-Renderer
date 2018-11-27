@@ -86,8 +86,6 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="includes\common\color.cu" />
-    <ClInclude Include="includes\common\device.cu" />
     <ClInclude Include="includes\math\matrix.hpp" />
     <ClInclude Include="includes\math\vector.hpp" />
   </ItemGroup>
@@ -95,6 +93,9 @@
     <ClCompile Include="main.cu" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="common\camera.cu" />
+    <CudaCompile Include="common\color.cu" />
+    <CudaCompile Include="common\device.cu" />
     <CudaCompile Include="cuda\define.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

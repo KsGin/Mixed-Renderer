@@ -10,7 +10,7 @@
     <Filter Include="Cuda">
       <UniqueIdentifier>{5a17c091-2141-4739-af0f-adfe1af6dc44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Includes\Common">
+    <Filter Include="Common">
       <UniqueIdentifier>{bcef57ff-6776-46be-bbdb-d5bfd0970707}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -21,12 +21,6 @@
     <ClInclude Include="includes\math\vector.hpp">
       <Filter>Includes\Math</Filter>
     </ClInclude>
-    <ClInclude Include="includes\common\color.cu">
-      <Filter>Includes\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="includes\common\device.cu">
-      <Filter>Includes\Common</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cu" />
@@ -34,6 +28,15 @@
   <ItemGroup>
     <CudaCompile Include="cuda\define.cu">
       <Filter>Cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="common\camera.cu">
+      <Filter>Common</Filter>
+    </CudaCompile>
+    <CudaCompile Include="common\color.cu">
+      <Filter>Common</Filter>
+    </CudaCompile>
+    <CudaCompile Include="common\device.cu">
+      <Filter>Common</Filter>
     </CudaCompile>
   </ItemGroup>
 </Project>
