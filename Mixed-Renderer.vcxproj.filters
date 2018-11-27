@@ -23,9 +23,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cu" />
-  </ItemGroup>
-  <ItemGroup>
     <CudaCompile Include="cuda\define.cu">
       <Filter>Cuda</Filter>
     </CudaCompile>
@@ -38,5 +35,6 @@
     <CudaCompile Include="common\device.cu">
       <Filter>Common</Filter>
     </CudaCompile>
+    <CudaCompile Include="main.cu" />
   </ItemGroup>
 </Project>

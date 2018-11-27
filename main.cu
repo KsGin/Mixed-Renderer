@@ -1,9 +1,12 @@
-// Mixed-Renderer.cpp: 定义应用程序的入口点。
-//
-
-#include <iostream>
-#include "common/device.cu"		
+/**
+ * File Name : main.cu
+ * Author : Yang Fan
+ * Date : 2018/11/27
+ * program entrance
+ */
+	
 #include "cuda/define.cu"
+#include "common/device.cu"	
 
 using namespace std;
 

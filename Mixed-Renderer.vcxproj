@@ -90,7 +90,9 @@
     <ClInclude Include="includes\math\vector.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cu" />
+    <CudaCompile Include="main.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="common\camera.cu" />

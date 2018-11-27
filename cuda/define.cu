@@ -9,18 +9,20 @@
 
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <iostream>
+#include <assert.h>
 
 /**
  * define a cuda call
  */
 #define CUDA_CALL(x) { \
-	const cudaError_t e = (x);	\
-	if (e != cudaSuccess) \							\
-	{							\
-		printf("\nCUDA Error : %s (err_num = %d)\n" , cudaGetErrorString(e) , e);					\
-		cudaDeviceReset();						\
-		assert(0);							\
-	}                  \
+	const cudaError_t e = (x);\
+	if(e != cudaSuccess)		\
+	{		\
+		printf("\nCUDA Error : %s (err_num = %d)\n", cudaGetErrorString(e), e); \
+		cudaDeviceReset(); \
+		assert(0); \
+	}\
 }
 
 /**
@@ -51,5 +53,5 @@
 	cudaDeviceProp devProps;	\
 	cudaGetDeviceProperties(&devProps, dev); \
 	\
-	printf("name : %s \ntotalGlobalMem : %zdM\n" , devProps.name , devProps.totalGlobalMem / 1024 / 1024); \
+	printf("name : %s \ntotalGlobalMem : %zdM\n" , devProps.name , devProps.totalGlobalMem >> 20); \
 }
