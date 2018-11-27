@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Includes">
+      <UniqueIdentifier>{c33ed6e0-f85c-464b-bad2-b5791eba9873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Includes\Math">
+      <UniqueIdentifier>{37e3d807-8ac0-461b-bdb4-aa3924adb077}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cuda">
+      <UniqueIdentifier>{5a17c091-2141-4739-af0f-adfe1af6dc44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Includes\Common">
+      <UniqueIdentifier>{bcef57ff-6776-46be-bbdb-d5bfd0970707}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="includes\math\matrix.hpp">
+      <Filter>Includes\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\math\vector.hpp">
+      <Filter>Includes\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\common\color.h">
+      <Filter>Includes\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\common\device.h">
+      <Filter>Includes\Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cu" />
+    <ClCompile Include="includes\common\color.cpp">
+      <Filter>Includes\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="includes\common\device.cpp">
+      <Filter>Includes\Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="cuda\define.cu">
+      <Filter>Cuda</Filter>
+    </CudaCompile>
+  </ItemGroup>
+</Project>
