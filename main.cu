@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-#include "Includes/common/device.h"		
+#include "Includes/common/device.cu"		
 #include "cuda/define.cu"
 
 using namespace std;

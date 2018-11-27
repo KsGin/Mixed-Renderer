@@ -21,21 +21,15 @@
     <ClInclude Include="includes\math\vector.hpp">
       <Filter>Includes\Math</Filter>
     </ClInclude>
-    <ClInclude Include="includes\common\color.h">
+    <ClInclude Include="includes\common\color.cu">
       <Filter>Includes\Common</Filter>
     </ClInclude>
-    <ClInclude Include="includes\common\device.h">
+    <ClInclude Include="includes\common\device.cu">
       <Filter>Includes\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cu" />
-    <ClCompile Include="includes\common\color.cpp">
-      <Filter>Includes\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="includes\common\device.cpp">
-      <Filter>Includes\Common</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="cuda\define.cu">

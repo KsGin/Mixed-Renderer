@@ -86,14 +86,12 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="includes\common\color.h" />
-    <ClInclude Include="includes\common\device.h" />
+    <ClInclude Include="includes\common\color.cu" />
+    <ClInclude Include="includes\common\device.cu" />
     <ClInclude Include="includes\math\matrix.hpp" />
     <ClInclude Include="includes\math\vector.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="includes\common\color.cpp" />
-    <ClCompile Include="includes\common\device.cpp" />
     <ClCompile Include="main.cu" />
   </ItemGroup>
   <ItemGroup>
