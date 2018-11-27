@@ -2,16 +2,16 @@
 //
 
 #include <iostream>
-#include "Includes/common/device.h"						
+#include "Includes/common/device.h"		
+#include "cuda/define.cu"
 
 using namespace std;
 
-#undef main 
-
 int main()
 {
+	PRINT_DEVICE_INFORMATION();
 	auto *d = new Device();
-	d->initialize(800, 600, false);
+	d->initialize(SCREEN_WIDTH, SCREEN_HEIGHT, false);
 	d->show();
 
 	while (!d->windowShouldClose())
