@@ -36,5 +36,8 @@
       <Filter>Common</Filter>
     </CudaCompile>
     <CudaCompile Include="main.cu" />
+    <CudaCompile Include="common\raster.cu">
+      <Filter>Common</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

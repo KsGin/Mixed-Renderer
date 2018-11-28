@@ -90,6 +90,7 @@
     <ClInclude Include="includes\math\vector.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="common\raster.cu" />
     <CudaCompile Include="main.cu">
       <FileType>Document</FileType>
     </CudaCompile>
