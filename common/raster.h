@@ -26,14 +26,7 @@ public:
 	/*
 	 * Îö¹¹·½·¨
 	 */
-	~Raster()
-	{
-		if (device)
-		{
-			delete device;
-			device = 0;
-		}
-	}
+	~Raster() {}
 
 	void initialize(Device *device)
 	{

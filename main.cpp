@@ -32,13 +32,14 @@ int main()
 	while (!d->windowShouldClose())
 	{
 		
-		r->BresenhamRasterLine(Math::Vector2(100, 100), Math::Vector2(500, 500), Color::white());
+		r->BresenhamRasterLine(Math::Vector2(100, 100), Math::Vector2(SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100), Color::blue());
+		r->BresenhamRasterLine(Math::Vector2(100, SCREEN_HEIGHT - 100), Math::Vector2(SCREEN_WIDTH - 100, 100), Color::red());
 
 		d->handleEvent();
 		d->updateRender();
 	}
 
-	// delete r;
+	delete r;
 	d->destory();
 	delete d;
 
