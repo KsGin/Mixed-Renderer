@@ -32,11 +32,6 @@
 #define SCREEN_HEIGHT 768
 #define IS_FULL_SCREEN false
 
-/**
- * sdl defined main to SDL_main , so we undef it on here
- */
-#undef main 
-
 /*
  * print device information 
  */

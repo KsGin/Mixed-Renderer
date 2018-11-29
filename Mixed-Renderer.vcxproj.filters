@@ -26,18 +26,20 @@
     <CudaCompile Include="cuda\define.cu">
       <Filter>Cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="common\camera.cu">
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="common\camera.h">
       <Filter>Common</Filter>
-    </CudaCompile>
-    <CudaCompile Include="common\color.cu">
+    </ClCompile>
+    <ClCompile Include="common\color.h">
       <Filter>Common</Filter>
-    </CudaCompile>
-    <CudaCompile Include="common\device.cu">
+    </ClCompile>
+    <ClCompile Include="common\device.h">
       <Filter>Common</Filter>
-    </CudaCompile>
-    <CudaCompile Include="main.cu" />
-    <CudaCompile Include="common\raster.cu">
+    </ClCompile>
+    <ClCompile Include="common\raster.h">
       <Filter>Common</Filter>
-    </CudaCompile>
+    </ClCompile>
   </ItemGroup>
 </Project>
