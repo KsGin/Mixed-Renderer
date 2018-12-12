@@ -9,8 +9,7 @@
 
 #include "../includes/math/vector.hpp"
 
-class Camera
-{
+class Camera {
 	/**
 	 * camera position
 	 */
@@ -35,8 +34,7 @@ protected:
 	/**
 	 * private camera
 	 */
-	Camera()
-	{
+	Camera() {
 		position = Math::Vector3();
 		target = Math::Vector3();
 		far = 0;
@@ -46,14 +44,12 @@ protected:
 	/**
 	 * public ~camera
 	 */
-	~Camera()
-	{
+	~Camera() {
 		// do something
 	}
 };
 
-class OrthographicCamera : Camera
-{
+class OrthographicCamera : Camera {
 	/*
 	 * view width
 	 */
@@ -66,23 +62,18 @@ class OrthographicCamera : Camera
 
 public:
 
-	OrthographicCamera() : Camera()
-	{
+	OrthographicCamera() : Camera() {
 		width = 0;
 		height = 0;
 	}
 };
 
-class PerspectiveCamera : Camera
-{
+class PerspectiveCamera : Camera {
 	/*
 	 * view fov
 	 */
 	float fov;
 
 public:
-	PerspectiveCamera() : Camera()
-	{
-		fov = 0;
-	}
+	PerspectiveCamera() : Camera() { fov = 0; }
 };
