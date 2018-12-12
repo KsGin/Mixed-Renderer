@@ -59,4 +59,11 @@ public:
 			}
 		}
 	}
+
+	float Interpolate(float v1 , float v2 , float gad) {
+		if (v1 > v2) {
+			return v1 - (v1 - v2) * device->clamp(gad);
+		}
+		return v1 + (v2 - v1) * device->clamp(gad);
+	}
 };
