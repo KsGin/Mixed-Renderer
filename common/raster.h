@@ -12,6 +12,8 @@
 #include "device.h"
 #include <cmath>
 
+#include <iostream>
+
 class Raster {
 private:
 
@@ -68,6 +70,60 @@ private:
 		}
 	}
 
+	void ProcessLineDrawTriangle(const Math::Vector2& p1, const Math::Vector2& p2, const Math::Vector2& p3,
+	                             const Color& color) const {
+		Math::Vector2 top = p1, mid = p2, btm = p3, tmp;
+
+		// 修正三个点的位置 
+		if (btm._y > mid._y) {
+			tmp = mid;
+			mid = btm;
+			btm = tmp;
+		}
+
+		if (mid._y > top._y) {
+			tmp = top;
+			top = mid;
+			mid = tmp;
+		}
+
+		if (btm._y > mid._y) {
+			tmp = mid;
+			mid = btm;
+			btm = tmp;
+		}
+
+		// printf("top => (%.2f,%.2f) , mid => (%.2f,%.2f) , btm => (%.2f,%.2f)\n" , top._x , top._y , mid._x , mid._y , btm._x , btm._y);
+
+		// 三角形顶部点和其他两个点的反向斜率
+		float dtm = 0, dtb = 0, dmb = 0;
+		if (top._y - mid._y > 0) { dtm = (top._x - mid._x) / (top._y - mid._y); }
+		if (top._y - btm._y > 0) { dtb = (top._x - btm._x) / (top._y - btm._y); }
+		if (mid._y - btm._y > 0) { dmb = (mid._x - btm._x) / (mid._y - btm._y); }
+
+		// printf("%.2f  %.2f\n", dtm, dtb);
+
+		for (auto y = top._y; y >= btm._y; --y) {
+			float sx = 0, ex = 0; // x坐标
+			if (y > mid._y) {
+				sx = top._x + dtm * (y - top._y);
+				ex = top._x + dtb * (y - top._y);
+			}
+			else {
+				sx = mid._x + dmb * (y - mid._y);
+				ex = top._x + dtb * (y - top._y);
+			}
+
+			if (sx > ex) {
+				const float t = sx;
+				sx = ex;
+				ex = t;
+			}
+
+			for (auto x = sx; x <= ex; ++x) { device->setPixelColor(x, y, color); }
+		}
+	}
+
 public:
 	/**
 	 * 构造方法
@@ -85,5 +141,9 @@ public:
 
 	void drawLine(const Math::Vector2& p1, const Math::Vector2& p2, const Color& color) {
 		BresenhamRasterLine(p1, p2, color);
+	}
+
+	void drawTriangle(const Math::Vector2& p1, const Math::Vector2& p2, const Math::Vector2& p3, const Color& color) {
+		ProcessLineDrawTriangle(p1, p2, p3, color);
 	}
 };
