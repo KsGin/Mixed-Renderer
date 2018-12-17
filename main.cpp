@@ -30,15 +30,8 @@ int main()
 	r->initialize(d);
 
 	while (!d->windowShouldClose()) {
-		// r->drawLine(Math::Vector2(100, 100), Math::Vector2(SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100),
-		//             Color::blue());
-		// r->drawLine(Math::Vector2(100, SCREEN_HEIGHT - 100), Math::Vector2(SCREEN_WIDTH - 100, 100), Color::red());
 
-		r->drawTriangle(Math::Vector2(100, 100), Math::Vector2(200, 150), Math::Vector2(200, 200), Color::green());
-
-		r->drawTriangle(Math::Vector2(300, 300), Math::Vector2(200, 400), Math::Vector2(400, 400), Color::green());
-
-		r->drawTriangle(Math::Vector2(500, 100), Math::Vector2(400, 150), Math::Vector2(400, 200), Color::green());
+		r->draw(Math::Vector2(-0.2, 0.4), Math::Vector2(-0.4, 0), Math::Vector2(0, 0), Color::green() , Raster::WIREFRAME);
 
 		d->handleEvent();
 		d->updateRender();

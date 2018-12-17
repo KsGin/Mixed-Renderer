@@ -124,6 +124,22 @@ private:
 		}
 	}
 
+	Math::Vector2 FixedPoint2D(const Math::Vector2& p) {
+		Math::Vector2 refP;
+		refP._x =  p._x * device->width + device->width / 2;
+		refP._y = -p._y * device->height + device->height / 2;
+		return refP;
+	}
+public:
+
+	/*
+	 * 绘制类型
+	 */
+	enum TYPE {
+		SOLID ,
+		WIREFRAME
+	};
+
 public:
 	/**
 	 * 构造方法
@@ -139,11 +155,20 @@ public:
 
 	void initialize(Device* device) { this->device = device; }
 
-	void drawLine(const Math::Vector2& p1, const Math::Vector2& p2, const Color& color) {
-		BresenhamRasterLine(p1, p2, color);
+	void draw(const Math::Vector2& p1, const Math::Vector2& p2, const Math::Vector2& p3, const Color& color , const TYPE type) {
+
+		const auto pd1 = FixedPoint2D(p1);
+		const auto pd2 = FixedPoint2D(p2);
+		const auto pd3 = FixedPoint2D(p3);
+
+		if (type == SOLID) {
+			ProcessLineDrawTriangle(pd1, pd2, pd3, color);
+		} else {
+			BresenhamRasterLine(pd1, pd2, color);
+			BresenhamRasterLine(pd1, pd3, color);
+			BresenhamRasterLine(pd2, pd3, color);
+		}
 	}
 
-	void drawTriangle(const Math::Vector2& p1, const Math::Vector2& p2, const Math::Vector2& p3, const Color& color) {
-		ProcessLineDrawTriangle(p1, p2, p3, color);
-	}
+	
 };
