@@ -1,20 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Includes">
-      <UniqueIdentifier>{c33ed6e0-f85c-464b-bad2-b5791eba9873}</UniqueIdentifier>
+    <Filter Include="Common">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Includes\Math">
-      <UniqueIdentifier>{37e3d807-8ac0-461b-bdb4-aa3924adb077}</UniqueIdentifier>
+    <Filter Include="Includes">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Cuda">
-      <UniqueIdentifier>{5a17c091-2141-4739-af0f-adfe1af6dc44}</UniqueIdentifier>
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{bcef57ff-6776-46be-bbdb-d5bfd0970707}</UniqueIdentifier>
+    <Filter Include="Includes\Math">
+      <UniqueIdentifier>{52fe58ce-5467-4ff2-8475-9b1f34a548d3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\camera.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\color.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\device.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\raster.h">
+      <Filter>Common</Filter>
+    </ClInclude>
     <ClInclude Include="includes\math\matrix.hpp">
       <Filter>Includes\Math</Filter>
     </ClInclude>
@@ -23,23 +38,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="cuda\define.cu">
+    <None Include="cuda\define.cu">
       <Filter>Cuda</Filter>
-    </CudaCompile>
+    </None>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="common\camera.h">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\color.h">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\device.h">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\raster.h">
-      <Filter>Common</Filter>
+    <ClCompile Include="main.cpp">
+      <Filter>Includes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

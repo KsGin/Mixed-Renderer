@@ -1,5 +1,5 @@
 /**
- * File Name : raster.cu
+ * File Name : raster.h
  * Author : Yang Fan
  * Date : 2018/11/28
  * declare raster
