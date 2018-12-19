@@ -8,23 +8,77 @@
 
 #include "../includes/math/matrix.hpp"
 #include "../includes/math/vector.hpp"
+#include "device.h"
+#include "raster.h"
+#include "model.h"
 
-static class Shader
+class Shader
 {
-	static void transform(const Math::Matrix &mat) {
+	/*
+	* Raster 
+	*/
+	Raster *r;
+
+	/*
+	* Instance
+	*/
+	Shader *instance;
+
+	/*
+	* Vertex Transform
+	*/
+	void transform(const Math::Matrix &mat) {
 
 	}
 
-	static void vs() {
+	/*
+	* Vertex Shader
+	*/
+	void vs() {
 
 	}
 
-	static void ps() {
+	/*
+	* Pixel Shader
+	*/
+	void ps() {
 
+	}
+
+	/*
+	* Disabled Constructor
+	*/
+	Shader() {
+		r = new Raster();
+	}
+
+	/*
+	* Disabled Deconstructor
+	*/
+	~Shader() {
+		if (r) {
+			delete r;
+			r = nullptr;
+		}
 	}
 
 public:
-	static void render(const Math::Matrix &mat) {
+
+	/*
+	* Singleton defined
+	*/
+	Shader* getInstance() {
+		if (instance == nullptr)
+		{
+			instance = new Shader();
+		}
+		return instance;
+	}
+
+	/*
+	* Render interface
+	*/
+	void render(const Model &model , const Math::Matrix &mat , const Device& immediateDevice) {
 		transform(mat);
 
 		vs();

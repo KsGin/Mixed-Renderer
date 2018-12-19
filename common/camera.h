@@ -1,5 +1,5 @@
 /**
- * File Name : camera.cu
+ * File Name : camera.h
  * Author : Yang Fan
  * Date : 2018/11/27
  * declare camera property and method
