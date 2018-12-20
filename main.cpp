@@ -24,14 +24,14 @@ int main()
 #define main SDL_main
 {
 	PRINT_DEVICE_INFORMATION();
-	auto* d = new Device();
-	d->initialize(SCREEN_WIDTH, SCREEN_HEIGHT, IS_FULL_SCREEN, "Mixed-Renderer");
-	d->show();
 
-	auto* r = new Raster();
-	r->initialize(d);
+	Device::initialize(SCREEN_WIDTH, SCREEN_HEIGHT, IS_FULL_SCREEN, "Mixed-Renderer");
+	auto d = Device::getInstance();
 
-	while (!d->windowShouldClose()) {
+	d.show();
+	auto r = Raster::getInstance();
+
+	while (!d.windowShouldClose()) {
 
 		Matrix model = Matrix::identity();
 		Matrix view = Matrix::lookAtLH(Vector3(0, 0, -2), Vector3(0, 0, 0), Vector3(0, 1, 0));
@@ -43,15 +43,13 @@ int main()
 		Vector3 p2 = Matrix::transformCoordinates(Vector3(0, 2, 0), mvp);
 		Vector3 p3 = Matrix::transformCoordinates(Vector3(1, 0, 0), mvp);
 
-		r->draw(Vector2(p1._x, p1._y), Vector2(p2._x, p2._y), Vector2(p3._x, p3._y), Color::red() , Raster::SOLID);
+		r.draw(Vector2(p1._x, p1._y), Vector2(p2._x, p2._y), Vector2(p3._x, p3._y), Color::red() , Raster::SOLID);
 
-		d->handleEvent();
-		d->updateRender();
+		d.handleEvent();
+		d.updateRender();
 	}
 
-	delete r;
-	d->destory();
-	delete d;
+	d.destory();
 
 	return 0;
 }

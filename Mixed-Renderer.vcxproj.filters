@@ -36,6 +36,12 @@
     <ClInclude Include="includes\math\vector.hpp">
       <Filter>Includes\Math</Filter>
     </ClInclude>
+    <ClInclude Include="common\shader.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\model.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cuda\define.cu">

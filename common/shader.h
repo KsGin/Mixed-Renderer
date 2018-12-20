@@ -15,16 +15,6 @@
 class Shader
 {
 	/*
-	* Raster 
-	*/
-	Raster *r;
-
-	/*
-	* Instance
-	*/
-	Shader *instance;
-
-	/*
 	* Vertex Transform
 	*/
 	void transform(const Math::Matrix &mat) {
@@ -49,29 +39,21 @@ class Shader
 	* Disabled Constructor
 	*/
 	Shader() {
-		r = new Raster();
-	}
-
-	/*
-	* Disabled Deconstructor
-	*/
-	~Shader() {
-		if (r) {
-			delete r;
-			r = nullptr;
-		}
 	}
 
 public:
 
 	/*
+	 * Disabled Deconstructor
+	 */
+	~Shader() {
+	}
+
+	/*
 	* Singleton defined
 	*/
-	Shader* getInstance() {
-		if (instance == nullptr)
-		{
-			instance = new Shader();
-		}
+	static Shader& getInstance() {
+		static Shader instance;
 		return instance;
 	}
 

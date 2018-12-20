@@ -133,7 +133,9 @@
     <ClInclude Include="common\camera.h" />
     <ClInclude Include="common\color.h" />
     <ClInclude Include="common\device.h" />
+    <ClInclude Include="common\model.h" />
     <ClInclude Include="common\raster.h" />
+    <ClInclude Include="common\shader.h" />
     <ClInclude Include="includes\math\matrix.hpp" />
     <ClInclude Include="includes\math\vector.hpp" />
   </ItemGroup>

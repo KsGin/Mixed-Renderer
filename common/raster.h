@@ -16,18 +16,12 @@
 
 class Raster {
 private:
-
-	/*
-	 * DEVICE CONTEXT
-	 */
-	Device* device;
-
 	/*
 	 * Interpolate float value
 	 */
 	float Interpolate(float v1, float v2, float gad) const {
-		if (v1 > v2) { return v1 - (v1 - v2) * device->clamp(gad); }
-		return v1 + (v2 - v1) * device->clamp(gad);
+		if (v1 > v2) { return v1 - (v1 - v2) * Device::clamp(gad); }
+		return v1 + (v2 - v1) * Device::clamp(gad);
 	}
 
 	/*
@@ -55,7 +49,7 @@ private:
 		int sy = y1 < y2 ? 1 : -1;
 		int eps = dx - dy;
 		while (true) {
-			device->setPixelColor(x1, y1, color);
+			Device::getInstance().setPixelColor(x1, y1, color);
 			if (x1 == x2 && y1 == y2) break;
 			auto e2 = 2 * eps;
 			if (e2 > -dy) {
@@ -120,16 +114,24 @@ private:
 				ex = t;
 			}
 
-			for (auto x = sx; x <= ex; ++x) { device->setPixelColor(x, y, color); }
+			for (auto x = sx; x <= ex; ++x) { Device::getInstance().setPixelColor(x, y, color); }
 		}
 	}
 
 	Math::Vector2 FixedPoint2D(const Math::Vector2& p) {
 		Math::Vector2 refP;
-		refP._x =  p._x * device->width + device->width / 2;
-		refP._y = -p._y * device->height + device->height / 2;
+		refP._x =  p._x * Device::getInstance().width + Device::getInstance().width / 2;
+		refP._y = -p._y * Device::getInstance().height + Device::getInstance().height / 2;
 		return refP;
 	}
+
+	/**
+	 * 构造方法
+	 */
+	Raster() {
+	}
+
+
 public:
 
 	/*
@@ -141,11 +143,7 @@ public:
 	};
 
 public:
-	/**
-	 * 构造方法
-	 */
-	Raster() {
-	}
+	
 
 	/*
 	 * 析构方法
@@ -153,7 +151,10 @@ public:
 	~Raster() {
 	}
 
-	void initialize(Device* device) { this->device = device; }
+	static Raster& getInstance() {
+		static Raster instance;
+		return instance;
+	}
 
 	void draw(const Math::Vector2& p1, const Math::Vector2& p2, const Math::Vector2& p3, const Color& color , const TYPE type) {
 
@@ -169,6 +170,4 @@ public:
 			BresenhamRasterLine(pd2, pd3, color);
 		}
 	}
-
-	
 };
