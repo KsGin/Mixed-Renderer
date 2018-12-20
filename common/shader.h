@@ -15,56 +15,82 @@
 class Shader
 {
 	/*
-	* Vertex Transform
+	* modelMat
 	*/
-	void transform(const Math::Matrix &mat) {
+	Math::Matrix modelMat = Math::Matrix::identity();
+	/*
+	* viewMat
+	*/
+	Math::Matrix viewMat = Math::Matrix::identity();
+	/*
+	* perspectiveMat
+	*/
+	Math::Matrix perspectiveMat = Math::Matrix::identity();
+	
+public:
 
-	}
+	enum MatType
+	{
+		MODEL , 
+		VIEW , 
+		PERSPECTIVE
+	};
+
+	struct Vertex
+	{
+		Math::Vector3 pos;
+		Math::Vector3 normal;
+		Color color;
+	};
+
+	struct Pixel
+	{
+		Math::Vector3 pos;
+		Math::Vector3 normal;
+		Color color;
+	};
 
 	/*
-	* Vertex Shader
-	*/
-	void vs() {
-
-	}
-
-	/*
-	* Pixel Shader
-	*/
-	void ps() {
-
-	}
-
-	/*
-	* Disabled Constructor
+	* Constructor
 	*/
 	Shader() {
 	}
 
-public:
-
 	/*
-	 * Disabled Deconstructor
+	 * Deconstructor
 	 */
 	~Shader() {
 	}
 
 	/*
-	* Singleton defined
-	*/
-	static Shader& getInstance() {
-		static Shader instance;
-		return instance;
+	 * Set Matrix
+	 */
+	void setMat(const Math::Matrix& mat , const MatType& type) {
+		switch (type) {
+			case MODEL: modelMat = mat; break;
+			case VIEW: viewMat = mat; break;
+			case PERSPECTIVE: perspectiveMat = mat; break;
+		}
 	}
 
 	/*
-	* Render interface
-	*/
-	void render(const Model &model , const Math::Matrix &mat , const Device& immediateDevice) {
-		transform(mat);
+	 * Vertex Shader
+	 */
+	Pixel vertexShader(const Vertex& vsInput) const{
+		Math::Matrix transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
+		Pixel psInput;
+		psInput.pos = Math::Matrix::transform(vsInput.pos , transMat);
+		psInput.normal = Math::Matrix::transformCoordinates(vsInput.normal, transMat);
+		psInput.color = vsInput.color;
+		return psInput;
+	}
 
-		vs();
-
-		ps();
+	/*
+	 * Pixel Shader
+	 */
+	Color pixelShader(const Pixel& psInput) const{
+		Color color;
+		color = psInput.color;
+		return color;
 	}
 };

@@ -42,6 +42,9 @@
     <ClInclude Include="common\model.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="common\render.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cuda\define.cu">
@@ -52,8 +55,6 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Includes</Filter>
-    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
 </Project>

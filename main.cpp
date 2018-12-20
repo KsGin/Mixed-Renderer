@@ -9,6 +9,7 @@
 #include "common/device.h"
 #include "common/raster.h"
 #include "includes/math/matrix.hpp"
+#include "common/render.h"
 
 using namespace std;
 using namespace Math;
@@ -29,21 +30,44 @@ int main()
 	auto d = Device::getInstance();
 
 	d.show();
-	auto r = Raster::getInstance();
+
+	Matrix model = Matrix::identity();
+	Matrix view = Matrix::lookAtLH(Vector3(0, 0, -15), Vector3(0, 0, 0), Vector3(0, 1, 0));
+	Matrix perspective = Matrix::perspectiveFovLH(60, SCREEN_WIDTH / SCREEN_HEIGHT, 0.01, 1000);
+
+	Model::Mesh::Face face1;
+	face1.p1 = Vector3(-1, -1, 0);
+	face1.p2 = Vector3(-1,  1, 0);
+	face1.p3 = Vector3( 1,  1, 0);
+	face1.normal = Vector3(0, 0, 1);
+	face1.color = Color::red();
+
+	Model::Mesh::Face face2;
+	face2.p1 = Vector3(-1, -1, 0);
+	face2.p2 = Vector3(1, 1, 0);
+	face2.p3 = Vector3(1, -1, 0);
+	face2.normal = Vector3(0, 0, 1);
+	face2.color = Color::red();
+
+	Model::Mesh mesh;
+	mesh.faces.push_back(face1);
+	mesh.faces.push_back(face2);
+
+	Model m;
+	m.meshes.push_back(mesh);
+
+	Shader shader;
+	shader.setMat(model , Shader::MatType::MODEL);
+	shader.setMat(view, Shader::MatType::VIEW);
+	shader.setMat(perspective, Shader::MatType::PERSPECTIVE);
 
 	while (!d.windowShouldClose()) {
+		d.clear();
 
-		Matrix model = Matrix::identity();
-		Matrix view = Matrix::lookAtLH(Vector3(0, 0, -2), Vector3(0, 0, 0), Vector3(0, 1, 0));
-		Matrix perspective = Matrix::perspectiveFovLH(60, SCREEN_WIDTH / SCREEN_HEIGHT, 0.01, 1000);
+		model = model * Math::Matrix::rotationY(-0.01);
+		shader.setMat(model, Shader::MatType::MODEL);
 
-		Matrix mvp = Matrix::transpose(model * view * perspective);
-
-		Vector3 p1 = Matrix::transformCoordinates(Vector3(-1, 0, 0), mvp);
-		Vector3 p2 = Matrix::transformCoordinates(Vector3(0, 2, 0), mvp);
-		Vector3 p3 = Matrix::transformCoordinates(Vector3(1, 0, 0), mvp);
-
-		r.draw(Vector2(p1._x, p1._y), Vector2(p2._x, p2._y), Vector2(p3._x, p3._y), Color::red() , Raster::SOLID);
+		Render::render(m, shader, Raster::SOLID);
 
 		d.handleEvent();
 		d.updateRender();
