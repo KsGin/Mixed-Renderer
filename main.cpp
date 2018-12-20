@@ -32,7 +32,7 @@ int main()
 	d.show();
 
 	Matrix model = Matrix::identity();
-	Matrix view = Matrix::lookAtLH(Vector3(0, 0, -15), Vector3(0, 0, 0), Vector3(0, 1, 0));
+	Matrix view = Matrix::lookAtLH(Vector3(0, 0, -60), Vector3(0, 0, 0), Vector3(0, 1, 0));
 	Matrix perspective = Matrix::perspectiveFovLH(60, SCREEN_WIDTH / SCREEN_HEIGHT, 0.01, 1000);
 
 	Model::Mesh::Face face1;
@@ -57,14 +57,14 @@ int main()
 	m.meshes.push_back(mesh);
 
 	Shader shader;
-	shader.setMat(model , Shader::MatType::MODEL);
+	shader.setMat(model, Shader::MatType::MODEL);
 	shader.setMat(view, Shader::MatType::VIEW);
 	shader.setMat(perspective, Shader::MatType::PERSPECTIVE);
 
 	while (!d.windowShouldClose()) {
 		d.clear();
 
-		model = model * Math::Matrix::rotationY(-0.01);
+		model = model * Math::Matrix::rotationY(-0.01f);
 		shader.setMat(model, Shader::MatType::MODEL);
 
 		Render::render(m, shader, Raster::SOLID);
