@@ -23,9 +23,17 @@ public:
 	     */
 		class Face {
 		public:
-			Math::Vector3 p1, p2, p3;
-			Math::Vector3 normal;
-			Color color;
+			/*
+			 * Vertex
+			 */
+			class Vertex {
+			public:
+				Math::Vector3 pos;
+				Math::Vector3 normal;
+				Math::Vector2 uv;
+				Color color;
+			};
+			Vertex v1, v2, v3;
 		};
 
 		std::vector<Face> faces;

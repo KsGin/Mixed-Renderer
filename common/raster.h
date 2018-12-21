@@ -63,8 +63,8 @@ private:
 	/*
 	 * Interpolate pixel value
 	 */
-	static Shader::Pixel Interpolate(const Shader::Pixel& p1, const Shader::Pixel& p2, float gad) {
-		Shader::Pixel p;
+	static Shader::PSInput Interpolate(const Shader::PSInput& p1, const Shader::PSInput& p2, float gad) {
+		Shader::PSInput p;
 		p.pos = Interpolate(p1.pos, p2.pos, gad);
 		p.normal = Interpolate(p1.normal, p2.normal, gad);
 		p.color = Interpolate(p1.color, p2.color, gad);
@@ -74,7 +74,7 @@ private:
 	/*
 	 * Bresenham Line Algorithm
 	 */
-	static void RasterLine(const Shader::Pixel& p1, const Shader::Pixel& p2, std::vector<Shader::Pixel> &pixels) {
+	static void RasterLine(const Shader::PSInput& p1, const Shader::PSInput& p2, std::vector<Shader::PSInput> &pixels) {
 
 		auto start = p1, end = p2;
 
@@ -92,8 +92,8 @@ private:
 		}
 	}
 
-	static void RasterTriangle(const Shader::Pixel& p1, const Shader::Pixel& p2, const Shader::Pixel& p3, std::vector<Shader::Pixel> &pixels){
-		Shader::Pixel top = p1, mid = p2, btm = p3, tmp;
+	static void RasterTriangle(const Shader::PSInput& p1, const Shader::PSInput& p2, const Shader::PSInput& p3, std::vector<Shader::PSInput> &pixels){
+		Shader::PSInput top = p1, mid = p2, btm = p3, tmp;
 
 		// 修正三个点的位置 
 		if (btm.pos._y > mid.pos._y) {
@@ -121,7 +121,7 @@ private:
 		if (mid.pos._y - btm.pos._y > 0) { dmb = (mid.pos._x - btm.pos._x) / (mid.pos._y - btm.pos._y); }
 
 		for (auto y = top.pos._y; y >= btm.pos._y; --y) {
-			Shader::Pixel sp, ep;
+			Shader::PSInput sp, ep;
 			float sgad = 0.0f , egad = 0.0f;
 			if (y > mid.pos._y) {
 				sgad = (y - top.pos._y) / (mid.pos._y - top.pos._y);
@@ -164,7 +164,7 @@ public:
 	};
 
 public:
-	static void raster(const Shader::Pixel& p1 , const Shader::Pixel& p2 , const Shader::Pixel& p3 , std::vector<Shader::Pixel>& pixels , const TYPE type) {
+	static void raster(const Shader::PSInput& p1 , const Shader::PSInput& p2 , const Shader::PSInput& p3 , std::vector<Shader::PSInput>& pixels , const TYPE type) {
 
 		auto pd1 = p1; pd1.pos = FixedPoint2D(pd1.pos);
 		auto pd2 = p2; pd2.pos = FixedPoint2D(pd2.pos);

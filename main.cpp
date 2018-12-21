@@ -29,25 +29,31 @@ int main()
 	Device::initialize(SCREEN_WIDTH, SCREEN_HEIGHT, IS_FULL_SCREEN, "Mixed-Renderer");
 	auto d = Device::getInstance();
 
-	d.show();
-
 	Matrix model = Matrix::identity();
-	Matrix view = Matrix::lookAtLH(Vector3(0, 0, -60), Vector3(0, 0, 0), Vector3(0, 1, 0));
-	Matrix perspective = Matrix::perspectiveFovLH(60, SCREEN_WIDTH / SCREEN_HEIGHT, 0.01, 1000);
+	Matrix view = Matrix::lookAtLH(Vector3(0, 0, -60), Vector3(0, 0, -1), Vector3(0, 1, 0));
+	Matrix perspective = Matrix::perspectiveFovLH(60, SCREEN_WIDTH / SCREEN_HEIGHT, 0.01, 100);
 
 	Model::Mesh::Face face1;
-	face1.p1 = Vector3(-1, -1, 0);
-	face1.p2 = Vector3(-1,  1, 0);
-	face1.p3 = Vector3( 1,  1, 0);
-	face1.normal = Vector3(0, 0, 1);
-	face1.color = Color::red();
+	face1.v1.pos = Vector3(-1, -1, 0);
+	face1.v2.pos = Vector3(-1,  1, 0);
+	face1.v3.pos = Vector3( 1,  1, 0);
+	face1.v1.normal = Vector3(0, 0, 1);
+	face1.v2.normal = Vector3(0, 0, 1);
+	face1.v3.normal = Vector3(0, 0, 1);
+	face1.v1.color = Color::red();
+	face1.v2.color = Color::blue();
+	face1.v3.color = Color::green();
 
 	Model::Mesh::Face face2;
-	face2.p1 = Vector3(-1, -1, 0);
-	face2.p2 = Vector3(1, 1, 0);
-	face2.p3 = Vector3(1, -1, 0);
-	face2.normal = Vector3(0, 0, 1);
-	face2.color = Color::red();
+	face2.v1.pos = Vector3(-1, -1, 0);
+	face2.v2.pos = Vector3(1, 1, 0);
+	face2.v2.pos = Vector3(1, -1, 0);
+	face2.v1.normal = Vector3(0, 0, 1);
+	face2.v2.normal = Vector3(0, 0, 1);
+	face2.v3.normal = Vector3(0, 0, 1);
+	face2.v1.color = Color::blue();
+	face2.v2.color = Color::green();
+	face2.v3.color = Color::red();
 
 	Model::Mesh mesh;
 	mesh.faces.push_back(face1);
@@ -57,9 +63,11 @@ int main()
 	m.meshes.push_back(mesh);
 
 	Shader shader;
-	shader.setMat(model, Shader::MatType::MODEL);
 	shader.setMat(view, Shader::MatType::VIEW);
 	shader.setMat(perspective, Shader::MatType::PERSPECTIVE);
+
+
+	d.show();
 
 	while (!d.windowShouldClose()) {
 		d.clear();

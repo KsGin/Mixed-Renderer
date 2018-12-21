@@ -14,27 +14,27 @@
 class Render
 {
 	static void doRenderFace(const Model::Mesh::Face& face, const Shader &shader , const Raster::TYPE &type) {
-		Shader::Vertex vertex1 , vertex2 , vertex3;
+		Shader::VSInput vertex1 , vertex2 , vertex3;
 
-		vertex1.pos = face.p1;
-		vertex2.pos = face.p2;
-		vertex3.pos = face.p3;
+		vertex1.pos = face.v1.pos;
+		vertex2.pos = face.v2.pos;
+		vertex3.pos = face.v3.pos;
 
-		vertex1.normal = face.normal;
-		vertex2.normal = face.normal;
-		vertex3.normal = face.normal;
+		vertex1.normal = face.v1.normal;
+		vertex2.normal = face.v2.normal;
+		vertex3.normal = face.v3.normal;
 
-		vertex1.color = face.color;
-		vertex2.color = face.color;
-		vertex3.color = face.color;
+		vertex1.color = face.v1.color;
+		vertex2.color = face.v2.color;
+		vertex3.color = face.v3.color;
 
-		Shader::Pixel pixel1 , pixel2 , pixel3;
+		Shader::PSInput pixel1 , pixel2 , pixel3;
 
 		pixel1 = shader.vertexShader(vertex1);
 		pixel2 = shader.vertexShader(vertex2);
 		pixel3 = shader.vertexShader(vertex3);
 
-		std::vector<Shader::Pixel> pixels;
+		std::vector<Shader::PSInput> pixels;
 		Raster::raster(pixel1 , pixel2 , pixel3 , pixels , type);
 
 		for (auto& pixel : pixels)

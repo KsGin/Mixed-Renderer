@@ -36,14 +36,14 @@ public:
 		PERSPECTIVE
 	};
 
-	struct Vertex
+	struct VSInput
 	{
 		Math::Vector3 pos;
 		Math::Vector3 normal;
 		Color color;
 	};
 
-	struct Pixel
+	struct PSInput
 	{
 		Math::Vector3 pos;
 		Math::Vector3 normal;
@@ -76,9 +76,9 @@ public:
 	/*
 	 * Vertex Shader
 	 */
-	Pixel vertexShader(const Vertex& vsInput) const{
+	PSInput vertexShader(const VSInput& vsInput) const{
 		Math::Matrix transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
-		Pixel psInput;
+		PSInput psInput;
 		psInput.pos = Math::Matrix::transform(vsInput.pos , transMat);
 		psInput.normal = Math::Matrix::transformCoordinates(vsInput.normal, transMat);
 		psInput.color = vsInput.color;
@@ -88,7 +88,7 @@ public:
 	/*
 	 * Pixel Shader
 	 */
-	Color pixelShader(const Pixel& psInput) const{
+	Color pixelShader(const PSInput& psInput) const{
 		Color color;
 		color = psInput.color;
 		return color;
