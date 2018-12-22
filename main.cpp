@@ -66,7 +66,6 @@ int main()
 	shader.setMat(view, Shader::MatType::VIEW);
 	shader.setMat(perspective, Shader::MatType::PERSPECTIVE);
 
-
 	d.show();
 
 	while (!d.windowShouldClose()) {

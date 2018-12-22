@@ -35,7 +35,7 @@ class Render
 		pixel3 = shader.vertexShader(vertex3);
 
 		std::vector<Shader::PSInput> pixels;
-		Raster::raster(pixel1 , pixel2 , pixel3 , pixels , type);
+		Raster::rasterize(pixel1 , pixel2 , pixel3 , pixels , type);
 
 		for (auto& pixel : pixels)
 		{
@@ -46,7 +46,7 @@ class Render
 	}
 
 public:
-	static void render(const Model &model , const Shader &shader, const Raster::TYPE &type) {
+	static void render(const Model &model , const Shader &shader, const Raster::TYPE &type = Raster::TYPE::SOLID) {
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces){
 				doRenderFace(face , shader , type);
