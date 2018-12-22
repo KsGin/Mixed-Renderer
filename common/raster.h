@@ -164,7 +164,7 @@ public:
 	};
 
 public:
-	static void raster(const Shader::PSInput& p1 , const Shader::PSInput& p2 , const Shader::PSInput& p3 , std::vector<Shader::PSInput>& pixels , const TYPE type) {
+	static void rasterize(const Shader::PSInput& p1 , const Shader::PSInput& p2 , const Shader::PSInput& p3 , std::vector<Shader::PSInput>& pixels , const TYPE type) {
 
 		auto pd1 = p1; pd1.pos = FixedPoint2D(pd1.pos);
 		auto pd2 = p2; pd2.pos = FixedPoint2D(pd2.pos);

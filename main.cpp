@@ -30,8 +30,8 @@ int main()
 	auto d = Device::getInstance();
 
 	Matrix model = Matrix::identity();
-	Matrix view = Matrix::lookAtLH(Vector3(0, 0, -60), Vector3(0, 0, -1), Vector3(0, 1, 0));
-	Matrix perspective = Matrix::perspectiveFovLH(60, SCREEN_WIDTH / SCREEN_HEIGHT, 0.01, 100);
+	Matrix view = Matrix::lookAtLH(Vector3(0, 0, -2), Vector3(0, 0, 0), Vector3(0, 1, 0));
+	Matrix perspective = Matrix::perspectiveFovLH(60, SCREEN_WIDTH / SCREEN_HEIGHT, 0.01, 1000);
 
 	Model::Mesh::Face face1;
 	face1.v1.pos = Vector3(-1, -1, 0);
@@ -47,13 +47,13 @@ int main()
 	Model::Mesh::Face face2;
 	face2.v1.pos = Vector3(-1, -1, 0);
 	face2.v2.pos = Vector3(1, 1, 0);
-	face2.v2.pos = Vector3(1, -1, 0);
+	face2.v3.pos = Vector3(1, -1, 0);
 	face2.v1.normal = Vector3(0, 0, 1);
 	face2.v2.normal = Vector3(0, 0, 1);
 	face2.v3.normal = Vector3(0, 0, 1);
-	face2.v1.color = Color::blue();
+	face2.v1.color = Color::red();
 	face2.v2.color = Color::green();
-	face2.v3.color = Color::red();
+	face2.v3.color = Color::blue();
 
 	Model::Mesh mesh;
 	mesh.faces.push_back(face1);

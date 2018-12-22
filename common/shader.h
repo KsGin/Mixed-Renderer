@@ -79,8 +79,8 @@ public:
 	PSInput vertexShader(const VSInput& vsInput) const{
 		Math::Matrix transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
 		PSInput psInput;
-		psInput.pos = Math::Matrix::transform(vsInput.pos , transMat);
-		psInput.normal = Math::Matrix::transformCoordinates(vsInput.normal, transMat);
+		psInput.pos = Math::Matrix::transformCoordinates(vsInput.pos , transMat);
+		psInput.normal = Math::Matrix::transform(vsInput.normal, transMat);
 		psInput.color = vsInput.color;
 		return psInput;
 	}
