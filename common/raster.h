@@ -21,12 +21,19 @@ static class Raster {
 private:
 
 	/*
+	 * Distance of two points
+	 */
+	static int Distance(const Math::Vector3& p1, const Math::Vector3& p2) {
+		return sqrt(pow(p2._x - p1._x , 2) + pow(p2._y - p1._y , 2));
+	}
+
+	/*
 	 * Fixed point function
 	 */
 	static Math::Vector3 FixedPoint2D(const Math::Vector3& p) {
 		Math::Vector3 refP;
 		refP._x = p._x * Device::getInstance().width + Device::getInstance().width / 2;
-		refP._y = p._y * Device::getInstance().height + Device::getInstance().height / 2;
+		refP._y = -p._y * Device::getInstance().height + Device::getInstance().height / 2;
 		refP._z = p._z;
 		return refP;
 	}
@@ -74,7 +81,7 @@ private:
 	/*
 	 * Bresenham Line Algorithm
 	 */
-	static void RasterLine(const Shader::PSInput& p1, const Shader::PSInput& p2, std::vector<Shader::PSInput> &pixels) {
+	static void RasterizeLine(const Shader::PSInput& p1, const Shader::PSInput& p2, std::vector<Shader::PSInput> &pixels , size_t &idx) {
 
 		auto start = p1, end = p2;
 
@@ -88,31 +95,12 @@ private:
 		for (auto i = 0; i < dis; i++)
 		{
 			gad = i / dis;
-			pixels.push_back(Interpolate(p1, p2, gad));
+			if (idx >= pixels.capacity()) pixels.resize(idx * 1.5);
+			pixels[idx++] = Interpolate(p1, p2, gad);
 		}
 	}
 
-	static void RasterTriangle(const Shader::PSInput& p1, const Shader::PSInput& p2, const Shader::PSInput& p3, std::vector<Shader::PSInput> &pixels){
-		Shader::PSInput top = p1, mid = p2, btm = p3, tmp;
-
-		// 修正三个点的位置 
-		if (btm.pos._y > mid.pos._y) {
-			tmp = mid;
-			mid = btm;
-			btm = tmp;
-		}
-
-		if (mid.pos._y > top.pos._y) {
-			tmp = top;
-			top = mid;
-			mid = tmp;
-		}
-
-		if (btm.pos._y > mid.pos._y) {
-			tmp = mid;
-			mid = btm;
-			btm = tmp;
-		}
+	static void RasterizeTriangle(const Shader::PSInput& top, const Shader::PSInput& mid, const Shader::PSInput& btm, std::vector<Shader::PSInput> &pixels , size_t &idx){
 
 		// 三角形顶部点和其他两个点的反向斜率
 		float dtm = 0, dtb = 0, dmb = 0;
@@ -148,7 +136,9 @@ private:
 
 			for (auto x = sx; x <= ex; ++x) { 
 				float gad = (x - sx) / (ex - sx);
-				pixels.push_back(Interpolate(sp, ep, gad));
+				if (idx >= pixels.capacity()) 
+					pixels.resize(idx * 1.5);
+				pixels[idx++] = Interpolate(sp, ep, gad);
 			}
 		}
 	}
@@ -166,16 +156,46 @@ public:
 public:
 	static void rasterize(const Shader::PSInput& p1 , const Shader::PSInput& p2 , const Shader::PSInput& p3 , std::vector<Shader::PSInput>& pixels , const TYPE type) {
 
-		auto pd1 = p1; pd1.pos = FixedPoint2D(pd1.pos);
-		auto pd2 = p2; pd2.pos = FixedPoint2D(pd2.pos);
-		auto pd3 = p3; pd3.pos = FixedPoint2D(pd3.pos);
+		auto top = p1; top.pos = FixedPoint2D(top.pos);
+		auto mid = p2; mid.pos = FixedPoint2D(mid.pos);
+		auto btm = p3; btm.pos = FixedPoint2D(btm.pos);
+
+		Shader::PSInput tmp;
+		// 修正三个点的位置 
+		if (btm.pos._y > mid.pos._y) {
+			tmp = mid;
+			mid = btm;
+			btm = tmp;
+		}
+
+		if (mid.pos._y > top.pos._y) {
+			tmp = top;
+			top = mid;
+			mid = tmp;
+		}
+
+		if (btm.pos._y > mid.pos._y) {
+			tmp = mid;
+			mid = btm;
+			btm = tmp;
+		}
+
+		size_t numPixels = 0 , idx = 0;
+		size_t tm = Distance(top.pos, mid.pos), tb = Distance(top.pos, btm.pos), mb = Distance(mid.pos, btm.pos);
 
 		if (type == SOLID) {
-			RasterTriangle(pd1, pd2, pd3, pixels);
+			size_t p = (tm + tb + mb) / 2;
+			numPixels = sqrt(p * (p - tm) * (p - tb) * (p - mb));
+			pixels.resize(numPixels * 1.5);
+
+			RasterizeTriangle(top, mid, btm, pixels , idx);
 		} else {
-			RasterLine(pd1, pd2, pixels);
-			RasterLine(pd1, pd3, pixels);
-			RasterLine(pd2, pd3, pixels);
+			numPixels = tm + tb + mb;
+			pixels.resize(numPixels * 1.5);
+
+			RasterizeLine(top, mid, pixels , idx);
+			RasterizeLine(top, btm, pixels , idx);
+			RasterizeLine(mid, btm, pixels , idx);
 		}
 	}
 };
