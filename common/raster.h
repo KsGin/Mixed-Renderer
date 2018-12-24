@@ -135,7 +135,9 @@ private:
 			float sx = sp.pos._x, ex = ep.pos._x;  // x×ø±ê	
 
 			for (auto x = sx; x <= ex; ++x) { 
-				float gad = (x - sx) / (ex - sx);
+				float gad = 0;
+				if (ex - sx < 1.0f) { gad = 0; }
+				else gad = (x - sx) / (ex - sx);
 				if (idx >= pixels.capacity()) 
 					pixels.resize(idx * 1.5);
 				pixels[idx++] = Interpolate(sp, ep, gad);
@@ -181,16 +183,14 @@ public:
 		}
 
 		size_t numPixels = 0 , idx = 0;
-		size_t tm = Distance(top.pos, mid.pos), tb = Distance(top.pos, btm.pos), mb = Distance(mid.pos, btm.pos);
 
 		if (type == SOLID) {
-			size_t p = (tm + tb + mb) / 2;
-			numPixels = sqrt(p * (p - tm) * (p - tb) * (p - mb));
+			numPixels = 0.5 * abs((mid.pos._x - top.pos._x) * (btm.pos._y - top.pos._y) - (btm.pos._x - top.pos._x) * (mid.pos._y - top.pos._y));
 			pixels.resize(numPixels * 1.5);
 
 			RasterizeTriangle(top, mid, btm, pixels , idx);
 		} else {
-			numPixels = tm + tb + mb;
+			numPixels = Distance(top.pos, mid.pos) + Distance(top.pos, btm.pos) + Distance(mid.pos, btm.pos);
 			pixels.resize(numPixels * 1.5);
 
 			RasterizeLine(top, mid, pixels , idx);

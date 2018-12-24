@@ -83,8 +83,8 @@ public:
 		face1.v3.normal = Math::Vector3(0, 0, -1);
 
 		face1.v1.color = Color::red();
-		face1.v2.color = Color::green();
-		face1.v3.color = Color::blue();
+		face1.v2.color = Color::red();
+		face1.v3.color = Color::red();
 
 		face1.v1.uv = Math::Vector2(0, 1);
 		face1.v2.uv = Math::Vector2(0, 0);
@@ -102,8 +102,8 @@ public:
 		face2.v2.normal = Math::Vector3(0, 0, -1);
 		face2.v3.normal = Math::Vector3(0, 0, -1);
 			
-		face2.v1.color = Color::blue();
-		face2.v2.color = Color::green();
+		face2.v1.color = Color::red();
+		face2.v2.color = Color::red();
 		face2.v3.color = Color::red();
 			
 		face2.v1.uv = Math::Vector2(1, 0);

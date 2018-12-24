@@ -42,7 +42,8 @@ class Render
 			Color pixelColor = shader.pixelShader(pixel);
 			Device::getInstance().setPixelColor(pixel.pos._x, pixel.pos._y, pixelColor);
 		}
-
+		pixels.clear();
+		pixels.shrink_to_fit();
 	}
 
 public:
