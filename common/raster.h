@@ -32,7 +32,7 @@ private:
 	 */
 	static Math::Vector3 FixedPoint2D(const Math::Vector3& p) {
 		Math::Vector3 refP;
-		refP._x = p._x * Device::getInstance().width + Device::getInstance().width / 2;
+		refP._x = -p._x * Device::getInstance().width + Device::getInstance().width / 2;
 		refP._y = -p._y * Device::getInstance().height + Device::getInstance().height / 2;
 		refP._z = p._z;
 		return refP;
@@ -111,7 +111,7 @@ private:
 		for (auto y = top.pos._y; y >= btm.pos._y; --y) {
 			Shader::PSInput sp, ep;
 			float sgad = 0.0f , egad = 0.0f;
-			if (y > mid.pos._y) {
+			if (y >= mid.pos._y) {
 				sgad = (y - top.pos._y) / (mid.pos._y - top.pos._y);
 				egad = (y - top.pos._y) / (btm.pos._y - top.pos._y);
 				sp = Interpolate(top, mid, sgad);

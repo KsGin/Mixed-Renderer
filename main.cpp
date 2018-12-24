@@ -30,7 +30,7 @@ int main()
 	auto d = Device::getInstance();
 
 	Matrix model = Matrix::identity();
-	Matrix view = Matrix::lookAtLH(Vector3(0, 0, -2), Vector3(0, 0, 0), Vector3(0, 1, 0));
+	Matrix view = Matrix::lookAtLH(Vector3(0, 0, 4), Vector3(0, 0, 0), Vector3(0, 1, 0));
 	Matrix perspective = Matrix::perspectiveFovLH(60, SCREEN_WIDTH / SCREEN_HEIGHT, 0.01, 1000);
 
 	Model m = Model::cube();
