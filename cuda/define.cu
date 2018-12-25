@@ -50,3 +50,20 @@
 	\
 	printf("name : %s \ntotalGlobalMem : %zdM\n" , devProps.name , devProps.totalGlobalMem >> 20); \
 }
+
+
+/*
+ * defined clamp
+ */
+#define CLAMP(x , min , max) { \
+   if (x > max) x = max;  \
+   if (x < min) x = min;  \
+}
+
+
+/*
+ * defined clamp 0~1
+ */
+#define CLAMP01(x) { \
+	CLAMP(x , 0 , 1) \
+}
