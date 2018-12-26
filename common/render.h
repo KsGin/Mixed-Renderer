@@ -43,6 +43,7 @@ class Render
 			if (!Device::getInstance().testDepth(pixel.pos._x, pixel.pos._y, pixel.pos._z)) continue; // …Ó∂»≤‚ ‘
 			Device::getInstance().setPixel(pixel.pos._x, pixel.pos._y, pixelColor);
 		}
+
 		pixels.clear();
 		pixels.shrink_to_fit();
 	}

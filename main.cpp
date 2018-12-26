@@ -29,11 +29,11 @@ int main()
 	Device::initialize(SCREEN_WIDTH, SCREEN_HEIGHT, IS_FULL_SCREEN, "Mixed-Renderer");
 	auto d = Device::getInstance();
 
-	Matrix model = Matrix::identity();
-	Matrix view = Matrix::lookAtLH(Vector3(0, 0, 4), Vector3(0, 0, 0), Vector3(0, 1, 0));
-	Matrix perspective = Matrix::perspectiveFovLH(60, SCREEN_WIDTH / SCREEN_HEIGHT, 0.01, 100);
+	Matrix model = Matrix::identity() * Matrix::scale(0.25 , 0.25 , 0.25);
+	Matrix view = Matrix::lookAtLH(Vector3(0, 0, 10), Vector3(0, 0, 0), Vector3(0, 1, 0));
+	Matrix perspective = Matrix::perspectiveFovLH( 1 , SCREEN_WIDTH / SCREEN_HEIGHT, 0.1, 1000);
 
-	Model m = Model::cube();
+	Model m = Model::triangle();
 
 	Shader shader;
 	shader.setMat(view, Shader::MatType::VIEW);
@@ -44,7 +44,7 @@ int main()
 	while (!d.windowShouldClose()) {
 		d.clear();
 
-		model = model * Math::Matrix::rotationY(-0.02f);
+		model = model * Math::Matrix::rotationY(-0.02f) * Math::Matrix::rotationZ(-0.02f) * Math::Matrix::rotationX(-0.02f);
 		shader.setMat(model, Shader::MatType::MODEL);
 
 		Render::render(m, shader, Raster::SOLID);

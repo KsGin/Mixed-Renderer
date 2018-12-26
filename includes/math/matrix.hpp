@@ -280,10 +280,11 @@ namespace Math {
 			Vector3 x = Vector3::cross(up, z);
 			x.normalize();
 			Vector3 y = Vector3::cross(z, x);
+			y.normalize();
 
-			float ex = Vector3::dot(x, eye);
-			float ey = Vector3::dot(y, eye);
-			float ez = Vector3::dot(z, eye);
+			float ex = -Vector3::dot(x, eye);
+			float ey = -Vector3::dot(y, eye);
+			float ez = -Vector3::dot(z, eye);
 
 			return Matrix(
 				x._x, y._x, z._x, 0,
@@ -301,7 +302,7 @@ namespace Math {
 				t / aspect, 0, 0, 0,
 				0, t, 0, 0,
 				0, 0, -far / (near - far), 1,
-				0, 0, near * far / (near - far), 0
+				0, 0, (near * far) / (near - far), 0
 			);
 		}
 

@@ -47,9 +47,9 @@ public:
 		Model::Mesh triangleMesh;
 		Model::Mesh::Face triangleFace;
 
-		triangleFace.v1.pos = Math::Vector3( 0,  1, 0);
-		triangleFace.v2.pos = Math::Vector3(-1,  0, 0);
-		triangleFace.v3.pos = Math::Vector3( 1,  0, 0);
+		triangleFace.v1.pos = Math::Vector3( 0,  1, -5);
+		triangleFace.v2.pos = Math::Vector3(-1,  0, -5);
+		triangleFace.v3.pos = Math::Vector3( 1,  0, -5);
 
 		triangleFace.v1.normal = Math::Vector3(0, 0, -1);
 		triangleFace.v2.normal = Math::Vector3(0, 0, -1);

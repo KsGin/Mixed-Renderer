@@ -30,10 +30,10 @@ private:
 	/*
 	 * Fixed point function
 	 */
-	static Math::Vector3 FixedPoint2D(const Math::Vector3& p) {
+	static Math::Vector3 FixedPoint(const Math::Vector3& p) {
 		Math::Vector3 refP;
-		refP._x = -p._x * Device::getInstance().width + Device::getInstance().width / 2;
-		refP._y = -p._y * Device::getInstance().height + Device::getInstance().height / 2;
+		refP._x = floorf(-p._x  * Device::getInstance().width + Device::getInstance().width / 2);
+		refP._y = floorf(-p._y * Device::getInstance().height + Device::getInstance().height / 2);
 		refP._z = p._z;
 		return refP;
 	}
@@ -42,8 +42,9 @@ private:
 	 * Interpolate float value
 	 */
 	static float Interpolate(float v1, float v2, float gad){
-		if (v1 > v2) { return v1 - (v1 - v2) * Device::clamp(gad); }
-		return v1 + (v2 - v1) * Device::clamp(gad);
+		CLAMP01(gad);
+		if (v1 > v2) { return v1 - (v1 - v2) * gad; }
+		return v1 + (v2 - v1) * gad;
 	}
 
 	/*
@@ -158,9 +159,9 @@ public:
 public:
 	static void rasterize(const Shader::PSInput& p1 , const Shader::PSInput& p2 , const Shader::PSInput& p3 , std::vector<Shader::PSInput>& pixels , const TYPE type) {
 
-		auto top = p1; top.pos = FixedPoint2D(top.pos);
-		auto mid = p2; mid.pos = FixedPoint2D(mid.pos);
-		auto btm = p3; btm.pos = FixedPoint2D(btm.pos);
+		auto top = p1; top.pos = FixedPoint(top.pos);
+		auto mid = p2; mid.pos = FixedPoint(mid.pos);
+		auto btm = p3; btm.pos = FixedPoint(btm.pos);
 
 		Shader::PSInput tmp;
 		// 修正三个点的位置 
