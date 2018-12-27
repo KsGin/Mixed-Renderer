@@ -44,7 +44,7 @@ int main()
 	while (!d.windowShouldClose()) {
 		d.clear();
 
-		model = model * Math::Matrix::rotationY(-0.02f) * Math::Matrix::rotationZ(-0.02f) * Math::Matrix::rotationX(-0.02f);
+		//model = model * Math::Matrix::rotationY(-0.02f) * Math::Matrix::rotationZ(-0.02f) * Math::Matrix::rotationX(-0.02f);
 		shader.setMat(model, Shader::MatType::MODEL);
 
 		Render::render(m, shader, Raster::SOLID);
