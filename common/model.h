@@ -290,7 +290,7 @@ public:
 
 		face11.v1.uv = Math::Vector2(1, 1);
 		face11.v2.uv = Math::Vector2(1, 0);
-		face11.v3.uv = Math::Vector2(-1, 0);
+		face11.v3.uv = Math::Vector2(0, 0);
 
 		triangleMesh.faces.push_back(face11);
 

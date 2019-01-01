@@ -8,24 +8,27 @@
 
 #include "../includes/math/matrix.hpp"
 #include "../includes/math/vector.hpp"
-#include "device.h"
-#include "raster.h"
-#include "model.h"
+#include "texture.h"
+#include <vector>
 
 class Shader
 {
 	/*
-	* modelMat
-	*/
+	 * modelMat
+	 */
 	Math::Matrix modelMat = Math::Matrix::identity();
 	/*
-	* viewMat
-	*/
+	 * viewMat
+	 */
 	Math::Matrix viewMat = Math::Matrix::identity();
 	/*
-	* perspectiveMat
-	*/
+	 * perspectiveMat
+	 */
 	Math::Matrix perspectiveMat = Math::Matrix::identity();
+	/*
+	 * textures
+	 */
+	std::vector<Texture> textures = std::vector<Texture>(8);
 	
 public:
 
@@ -40,6 +43,7 @@ public:
 	{
 		Math::Vector3 pos;
 		Math::Vector3 normal;
+		Math::Vector2 uv;
 		Color color;
 	};
 
@@ -47,6 +51,7 @@ public:
 	{
 		Math::Vector3 pos;
 		Math::Vector3 normal;
+		Math::Vector2 uv;
 		Color color;
 	};
 
@@ -74,13 +79,21 @@ public:
 	}
 
 	/*
+	 * Set Texture
+	 */
+	void setTexture(const Texture& texture , const int idx) {
+		this->textures[idx] = texture;
+	}
+
+	/*
 	 * Vertex Shader
 	 */
-	PSInput vertexShader(const VSInput& vsInput) const{
+	PSInput vertexShader(const VSInput& vsInput){
 		Math::Matrix transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
 		PSInput psInput;
 		psInput.pos = Math::Matrix::transformCoordinates(vsInput.pos , transMat);
 		psInput.normal = Math::Matrix::transform(vsInput.normal, transMat);
+		psInput.uv = vsInput.uv;
 		psInput.color = vsInput.color;
 		return psInput;
 	}
@@ -88,9 +101,9 @@ public:
 	/*
 	 * Pixel Shader
 	 */
-	Color pixelShader(const PSInput& psInput) const{
+	Color pixelShader(const PSInput& psInput){
 		Color color;
-		color = psInput.color;
+		color = textures[0].getPixel(psInput.uv._x , psInput.uv._y);
 		return color;
 	}
 };

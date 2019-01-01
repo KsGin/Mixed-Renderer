@@ -10,6 +10,7 @@
 #include "common/raster.h"
 #include "includes/math/matrix.hpp"
 #include "common/render.h"
+#include "common/texture.h"
 
 using namespace std;
 using namespace Math;
@@ -30,7 +31,7 @@ int main()
 	auto d = Device::getInstance();
 
 	Matrix model = Matrix::identity() * Matrix::scale(0.25 , 0.25 , 0.25);
-	Matrix view = Matrix::lookAtLH(Vector3(0, 0, 10), Vector3(0, 0, 0), Vector3(0, 1, 0));
+	Matrix view = Matrix::lookAtLH(Vector3(0, 0, 5), Vector3(0, 0, 0), Vector3(0, 1, 0));
 	Matrix perspective = Matrix::perspectiveFovLH( 1 , SCREEN_WIDTH / SCREEN_HEIGHT, 0.1, 1000);
 
 	Model m = Model::cube();
@@ -39,12 +40,16 @@ int main()
 	shader.setMat(view, Shader::MatType::VIEW);
 	shader.setMat(perspective, Shader::MatType::PERSPECTIVE);
 
+	Texture texture = Texture::LoadFromFile("resources/TD1.png" , true);
+
+	shader.setTexture(texture, 0);
+
 	d.show();
 
 	while (!d.windowShouldClose()) {
 		d.clear();
 
-		model = model * Math::Matrix::rotationY(-0.02f) * Math::Matrix::rotationZ(-0.02f) * Math::Matrix::rotationX(-0.02f);
+		model = model * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
 		shader.setMat(model, Shader::MatType::MODEL);
 
 		Render::render(m, shader, Raster::SOLID);

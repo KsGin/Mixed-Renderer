@@ -16,6 +16,9 @@
     <Filter Include="Includes\Math">
       <UniqueIdentifier>{52fe58ce-5467-4ff2-8475-9b1f34a548d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{5c164fed-4ef0-4ec4-9be0-c0d53d2c4686}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\camera.h">
@@ -45,6 +48,9 @@
     <ClInclude Include="common\render.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="common\texture.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cuda\define.cu">
@@ -56,5 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\TD1.png">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

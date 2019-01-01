@@ -58,7 +58,7 @@ private:
 	 * Interpolate vec2 value
 	 */
 	static Math::Vector2 Interpolate(const Math::Vector2& v1, const Math::Vector2& v2, float gad){
-		return Math::Vector2(Interpolate(v1._x, v2._x, gad), Interpolate(v2._y, v2._y, gad));
+		return Math::Vector2(Interpolate(v1._x, v2._x, gad), Interpolate(v1._y, v2._y, gad));
 	}
 
 	/*
@@ -75,6 +75,7 @@ private:
 		Shader::PSInput p;
 		p.pos = Interpolate(p1.pos, p2.pos, gad);
 		p.normal = Interpolate(p1.normal, p2.normal, gad);
+		p.uv = Interpolate(p1.uv, p2.uv, gad);
 		p.color = Interpolate(p1.color, p2.color, gad);
 		return p;
 	}
