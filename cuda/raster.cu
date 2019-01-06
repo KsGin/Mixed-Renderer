@@ -8,12 +8,11 @@
 #pragma once
 
 #include "../includes/math/vector.hpp"
-#include "color.h"
-#include "device.h"
-#include "model.h"
-#include "shader.h"
+#include "../common/color.h"
+#include "../common/device.h"
+#include "../common/model.h"
+#include "../cuda/shader.cu"
 #include <cmath>
-
 #include <vector>
 #include <iostream>
 

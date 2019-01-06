@@ -30,26 +30,20 @@
     <ClInclude Include="common\device.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="common\raster.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="includes\math\matrix.hpp">
       <Filter>Includes\Math</Filter>
     </ClInclude>
     <ClInclude Include="includes\math\vector.hpp">
       <Filter>Includes\Math</Filter>
     </ClInclude>
-    <ClInclude Include="common\shader.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="common\model.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="common\render.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="common\texture.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\raster.cu">
+      <Filter>Cuda</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +53,12 @@
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="README.md" />
+    <None Include="cuda\shader.cu">
+      <Filter>Cuda</Filter>
+    </None>
+    <None Include="cuda\render.cu">
+      <Filter>Cuda</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

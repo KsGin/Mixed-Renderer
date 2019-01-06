@@ -1,14 +1,17 @@
 /**
- * File Name : shader.h
+ * File Name : shader.cu
  * Author : Yang Fan
- * Date : 2018/12/19
- * declare pipe shader
+ * Date : 2019/1/6
+ * defined shader
  */
+
 #pragma once
 
+#include <device_launch_parameters.h>
 #include "../includes/math/matrix.hpp"
 #include "../includes/math/vector.hpp"
-#include "texture.h"
+#include "../common/texture.h"
+#include "../cuda/shader.cu"
 #include <vector>
 
 class Shader
@@ -88,22 +91,21 @@ public:
 	/*
 	 * Vertex Shader
 	 */
-	PSInput vertexShader(const VSInput& vsInput){
-		Math::Matrix transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
-		PSInput psInput;
+	__global__ void vertexShader(const VSInput& vsInput , PSInput& psInput){
+		auto transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
 		psInput.pos = Math::Matrix::transformCoordinates(vsInput.pos , transMat);
 		psInput.normal = Math::Matrix::transform(vsInput.normal, transMat);
 		psInput.uv = vsInput.uv;
 		psInput.color = vsInput.color;
-		return psInput;
 	}
 
 	/*
 	 * Pixel Shader
 	 */
-	Color pixelShader(const PSInput& psInput){
-		Color color;
-		color = textures[0].getPixel(psInput.uv._x , psInput.uv._y);
-		return color;
+	__global__ void pixelShader(PSInput* psInput , Color* color)
+	{
+		int idx = blockIdx.x * blockDim.x + blockIdx.x;
+		color[idx] = textures[0].getPixel(psInput[idx].uv._x , psInput[idx].uv._y);
 	}
+
 };

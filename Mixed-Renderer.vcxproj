@@ -134,9 +134,7 @@
     <ClInclude Include="common\color.h" />
     <ClInclude Include="common\device.h" />
     <ClInclude Include="common\model.h" />
-    <ClInclude Include="common\raster.h" />
-    <ClInclude Include="common\render.h" />
-    <ClInclude Include="common\shader.h" />
+    <ClInclude Include="common\raster.cu" />
     <ClInclude Include="common\texture.h" />
     <ClInclude Include="includes\math\matrix.hpp" />
     <ClInclude Include="includes\math\vector.hpp" />
@@ -145,6 +143,8 @@
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="cuda\define.cu" />
+    <None Include="cuda\render.cu" />
+    <None Include="cuda\shader.cu" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
