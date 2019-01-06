@@ -28,8 +28,8 @@
 /**
  * define screen width & height & isFullScreen
  */
-#define SCREEN_WIDTH 1920
-#define SCREEN_HEIGHT 1080
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
 #define IS_FULL_SCREEN false
 
 /*
