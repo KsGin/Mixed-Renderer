@@ -6,138 +6,54 @@
  */
 
 #pragma once
-
 #include <device_launch_parameters.h>
-#include "../includes/math/matrix.hpp"
-#include "../includes/math/vector.hpp"
-#include "../common/color.h"
-#include "../cuda/define.cu"
-#include "../cuda/texture.cu"
+#include "../common/define.h"
+#include "../common/texture.h"
 #include <vector>
 
-class Shader
+
+__device__ void TexSampler2D(const Texture& texture, const float x, const float y, Color& color)
 {
-	/*
-	 * modelMat
-	 */
-	Math::Matrix modelMat = Math::Matrix::identity();
-	/*
-	 * viewMat
-	 */
-	Math::Matrix viewMat = Math::Matrix::identity();
-	/*
-	 * perspectiveMat
-	 */
-	Math::Matrix perspectiveMat = Math::Matrix::identity();
-	/*
-	 * textures
-	 */
-	std::vector<Texture> textures = std::vector<Texture>(8);
+	const int tx = x * texture.width;
+	const int ty = y * texture.height;
 
-public:
+	auto idx = (ty * texture.width + tx) * 4;
 
-	enum MatType
-	{
-		MODEL,
-		VIEW,
-		PERSPECTIVE
-	};
+	CLAMP(idx, 0, texture.width * texture.height * 4 - 1);
 
-	struct VSInput
-	{
-		Math::Vector3 pos;
-		Math::Vector3 normal;
-		Math::Vector2 uv;
-		Color color;
-	};
-
-	struct PSInput
-	{
-		Math::Vector3 pos;
-		Math::Vector3 normal;
-		Math::Vector2 uv;
-		Color color;
-	};
-
-	/*
-	* Constructor
-	*/
-	Shader()
-	{
-	}
-
-	/*
-	 * Deconstructor
-	 */
-	~Shader()
-	{
-	}
-
-	/*
-	 * Set Matrix
-	 */
-	void setMat(const Math::Matrix& mat, const MatType& type)
-	{
-		switch (type)
-		{
-		case MODEL: modelMat = mat;
-			break;
-		case VIEW: viewMat = mat;
-			break;
-		case PERSPECTIVE: perspectiveMat = mat;
-			break;
-		}
-	}
-
-	/*
-	 * Set Texture
-	 */
-	void setTexture(const Texture& texture, const int idx)
-	{
-		this->textures[idx] = texture;
-	}
-
-	/*
-	 * Vertex Shader
-	 */
-	void callVertexShader(const VSInput& vsInput, PSInput& psInput)
-	{
-		auto transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
-		psInput.pos = Math::Matrix::transformCoordinates(vsInput.pos, transMat);
-		psInput.normal = Math::Matrix::transform(vsInput.normal, transMat);
-		psInput.uv = vsInput.uv;
-		psInput.color = vsInput.color;
-	}
-
-	/*
-	 * Pixel Shader
-	 */
-	void callPixelShader(std::vector<PSInput> pixels, std::vector<Color> colors);
-};
-
-
-__global__ void pixelShader(Shader::PSInput* psInput, Color* color, Texture* textures)
-{
-	const int idx = blockIdx.x * blockDim.x + blockIdx.x;
-	Sampler2D(textures[0] , psInput[idx].uv._x, psInput[idx].uv._y , color[idx]);
+	color.a = texture.pixels[idx - 1] / 255.0f;
+	color.b = texture.pixels[idx - 2] / 255.0f;
+	color.g = texture.pixels[idx - 3] / 255.0f;
+	color.r = texture.pixels[idx - 4] / 255.0f;
 }
 
-void Shader::callPixelShader(std::vector<PSInput> pixels, std::vector<Color> colors)
+__global__ void GlobalPixelShader(PSInput* psInput, Texture* textures ,Color* color)
+{
+	const int idx = blockIdx.x * blockDim.x + blockIdx.x;
+	TexSampler2D(textures[0], psInput[idx].uv._x, psInput[idx].uv._y, color[idx]);
+}
+
+extern "C" void CallGlobalPixelShader(const std::vector<PSInput> pixels, const std::vector<Texture> textures, std::vector<Color> colors)
 {
 	PSInput* dPixels;
-	CUDA_CALL(cudaMalloc((void**)&dPixels , sizeof(Shader::PSInput) * pixels.size()));
+	CUDA_CALL(cudaMalloc((void**)&dPixels , sizeof(PSInput) * pixels.size()));
 	Color* dColors;
 	CUDA_CALL(cudaMalloc((void**)&dColors , sizeof(Color) * pixels.size()));
 	Texture* dTextures;
 	CUDA_CALL(cudaMalloc((void**)&dTextures , sizeof(Texture) * pixels.size()));
 
-	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , pixels.size() , cudaMemcpyHostToDevice));
-	CUDA_CALL(cudaMemcpy(dTextures , &textures[0] , textures.size() , cudaMemcpyDeviceToDevice))
+	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , pixels.size() * sizeof(PSInput) , cudaMemcpyHostToDevice));
+	CUDA_CALL(cudaMemcpy(dTextures , &textures[0] , textures.size() * sizeof(Texture) , cudaMemcpyHostToDevice))
 
-	pixelShader<<<1 , pixels.size()>>>(dPixels, dColors, dTextures);
+	GlobalPixelShader<<<1 , pixels.size()>>>(dPixels, dTextures, dColors);
 
-	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , pixels.size() , cudaMemcpyDeviceToHost));
+	cudaThreadSynchronize();
+
+	Color* hColors = (Color*)malloc(sizeof(Color) * pixels.size());
+
+	CUDA_CALL(cudaMemcpy(hColors , dColors , pixels.size() * sizeof(Color) , cudaMemcpyDeviceToHost));
 	CUDA_CALL(cudaFree(dPixels));
 	CUDA_CALL(cudaFree(dColors));
 	CUDA_CALL(cudaFree(dTextures));
 }
+

@@ -6,15 +6,17 @@
  */
 
 #pragma once
-#include "../cuda/shader.cu"
-#include "../cuda/raster.cu"
 #include "../common/device.h"
 #include "../common/model.h"
+#include "../common/color.h"
+#include "../common/define.h"
+#include "../common/shader.h"
+#include "../cuda/raster.cu"
 
 class Render
 {
-	static void doRenderFace(const Model::Mesh::Face& face, Shader &shader , const Raster::TYPE &type) {
-		Shader::VSInput vertex1 , vertex2 , vertex3;
+	static void doRenderFace(const Model::Mesh::Face& face, Shader &shader , const TYPE &type) {
+		VSInput vertex1 , vertex2 , vertex3;
 
 		vertex1.pos = face.v1.pos;
 		vertex2.pos = face.v2.pos;
@@ -32,16 +34,16 @@ class Render
 		vertex2.color = face.v2.color;
 		vertex3.color = face.v3.color;
 
-		Shader::PSInput pixel1 , pixel2 , pixel3;
+		PSInput pixel1 , pixel2 , pixel3;
 
-		shader.callVertexShader(vertex1 , pixel1);
-		shader.callVertexShader(vertex2 , pixel2);
-		shader.callVertexShader(vertex3 , pixel3);
+		shader.vertexShader(vertex1 , pixel1);
+		shader.vertexShader(vertex2 , pixel2);
+		shader.vertexShader(vertex3 , pixel3);
 
-		std::vector<Shader::PSInput> pixels;
+		std::vector<PSInput> pixels;
 		Raster::rasterize(pixel1 , pixel2 , pixel3 , pixels , type);
 		std::vector<Color> colors(pixels.size());
-		shader.callPixelShader(pixels , colors);
+		shader.pixelShader(pixels , colors);
 
 		for (auto i = 0 ; i < pixels.size(); ++i)
 		{
@@ -59,7 +61,7 @@ class Render
 	}
 
 public:
-	static void render(const Model &model , Shader &shader, const Raster::TYPE &type = Raster::TYPE::SOLID) {
+	static void render(const Model &model , Shader &shader, const TYPE &type = TYPE::SOLID) {
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces){
 				doRenderFace(face , shader , type);
