@@ -10,7 +10,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 
 /**
  * define a cuda call

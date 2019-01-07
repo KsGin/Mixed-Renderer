@@ -8,17 +8,15 @@
 #pragma once
 
 #include <SDL_image.h>
-#include "../cuda/define.cu"
-#include "color.h"
+#include "define.cu"
+#include "../common/color.h"
 
 /*
  *	Texture class
  */
-class Texture {
-	/*
-	 * pixels
-	 */
-	unsigned char* pixels;
+class Texture
+{
+public:
 
 	/*
 	 * width & height
@@ -26,13 +24,17 @@ class Texture {
 	int width, height;
 
 	/*
+	 * pixels
+	 */
+	unsigned char* pixels;
+
+	/*
 	 * isAlpha
 	 */
 	bool alpha;
 
-public:
-
-	Texture() {
+	Texture()
+	{
 		pixels = nullptr;
 		width = 0;
 		height = 0;
@@ -42,13 +44,15 @@ public:
 	/*
 	 * init from file
 	 */
-	static Texture LoadFromFile(const char* fileName, bool isAlpha) {
+	static Texture LoadFromFile(const char* fileName, bool isAlpha)
+	{
 		Texture texture;
 
 		IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 		SDL_Surface* sf = IMG_Load(fileName);
 
-		if (sf == nullptr) {
+		if (sf == nullptr)
+		{
 			fprintf(stderr, "could not load image: %s\n", IMG_GetError());
 			return texture;
 		}
@@ -57,7 +61,7 @@ public:
 		texture.width = sf->w;
 		texture.height = sf->h;
 		texture.alpha = isAlpha;
-		
+
 		return texture;
 	}
 
@@ -65,7 +69,8 @@ public:
 	 * init from memory
 	 */
 	static Texture LoadFromMemory(const int textureWidth, const int textureHeight, unsigned char* textureData,
-	                              bool isAlpha) {
+	                              bool isAlpha)
+	{
 		Texture texture;
 		texture.pixels = textureData;
 		texture.width = textureWidth;
@@ -78,7 +83,8 @@ public:
 	/*
 	 * set pixel
 	 */
-	void setPixel(const float x, const float y, const Color& color) {
+	void setPixel(float x, float y, const Color& color)
+	{
 		const int tx = x * width;
 		const int ty = y * height;
 
@@ -102,19 +108,35 @@ public:
 	/*
 	 * get pixel
 	 */
-	Color getPixel(const float x, const float y) {
+	void getPixel(float x, float y, Color& color)
+	{
+		const int tx = x * this->width;
+		const int ty = y * this->height;
 
-		const int tx = x * width;
-		const int ty = y * height;
+		auto idx = (ty * this->width + tx) * 4;
 
-		auto idx = (ty * width + tx) * 4;
+		CLAMP(idx, 0, this->width * this->height * 4 - 1);
 
-		CLAMP(idx, 0, width * height * 4 - 1);
-
-		const auto a = this->pixels[idx - 1] / 255.0f;
-		const auto b = this->pixels[idx - 2] / 255.0f;
-		const auto g = this->pixels[idx - 3] / 255.0f;
-		const auto r = this->pixels[idx - 4] / 255.0f;
-		return Color(r, g, b, a);
+		color.a = this->pixels[idx - 1] / 255.0f;
+		color.b = this->pixels[idx - 2] / 255.0f;
+		color.g = this->pixels[idx - 3] / 255.0f;
+		color.r = this->pixels[idx - 4] / 255.0f;
 	}
 };
+
+__device__ void Sampler2D(const Texture& texture, const float x, const float y, Color& color)
+{
+	const int tx = x * texture.width;
+	const int ty = y * texture.height;
+
+	auto idx = (ty * texture.width + tx) * 4;
+
+	CLAMP(idx, 0, texture.width * texture.height * 4 - 1);
+
+	color.a = texture.pixels[idx - 1] / 255.0f;
+	color.b = texture.pixels[idx - 2] / 255.0f;
+	color.g = texture.pixels[idx - 3] / 255.0f;
+	color.r = texture.pixels[idx - 4] / 255.0f;
+}
+
+

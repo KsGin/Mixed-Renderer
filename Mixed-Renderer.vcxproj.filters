@@ -24,9 +24,6 @@
     <ClInclude Include="common\camera.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="common\color.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="common\device.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -39,33 +36,38 @@
     <ClInclude Include="common\model.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="common\texture.h">
+    <ClInclude Include="common\render.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="common\raster.cu">
-      <Filter>Cuda</Filter>
+    <ClInclude Include="common\color.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cuda\define.cu">
-      <Filter>Cuda</Filter>
-    </None>
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="README.md" />
     <None Include="cuda\shader.cu">
       <Filter>Cuda</Filter>
     </None>
-    <None Include="cuda\render.cu">
+    <None Include="cuda\raster.cu">
       <Filter>Cuda</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="cuda\define.cu">
+      <Filter>Cuda</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\TD1.png">
       <Filter>Resources</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="cuda\texture.cu">
+      <Filter>Cuda</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

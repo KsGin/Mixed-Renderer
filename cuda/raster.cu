@@ -8,15 +8,14 @@
 #pragma once
 
 #include "../includes/math/vector.hpp"
+#include "../cuda/define.cu"
 #include "../common/color.h"
-#include "../common/device.h"
-#include "../common/model.h"
 #include "../cuda/shader.cu"
 #include <cmath>
 #include <vector>
-#include <iostream>
+#include "../common/device.h"
 
-static class Raster {
+class Raster {
 private:
 
 	/*
@@ -102,13 +101,6 @@ private:
 	}
 
 	static void RasterizeTriangle(const Shader::PSInput& top, const Shader::PSInput& mid, const Shader::PSInput& btm, std::vector<Shader::PSInput> &pixels , size_t &idx){
-
-		// 三角形顶部点和其他两个点的反向斜率
-		float dtm = 0, dtb = 0, dmb = 0;
-		if (top.pos._y - mid.pos._y > 0) { dtm = (top.pos._x - mid.pos._x) / (top.pos._y - mid.pos._y); }
-		if (top.pos._y - btm.pos._y > 0) { dtb = (top.pos._x - btm.pos._x) / (top.pos._y - btm.pos._y); }
-		if (mid.pos._y - btm.pos._y > 0) { dmb = (mid.pos._x - btm.pos._x) / (mid.pos._y - btm.pos._y); }
-
 		for (auto y = top.pos._y; y >= btm.pos._y; --y) {
 			Shader::PSInput sp, ep;
 			float sgad = 0.0f , egad = 0.0f;

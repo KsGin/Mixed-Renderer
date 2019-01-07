@@ -7,10 +7,10 @@
 
 #include "cuda/define.cu"
 #include "cuda/raster.cu"
-#include "cuda/render.cu"
+#include "common/render.h"
 #include "common/device.h"
 #include "includes/math/matrix.hpp"
-#include "common/texture.h"
+#include "cuda/texture.cu"
 
 using namespace std;
 using namespace Math;

@@ -34,38 +34,28 @@ class Render
 
 		Shader::PSInput pixel1 , pixel2 , pixel3;
 
-		shader.vertexShader(vertex1 , pixel1);
-		shader.vertexShader(vertex2 , pixel2);
-		shader.vertexShader(vertex3 , pixel3);
+		shader.callVertexShader(vertex1 , pixel1);
+		shader.callVertexShader(vertex2 , pixel2);
+		shader.callVertexShader(vertex3 , pixel3);
 
-		std::vector<Shader::PSInput> hPixels;
-		Raster::rasterize(pixel1 , pixel2 , pixel3 , hPixels , type);
-		Shader::PSInput *dPixels;
-		CUDA_CALL(cudaMalloc((void**)&dPixels , sizeof(Shader::PSInput) * hPixels.size()));
+		std::vector<Shader::PSInput> pixels;
+		Raster::rasterize(pixel1 , pixel2 , pixel3 , pixels , type);
+		std::vector<Color> colors(pixels.size());
+		shader.callPixelShader(pixels , colors);
 
-		Color* hPixelsColor = static_cast<Color*>(malloc(sizeof(Color) * hPixels.size()));
-		Color* dPixelsColor;
-		CUDA_CALL(cudaMalloc((void**)&dPixelsColor , sizeof(Color) * hPixels.size()));
-		CUDA_CALL(cudaMemcpy(dPixels , &hPixels[0] , hPixels.size() , cudaMemcpyHostToDevice));
-
-		shader.pixelShader<<<1 , hPixels.size()>>>(&dPixels[0] , dPixelsColor);
-
-		CUDA_CALL(cudaMemcpy(hPixelsColor , dPixelsColor , hPixels.size() , cudaMemcpyDeviceToHost));
-		CUDA_CALL(cudaFree(dPixels));
-		CUDA_CALL(cudaFree(dPixelsColor));
-
-		for (auto i = 0 ; i < hPixels.size(); ++i)
+		for (auto i = 0 ; i < pixels.size(); ++i)
 		{
-			auto pixel = hPixels[i];
-			auto pixelColor = hPixelsColor[i];
+			auto pixel = pixels[i];
+			auto pixelColor = colors[i];
 			if (!Device::getInstance().testDepth(pixel.pos._x, pixel.pos._y, pixel.pos._z)) continue; // Éî¶È²âÊÔ
 			Device::getInstance().setPixel(pixel.pos._x, pixel.pos._y, pixelColor);
 		}
 
-		free(hPixelsColor);
+		pixels.clear();
+		pixels.shrink_to_fit();
 
-		hPixels.clear();
-		hPixels.shrink_to_fit();
+		colors.clear();
+		colors.shrink_to_fit();
 	}
 
 public:
