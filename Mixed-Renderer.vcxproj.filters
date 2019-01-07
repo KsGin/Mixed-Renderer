@@ -42,6 +42,15 @@
     <ClInclude Include="common\color.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="common\shader.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\texture.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\define.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitattributes" />
@@ -56,18 +65,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="cuda\define.cu">
-      <Filter>Cuda</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\TD1.png">
       <Filter>Resources</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="cuda\texture.cu">
-      <Filter>Cuda</Filter>
-    </CudaCompile>
   </ItemGroup>
 </Project>

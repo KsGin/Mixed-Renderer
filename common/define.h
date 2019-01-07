@@ -11,6 +11,8 @@
 #include <cuda_runtime.h>
 #include <iostream>
 #include <cassert>
+#include "../common/color.h"
+#include "../includes/math/vector.hpp"
 
 /**
  * define a cuda call
@@ -67,3 +69,37 @@
 #define CLAMP01(x) { \
 	CLAMP(x , 0 , 1) \
 }
+
+
+enum MatType
+{
+	MODEL,
+	VIEW,
+	PERSPECTIVE
+};
+
+struct VSInput
+{
+	Math::Vector3 pos;
+	Math::Vector3 normal;
+	Math::Vector2 uv;
+	Color color;
+};
+
+struct PSInput
+{
+	Math::Vector3 pos;
+	Math::Vector3 normal;
+	Math::Vector2 uv;
+	Color color;
+};
+
+
+/*
+ * ªÊ÷∆¿‡–Õ
+ */
+enum TYPE
+{
+	SOLID,
+	WIREFRAME
+};

@@ -5,12 +5,9 @@
  * program entrance
  */
 
-#include "cuda/define.cu"
-#include "cuda/raster.cu"
 #include "common/render.h"
 #include "common/device.h"
 #include "includes/math/matrix.hpp"
-#include "cuda/texture.cu"
 
 using namespace std;
 using namespace Math;
@@ -37,8 +34,8 @@ int main()
 	auto cube = Model::cube();
 
 	auto shader = Shader();
-	shader.setMat(view, Shader::MatType::VIEW);
-	shader.setMat(perspective, Shader::MatType::PERSPECTIVE);
+	shader.setMat(view, MatType::VIEW);
+	shader.setMat(perspective, MatType::PERSPECTIVE);
 
 	auto texture = Texture::LoadFromFile("resources/TD1.png" , true);
 
@@ -50,9 +47,9 @@ int main()
 		d.clear();
 
 		model = model * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
-		shader.setMat(model, Shader::MatType::MODEL);
+		shader.setMat(model, MatType::MODEL);
 
-		Render::render(cube, shader, Raster::SOLID);
+		Render::render(cube, shader, SOLID);
 
 		d.handleEvent();
 		d.updateRender();

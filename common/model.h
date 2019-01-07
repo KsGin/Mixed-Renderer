@@ -8,6 +8,7 @@
 #pragma once
 
 #include <vector>
+#include "../common/define.h"
 
 
 class Model

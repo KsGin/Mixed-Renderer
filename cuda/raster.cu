@@ -8,12 +8,11 @@
 #pragma once
 
 #include "../includes/math/vector.hpp"
-#include "../cuda/define.cu"
+#include "../common/define.h"
 #include "../common/color.h"
-#include "../cuda/shader.cu"
+#include "../common/device.h"
 #include <cmath>
 #include <vector>
-#include "../common/device.h"
 
 class Raster {
 private:
@@ -69,8 +68,8 @@ private:
 	/*
 	 * Interpolate pixel value
 	 */
-	static Shader::PSInput Interpolate(const Shader::PSInput& p1, const Shader::PSInput& p2, float gad) {
-		Shader::PSInput p;
+	static PSInput Interpolate(const PSInput& p1, const PSInput& p2, float gad) {
+		PSInput p;
 		p.pos = Interpolate(p1.pos, p2.pos, gad);
 		p.normal = Interpolate(p1.normal, p2.normal, gad);
 		p.uv = Interpolate(p1.uv, p2.uv, gad);
@@ -81,7 +80,7 @@ private:
 	/*
 	 * Bresenham Line Algorithm
 	 */
-	static void RasterizeLine(const Shader::PSInput& p1, const Shader::PSInput& p2, std::vector<Shader::PSInput> &pixels , size_t &idx) {
+	static void RasterizeLine(const PSInput& p1, const PSInput& p2, std::vector<PSInput> &pixels , size_t &idx) {
 
 		auto start = p1, end = p2;
 
@@ -100,9 +99,9 @@ private:
 		}
 	}
 
-	static void RasterizeTriangle(const Shader::PSInput& top, const Shader::PSInput& mid, const Shader::PSInput& btm, std::vector<Shader::PSInput> &pixels , size_t &idx){
+	static void RasterizeTriangle(const PSInput& top, const PSInput& mid, const PSInput& btm, std::vector<PSInput> &pixels , size_t &idx){
 		for (auto y = top.pos._y; y >= btm.pos._y; --y) {
-			Shader::PSInput sp, ep;
+			PSInput sp, ep;
 			float sgad = 0.0f , egad = 0.0f;
 			if (y >= mid.pos._y) {
 				sgad = (y - top.pos._y) / (mid.pos._y - top.pos._y);
@@ -139,23 +138,13 @@ private:
 	}
 
 public:
-
-	/*
-	 * 绘制类型
-	 */
-	enum TYPE {
-		SOLID ,
-		WIREFRAME
-	};
-
-public:
-	static void rasterize(const Shader::PSInput& p1 , const Shader::PSInput& p2 , const Shader::PSInput& p3 , std::vector<Shader::PSInput>& pixels , const TYPE type) {
+	static void rasterize(const PSInput& p1 , const PSInput& p2 , const PSInput& p3 , std::vector<PSInput>& pixels , const TYPE type) {
 
 		auto top = p1; top.pos = FixedPoint(top.pos);
 		auto mid = p2; mid.pos = FixedPoint(mid.pos);
 		auto btm = p3; btm.pos = FixedPoint(btm.pos);
 
-		Shader::PSInput tmp;
+		PSInput tmp;
 		// 修正三个点的位置 
 		if (btm.pos._y > mid.pos._y) {
 			tmp = mid;

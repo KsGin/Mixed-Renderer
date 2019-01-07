@@ -1,14 +1,13 @@
 /**
  * File Name : texture.h
  * Author : Yang Fan
- * Date : 2019/1/1
+ * Date : 2019/1/7
  * declare texture class
  */
 
 #pragma once
-
 #include <SDL_image.h>
-#include "define.cu"
+#include "../common/define.h"
 #include "../common/color.h"
 
 /*
@@ -123,20 +122,3 @@ public:
 		color.r = this->pixels[idx - 4] / 255.0f;
 	}
 };
-
-__device__ void Sampler2D(const Texture& texture, const float x, const float y, Color& color)
-{
-	const int tx = x * texture.width;
-	const int ty = y * texture.height;
-
-	auto idx = (ty * texture.width + tx) * 4;
-
-	CLAMP(idx, 0, texture.width * texture.height * 4 - 1);
-
-	color.a = texture.pixels[idx - 1] / 255.0f;
-	color.b = texture.pixels[idx - 2] / 255.0f;
-	color.g = texture.pixels[idx - 3] / 255.0f;
-	color.r = texture.pixels[idx - 4] / 255.0f;
-}
-
-
