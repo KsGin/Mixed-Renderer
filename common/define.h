@@ -70,7 +70,9 @@
 	CLAMP(x , 0 , 1) \
 }
 
-
+/*
+ * Shader Matrix Type
+ */
 enum MatType
 {
 	MODEL,
@@ -78,6 +80,9 @@ enum MatType
 	PERSPECTIVE
 };
 
+/*
+ * Vertex Shader Input
+ */
 struct VSInput
 {
 	Math::Vector3 pos;
@@ -86,6 +91,9 @@ struct VSInput
 	Color color;
 };
 
+/*
+ * Pixel Shader Input
+ */
 struct PSInput
 {
 	Math::Vector3 pos;
@@ -96,7 +104,7 @@ struct PSInput
 
 
 /*
- * ªÊ÷∆¿‡–Õ
+ * Draw Type
  */
 enum TYPE
 {
