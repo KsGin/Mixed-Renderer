@@ -36,22 +36,27 @@ __global__ void GlobalPixelShader(PSInput* psInput, Texture* textures ,Color* co
 extern "C" void CallGlobalPixelShader(const std::vector<PSInput> pixels, const std::vector<Texture> textures, std::vector<Color> colors)
 {
 	PSInput* dPixels;
-	CUDA_CALL(cudaMalloc((void**)&dPixels , sizeof(PSInput) * pixels.size()));
+	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dPixels) , sizeof(PSInput) * pixels.size()));
+	CUDA_CALL(cudaMemset(dPixels , 0 , sizeof(PSInput) * pixels.size()));
 	Color* dColors;
-	CUDA_CALL(cudaMalloc((void**)&dColors , sizeof(Color) * pixels.size()));
+	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dColors) , sizeof(Color) * pixels.size()));
+	CUDA_CALL(cudaMemset(dColors , 0 , sizeof(Color) * pixels.size()));
 	Texture* dTextures;
-	CUDA_CALL(cudaMalloc((void**)&dTextures , sizeof(Texture) * pixels.size()));
+	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dTextures) , sizeof(Texture) * textures.size()));
+	CUDA_CALL(cudaMemset(dTextures , 0 , sizeof(Texture) * textures.size()));
 
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , pixels.size() * sizeof(PSInput) , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dTextures , &textures[0] , textures.size() * sizeof(Texture) , cudaMemcpyHostToDevice))
 
 	GlobalPixelShader<<<1 , pixels.size()>>>(dPixels, dTextures, dColors);
 
-	cudaThreadSynchronize();
+	if (colors.size() < pixels.size())
+	{
+		colors.resize(pixels.size() + 1);
+	}
 
-	Color* hColors = (Color*)malloc(sizeof(Color) * pixels.size());
+	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , colors.size() * sizeof(Color) , cudaMemcpyDeviceToHost));
 
-	CUDA_CALL(cudaMemcpy(hColors , dColors , pixels.size() * sizeof(Color) , cudaMemcpyDeviceToHost));
 	CUDA_CALL(cudaFree(dPixels));
 	CUDA_CALL(cudaFree(dColors));
 	CUDA_CALL(cudaFree(dTextures));
