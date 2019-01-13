@@ -34,8 +34,8 @@ int main()
 	auto cube = Model::cube();
 
 	auto shader = Shader();
-	shader.setMat(view, MatType::VIEW);
-	shader.setMat(perspective, MatType::PERSPECTIVE);
+	shader.setMat(view, VIEW);
+	shader.setMat(perspective, PERSPECTIVE);
 
 	auto texture = Texture::LoadFromFile("resources/TD1.png" , true);
 
@@ -47,7 +47,7 @@ int main()
 		d.clear();
 
 		model = model * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
-		shader.setMat(model, MatType::MODEL);
+		shader.setMat(model, MODEL);
 
 		Render::render(cube, shader, SOLID);
 
