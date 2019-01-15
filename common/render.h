@@ -42,7 +42,7 @@ class Render
 
 		std::vector<PSInput> pixels;
 		Raster::rasterize(pixel1 , pixel2 , pixel3 , pixels , type);
-		std::vector<Color> colors(pixels.size());
+		std::vector<Color> colors;
 		
 		shader.pixelShader(pixels , colors);
 
@@ -50,6 +50,12 @@ class Render
 		{
 			auto pixel = pixels[i];
 			auto color = colors[i];
+
+			if (color.r + color.g + color.b + color.a > 0.0f)
+			{
+				printf("%f %f %f %f\n" , color.r , color.g , color.b , color.a);
+			}
+
 			if (!Device::getInstance().testDepth(pixel.pos._x, pixel.pos._y, pixel.pos._z)) continue; // …Ó∂»≤‚ ‘
 			Device::getInstance().setPixel(pixel.pos._x, pixel.pos._y, color);
 		}

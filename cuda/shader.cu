@@ -50,11 +50,6 @@ extern "C" void CallGlobalPixelShader(const std::vector<PSInput> pixels, const s
 
 	GlobalPixelShader<<<1 , pixels.size()>>>(dPixels, dTextures, dColors);
 
-	if (colors.size() < pixels.size())
-	{
-		colors.resize(pixels.size() + 1);
-	}
-
 	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , colors.size() * sizeof(Color) , cudaMemcpyDeviceToHost));
 
 	CUDA_CALL(cudaFree(dPixels));
