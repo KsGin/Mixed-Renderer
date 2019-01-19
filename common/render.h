@@ -16,7 +16,7 @@
 class Render
 {
 	static void doRenderFace(const Model::Mesh::Face& face, Shader &shader , const TYPE &type) {
-		VSInput vertex1 , vertex2 , vertex3;
+		Vertex vertex1 , vertex2 , vertex3;
 
 		vertex1.pos = face.v1.pos;
 		vertex2.pos = face.v2.pos;
@@ -34,15 +34,15 @@ class Render
 		vertex2.color = face.v2.color;
 		vertex3.color = face.v3.color;
 
-		PSInput pixel1 , pixel2 , pixel3;
+		Pixel pixel1 , pixel2 , pixel3;
 
 		shader.vertexShader(vertex1 , pixel1);
 		shader.vertexShader(vertex2 , pixel2);
 		shader.vertexShader(vertex3 , pixel3);
 
-		std::vector<PSInput> pixels;
+		std::vector<Pixel> pixels;
 		Raster::rasterize(pixel1 , pixel2 , pixel3 , pixels , type);
-		std::vector<Color> colors;
+		std::vector<Color> colors(pixels.size());
 		
 		shader.pixelShader(pixels , colors);
 
@@ -50,11 +50,6 @@ class Render
 		{
 			auto pixel = pixels[i];
 			auto color = colors[i];
-
-			if (color.r + color.g + color.b + color.a > 0.0f)
-			{
-				printf("%f %f %f %f\n" , color.r , color.g , color.b , color.a);
-			}
 
 			if (!Device::getInstance().testDepth(pixel.pos._x, pixel.pos._y, pixel.pos._z)) continue; // …Ó∂»≤‚ ‘
 			Device::getInstance().setPixel(pixel.pos._x, pixel.pos._y, color);

@@ -12,7 +12,7 @@
 #include "../common/texture.h"
 #include <vector>
 
-extern "C" void CallGlobalPixelShader(const std::vector<PSInput> pixels,const std::vector<Texture> textures, std::vector<Color> colors);
+extern "C" void CallPixelShader(const std::vector<Pixel>& pixels,const std::vector<Texture>& textures, std::vector<Color>& colors);
 
 class Shader
 {
@@ -76,7 +76,7 @@ public:
 	/*
 	 * Vertex Shader
 	 */
-	void vertexShader(const VSInput& vsInput, PSInput& psInput)
+	void vertexShader(const Vertex& vsInput, Pixel& psInput)
 	{
 		auto transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
 		psInput.pos = Math::Matrix::transformCoordinates(vsInput.pos, transMat);
@@ -85,8 +85,8 @@ public:
 		psInput.color = vsInput.color;
 	}
 
-	void pixelShader(const std::vector<PSInput> pixels , std::vector<Color> colors)
+	void pixelShader(const std::vector<Pixel>& pixels , std::vector<Color>& colors)
 	{
-		CallGlobalPixelShader(pixels ,  textures , colors);
+		CallPixelShader(pixels ,  textures , colors);
 	}
 };

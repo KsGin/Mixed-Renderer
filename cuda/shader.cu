@@ -27,33 +27,43 @@ __device__ void TexSampler2D(const Texture& texture, const float x, const float 
 	color.r = texture.pixels[idx - 4] / 255.0f;
 }
 
-__global__ void GlobalPixelShader(PSInput* psInput, Texture* textures ,Color* color)
+__global__ void KernelPixelShader(Color* color , Pixel* pixels  , Texture* textures, const int numElements)
 {
-	const int idx = blockIdx.x * blockDim.x + blockIdx.x;
-	TexSampler2D(textures[0], psInput[idx].uv._x, psInput[idx].uv._y, color[idx]);
+	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	if(idx < numElements) 
+	{
+		TexSampler2D(textures[0], pixels[idx].uv._x, pixels[idx].uv._y, color[idx]);
+	}
 }
 
-extern "C" void CallGlobalPixelShader(const std::vector<PSInput> pixels, const std::vector<Texture> textures, std::vector<Color> colors)
+extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vector<Texture>& textures, std::vector<Color>& colors)
 {
-	PSInput* dPixels;
-	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dPixels) , sizeof(PSInput) * pixels.size()));
-	CUDA_CALL(cudaMemset(dPixels , 0 , sizeof(PSInput) * pixels.size()));
+	const int numPixels = pixels.size();
+	const int numTextures = textures.size();
+
+	Pixel* dPixels;
+	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dPixels) , sizeof(Pixel) * numPixels));
+	CUDA_CALL(cudaMemset(dPixels , 0 , sizeof(Pixel) * numPixels));
 	Color* dColors;
-	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dColors) , sizeof(Color) * pixels.size()));
-	CUDA_CALL(cudaMemset(dColors , 0 , sizeof(Color) * pixels.size()));
+	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dColors) , sizeof(Color) * numPixels));
+	CUDA_CALL(cudaMemset(dColors , 0 , sizeof(Color) * numPixels));
 	Texture* dTextures;
-	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dTextures) , sizeof(Texture) * textures.size()));
-	CUDA_CALL(cudaMemset(dTextures , 0 , sizeof(Texture) * textures.size()));
+	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dTextures) , sizeof(Texture) * numTextures));
+	CUDA_CALL(cudaMemset(dTextures , 0 , sizeof(Texture) * numTextures));
 
-	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , pixels.size() * sizeof(PSInput) , cudaMemcpyHostToDevice));
-	CUDA_CALL(cudaMemcpy(dTextures , &textures[0] , textures.size() * sizeof(Texture) , cudaMemcpyHostToDevice))
+	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , numPixels * sizeof(Pixel) , cudaMemcpyHostToDevice));
+	CUDA_CALL(cudaMemcpy(dTextures , &textures[0] , numTextures * sizeof(Texture) , cudaMemcpyHostToDevice))
 
-	GlobalPixelShader<<<1 , pixels.size()>>>(dPixels, dTextures, dColors);
+	// 每个线程块执行8个线程
+	KernelPixelShader<<<(numPixels + 7) / 8 , 8>>>(dColors, dPixels, dTextures, numPixels);
 
-	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , colors.size() * sizeof(Color) , cudaMemcpyDeviceToHost));
+	auto hcolors = static_cast<Color*>(malloc(sizeof(Color) * numPixels));
+
+	CUDA_CALL(cudaMemcpy(hcolors , dColors , numPixels * sizeof(Color) , cudaMemcpyDeviceToHost));
 
 	CUDA_CALL(cudaFree(dPixels));
 	CUDA_CALL(cudaFree(dColors));
 	CUDA_CALL(cudaFree(dTextures));
 }
 
+ 

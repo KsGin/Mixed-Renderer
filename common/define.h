@@ -83,7 +83,7 @@ enum MatType
 /*
  * Vertex Shader Input
  */
-struct VSInput
+struct Vertex
 {
 	Math::Vector3 pos;
 	Math::Vector3 normal;
@@ -94,7 +94,7 @@ struct VSInput
 /*
  * Pixel Shader Input
  */
-struct PSInput
+struct Pixel
 {
 	Math::Vector3 pos;
 	Math::Vector3 normal;

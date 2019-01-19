@@ -68,8 +68,8 @@ private:
 	/*
 	 * Interpolate pixel value
 	 */
-	static PSInput Interpolate(const PSInput& p1, const PSInput& p2, float gad) {
-		PSInput p;
+	static Pixel Interpolate(const Pixel& p1, const Pixel& p2, float gad) {
+		Pixel p;
 		p.pos = Interpolate(p1.pos, p2.pos, gad);
 		p.normal = Interpolate(p1.normal, p2.normal, gad);
 		p.uv = Interpolate(p1.uv, p2.uv, gad);
@@ -80,7 +80,7 @@ private:
 	/*
 	 * Bresenham Line Algorithm
 	 */
-	static void RasterizeLine(const PSInput& p1, const PSInput& p2, std::vector<PSInput> &pixels , size_t &idx) {
+	static void RasterizeLine(const Pixel& p1, const Pixel& p2, std::vector<Pixel> &pixels , size_t &idx) {
 
 		auto start = p1, end = p2;
 
@@ -99,9 +99,9 @@ private:
 		}
 	}
 
-	static void RasterizeTriangle(const PSInput& top, const PSInput& mid, const PSInput& btm, std::vector<PSInput> &pixels , size_t &idx){
+	static void RasterizeTriangle(const Pixel& top, const Pixel& mid, const Pixel& btm, std::vector<Pixel> &pixels , size_t &idx){
 		for (auto y = top.pos._y; y >= btm.pos._y; --y) {
-			PSInput sp, ep;
+			Pixel sp, ep;
 			float sgad = 0.0f , egad = 0.0f;
 			if (y >= mid.pos._y) {
 				sgad = (y - top.pos._y) / (mid.pos._y - top.pos._y);
@@ -138,13 +138,13 @@ private:
 	}
 
 public:
-	static void rasterize(const PSInput& p1 , const PSInput& p2 , const PSInput& p3 , std::vector<PSInput>& pixels , const TYPE type) {
+	static void rasterize(const Pixel& p1 , const Pixel& p2 , const Pixel& p3 , std::vector<Pixel>& pixels , const TYPE type) {
 
 		auto top = p1; top.pos = FixedPoint(top.pos);
 		auto mid = p2; mid.pos = FixedPoint(mid.pos);
 		auto btm = p3; btm.pos = FixedPoint(btm.pos);
 
-		PSInput tmp;
+		Pixel tmp;
 		// 修正三个点的位置 
 		if (btm.pos._y > mid.pos._y) {
 			tmp = mid;

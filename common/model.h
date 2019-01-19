@@ -24,16 +24,6 @@ public:
 	     */
 		class Face {
 		public:
-			/*
-			 * Vertex
-			 */
-			class Vertex {
-			public:
-				Math::Vector3 pos;
-				Math::Vector3 normal;
-				Math::Vector2 uv;
-				Color color;
-			};
 			Vertex v1, v2, v3;
 		};
 
@@ -45,8 +35,8 @@ public:
 
 	static Model triangle() {
 		Model triangle;
-		Model::Mesh triangleMesh;
-		Model::Mesh::Face triangleFace;
+		Mesh triangleMesh;
+		Mesh::Face triangleFace;
 
 		triangleFace.v1.pos = Math::Vector3( 0,  1, -5);
 		triangleFace.v2.pos = Math::Vector3(-1,  0, -5);
@@ -72,8 +62,8 @@ public:
 
 	static Model cube() {
 		Model triangle;
-		Model::Mesh triangleMesh;
-		Model::Mesh::Face face1;
+		Mesh triangleMesh;
+		Mesh::Face face1;
 
 		face1.v1.pos = Math::Vector3(-1, -1, -1);
 		face1.v2.pos = Math::Vector3(-1,  1, -1);
@@ -93,7 +83,7 @@ public:
 
 		triangleMesh.faces.push_back(face1);
 
-		Model::Mesh::Face face2;
+		Mesh::Face face2;
 
 		face2.v1.pos = Math::Vector3( 1,  1, -1);
 		face2.v2.pos = Math::Vector3( 1, -1, -1);
@@ -113,7 +103,7 @@ public:
 
 		triangleMesh.faces.push_back(face2);
 
-		Model::Mesh::Face face3;
+		Mesh::Face face3;
 
 		face3.v1.pos = Math::Vector3(-1, 1, 1);
 		face3.v2.pos = Math::Vector3( 1, 1, 1);
@@ -133,7 +123,7 @@ public:
 
 		triangleMesh.faces.push_back(face3);
 
-		Model::Mesh::Face face4;
+		Mesh::Face face4;
 
 		face4.v1.pos = Math::Vector3( 1, 1,  1);
 		face4.v2.pos = Math::Vector3( 1, 1, -1);
@@ -154,7 +144,7 @@ public:
 		triangleMesh.faces.push_back(face4);
 
 
-		Model::Mesh::Face face5;
+		Mesh::Face face5;
 
 		face5.v1.pos = Math::Vector3(-1, -1,  1);
 		face5.v2.pos = Math::Vector3(-1,  1,  1);
@@ -174,7 +164,7 @@ public:
 
 		triangleMesh.faces.push_back(face5);
 
-		Model::Mesh::Face face6;
+		Mesh::Face face6;
 
 		face6.v1.pos = Math::Vector3(-1, -1,  1);
 		face6.v2.pos = Math::Vector3(-1,  1, -1);
@@ -195,7 +185,7 @@ public:
 		triangleMesh.faces.push_back(face6);
 
 
-		Model::Mesh::Face face7;
+		Mesh::Face face7;
 
 		face7.v1.pos = Math::Vector3(-1, -1, 1);
 		face7.v2.pos = Math::Vector3(-1,  1, 1);
@@ -215,7 +205,7 @@ public:
 
 		triangleMesh.faces.push_back(face7);
 
-		Model::Mesh::Face face8;
+		Mesh::Face face8;
 
 		face8.v1.pos = Math::Vector3( 1,  1, 1);
 		face8.v2.pos = Math::Vector3( 1, -1, 1);
@@ -235,7 +225,7 @@ public:
 
 		triangleMesh.faces.push_back(face8);
 
-		Model::Mesh::Face face9;
+		Mesh::Face face9;
 
 		face9.v1.pos = Math::Vector3(-1, -1,  1);
 		face9.v2.pos = Math::Vector3( 1, -1,  1);
@@ -255,7 +245,7 @@ public:
 
 		triangleMesh.faces.push_back(face9);
 
-		Model::Mesh::Face face10;
+		Mesh::Face face10;
 
 		face10.v1.pos = Math::Vector3(1,  -1, 1);
 		face10.v2.pos = Math::Vector3(1,  -1, -1);
@@ -275,7 +265,7 @@ public:
 
 		triangleMesh.faces.push_back(face10);
 
-		Model::Mesh::Face face11;
+		Mesh::Face face11;
 
 		face11.v1.pos = Math::Vector3(1,-1, 1);
 		face11.v2.pos = Math::Vector3(1, 1, 1);
@@ -295,7 +285,7 @@ public:
 
 		triangleMesh.faces.push_back(face11);
 
-		Model::Mesh::Face face12;
+		Mesh::Face face12;
 
 		face12.v1.pos = Math::Vector3(1, -1, 1);
 		face12.v2.pos = Math::Vector3(1, 1, -1);
@@ -319,9 +309,5 @@ public:
 
 		return triangle;
 	}
-
-
-private:
-
 };
 
