@@ -27,12 +27,13 @@ __device__ void TexSampler2D(const Texture& texture, const float x, const float 
 	color.r = texture.pixels[idx - 4] / 255.0f;
 }
 
-__global__ void KernelPixelShader(Color* color , Pixel* pixels  , Texture* textures, const int numElements)
+__global__ void KernelPixelShader(Color* colors , Pixel* pixels  , Texture* textures, const int numElements)
 {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if(idx < numElements) 
 	{
-		TexSampler2D(textures[0], pixels[idx].uv._x, pixels[idx].uv._y, color[idx]);
+		colors[idx] = Color::red();
+		//TexSampler2D(textures[0], pixels[idx].uv._x, pixels[idx].uv._y, colors[idx]);
 	}
 }
 
@@ -42,13 +43,13 @@ extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vec
 	const int numTextures = textures.size();
 
 	Pixel* dPixels;
-	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dPixels) , sizeof(Pixel) * numPixels));
+	CUDA_CALL(cudaMalloc(&dPixels , sizeof(Pixel) * numPixels));
 	CUDA_CALL(cudaMemset(dPixels , 0 , sizeof(Pixel) * numPixels));
 	Color* dColors;
-	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dColors) , sizeof(Color) * numPixels));
+	CUDA_CALL(cudaMalloc(&dColors , sizeof(Color) * numPixels));
 	CUDA_CALL(cudaMemset(dColors , 0 , sizeof(Color) * numPixels));
 	Texture* dTextures;
-	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dTextures) , sizeof(Texture) * numTextures));
+	CUDA_CALL(cudaMalloc(&dTextures , sizeof(Texture) * numTextures));
 	CUDA_CALL(cudaMemset(dTextures , 0 , sizeof(Texture) * numTextures));
 
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , numPixels * sizeof(Pixel) , cudaMemcpyHostToDevice));
@@ -57,9 +58,7 @@ extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vec
 	// 每个线程块执行8个线程
 	KernelPixelShader<<<(numPixels + 7) / 8 , 8>>>(dColors, dPixels, dTextures, numPixels);
 
-	auto hcolors = static_cast<Color*>(malloc(sizeof(Color) * numPixels));
-
-	CUDA_CALL(cudaMemcpy(hcolors , dColors , numPixels * sizeof(Color) , cudaMemcpyDeviceToHost));
+	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , numPixels * sizeof(Color) , cudaMemcpyDeviceToHost));
 
 	CUDA_CALL(cudaFree(dPixels));
 	CUDA_CALL(cudaFree(dColors));
