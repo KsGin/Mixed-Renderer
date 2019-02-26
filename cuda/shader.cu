@@ -19,7 +19,7 @@ __device__ void TexSampler2D(const Texture& texture, const float x, const float 
 
 	auto idx = (ty * texture.width + tx) * 4;
 
-	CLAMP(idx, 0, texture.width * texture.height * 4 - 1);
+	CLAMP(idx, 4, texture.width * texture.height * 4);
 
 	color.a = texture.pixels[idx - 1] / 255.0f;
 	color.b = texture.pixels[idx - 2] / 255.0f;
@@ -34,9 +34,9 @@ __global__ void KernelPixelShader(Color* colors , Pixel* pixels  , Texture* text
 	{
 		colors[idx].r = 1.0f;
 		colors[idx].g = 0.0f;
-		colors[idx].b = 0.0f;
+		colors[idx].b = 1.0f;
 		colors[idx].a = 1.0f;
-		//TexSampler2D(textures[0], pixels[idx].uv._x, pixels[idx].uv._y, colors[idx]);
+		TexSampler2D(textures[0], pixels[idx].uv._x, pixels[idx].uv._y, colors[idx]);
 	}
 }
 
