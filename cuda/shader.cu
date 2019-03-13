@@ -12,7 +12,7 @@
 #include <vector>
 
 
-__device__ void TexSampler2D(const Texture& texture, const float x, const float y, Color& color)
+__device__ void TexSampler2D(const Texture& texture, unsigned char* texturesPixels, const float x, const float y, Color* color)
 {
 	const int tx = x * texture.width;
 	const int ty = y * texture.height;
@@ -21,13 +21,13 @@ __device__ void TexSampler2D(const Texture& texture, const float x, const float 
 
 	CLAMP(idx, 4, texture.width * texture.height * 4);
 
-	color.a = texture.pixels[idx - 1] / 255.0f;
-	color.b = texture.pixels[idx - 2] / 255.0f;
-	color.g = texture.pixels[idx - 3] / 255.0f;
-	color.r = texture.pixels[idx - 4] / 255.0f;
+	color->a = texturesPixels[idx - 1] / 255.0f;
+	color->b = texturesPixels[idx - 2] / 255.0f;
+	color->g = texturesPixels[idx - 3] / 255.0f;
+	color->r = texturesPixels[idx - 4] / 255.0f;
 }
 
-__global__ void KernelPixelShader(Color* colors , Pixel* pixels  , Texture* textures, const int numElements)
+__global__ void KernelPixelShader(Color* colors , Pixel* pixels  , Texture* textures , unsigned char* texturesPixels, const int numElements)
 {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if(idx < numElements) 
@@ -36,7 +36,7 @@ __global__ void KernelPixelShader(Color* colors , Pixel* pixels  , Texture* text
 		colors[idx].g = 0.0f;
 		colors[idx].b = 1.0f;
 		colors[idx].a = 1.0f;
-		TexSampler2D(textures[0], pixels[idx].uv._x, pixels[idx].uv._y, colors[idx]);
+		TexSampler2D(textures[0] , texturesPixels , pixels[idx].uv._x, pixels[idx].uv._y, &colors[idx]);
 	}
 }
 
@@ -44,7 +44,7 @@ extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vec
 {
 	const int numPixels = pixels.size();
 	const int numTextures = textures.size();
-
+	
 	Pixel* dPixels;
 	CUDA_CALL(cudaMalloc(&dPixels , sizeof(Pixel) * numPixels));
 	CUDA_CALL(cudaMemset(dPixels , 0 , sizeof(Pixel) * numPixels));
@@ -55,11 +55,16 @@ extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vec
 	CUDA_CALL(cudaMalloc(&dTextures , sizeof(Texture) * numTextures));
 	CUDA_CALL(cudaMemset(dTextures , 0 , sizeof(Texture) * numTextures));
 
+	// 以下拷贝第一个纹理的 pixels 数组
+	unsigned char* dTexturesPixels;
+	CUDA_CALL(cudaMalloc(&dTexturesPixels, sizeof(unsigned char) * textures[0].width * textures[0].height * 4));
+	CUDA_CALL(cudaMemcpy(dTexturesPixels, textures[0].pixels, sizeof(unsigned char) * textures[0].width * textures[0].height * 4, cudaMemcpyHostToDevice));
+
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , numPixels * sizeof(Pixel) , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dTextures , &textures[0] , numTextures * sizeof(Texture) , cudaMemcpyHostToDevice))
 
 	// 每个线程块执行8个线程
-	KernelPixelShader<<<(numPixels + 7) / 8 , 8>>>(dColors, dPixels, dTextures, numPixels);
+	KernelPixelShader<<<(numPixels + 63) / 64 , 64>>>(dColors, dPixels, dTextures, dTexturesPixels, numPixels);
 
 	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , numPixels * sizeof(Color) , cudaMemcpyDeviceToHost));
 
