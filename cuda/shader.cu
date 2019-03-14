@@ -71,6 +71,7 @@ extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vec
 	CUDA_CALL(cudaFree(dPixels));
 	CUDA_CALL(cudaFree(dColors));
 	CUDA_CALL(cudaFree(dTextures));
+	CUDA_CALL(cudaFree(dTexturesPixels));
 }
 
  
