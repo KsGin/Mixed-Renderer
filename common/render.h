@@ -46,14 +46,17 @@ class Render
 		
 		shader.pixelShader(pixels , colors);
 
-		for (auto i = 0 ; i < pixels.size(); ++i)
-		{
-			auto pixel = pixels[i];
-			auto color = colors[i];
+		Device::getInstance().mixed(pixels , colors);
 
-			if (!Device::getInstance().testDepth(pixel.pos._x, pixel.pos._y, pixel.pos._z)) continue; // 深度测试
-			Device::getInstance().setPixel(pixel.pos._x, pixel.pos._y, color);
-		}
+		// // 此处使用 CUDA 并行
+		// for (auto i = 0 ; i < pixels.size(); ++i)
+		// {
+		// 	auto pixel = pixels[i];
+		// 	auto color = colors[i];
+		//
+		// 	if (!Device::getInstance().testDepth(pixel.pos._x, pixel.pos._y, pixel.pos._z)) continue; // 深度测试
+		// 	Device::getInstance().setPixel(pixel.pos._x, pixel.pos._y, color);
+		// }
 
 		pixels.clear();
 		pixels.shrink_to_fit();

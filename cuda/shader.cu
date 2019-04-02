@@ -63,7 +63,7 @@ extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vec
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , numPixels * sizeof(Pixel) , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dTextures , &textures[0] , numTextures * sizeof(Texture) , cudaMemcpyHostToDevice))
 
-	// 每个线程块执行8个线程
+	// 64
 	KernelPixelShader<<<(numPixels + 63) / 64 , 64>>>(dColors, dPixels, dTextures, dTexturesPixels, numPixels);
 
 	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , numPixels * sizeof(Color) , cudaMemcpyDeviceToHost));
