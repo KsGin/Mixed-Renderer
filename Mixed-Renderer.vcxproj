@@ -148,6 +148,7 @@
   <ItemGroup>
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
+    <CudaCompile Include="cuda\device.cu" />
     <CudaCompile Include="cuda\raster.cu">
       <FileType>Document</FileType>
     </CudaCompile>

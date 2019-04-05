@@ -72,5 +72,8 @@
     <CudaCompile Include="cuda\shader.cu">
       <Filter>Cuda</Filter>
     </CudaCompile>
+    <CudaCompile Include="cuda\device.cu">
+      <Filter>Cuda</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
