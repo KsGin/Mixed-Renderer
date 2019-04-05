@@ -41,22 +41,17 @@ class Render
 		shader.vertexShader(vertex3 , pixel3);
 
 		std::vector<Pixel> pixels;
+
+		//CPU
 		Raster::rasterize(pixel1 , pixel2 , pixel3 , pixels , type);
+
 		std::vector<Color> colors(pixels.size());
-		
+
+		//GPU
 		shader.pixelShader(pixels , colors);
 
+		//GPU
 		Device::getInstance().mixed(pixels , colors);
-
-		// // 此处使用 CUDA 并行
-		// for (auto i = 0 ; i < pixels.size(); ++i)
-		// {
-		// 	auto pixel = pixels[i];
-		// 	auto color = colors[i];
-		//
-		// 	if (!Device::getInstance().testDepth(pixel.pos._x, pixel.pos._y, pixel.pos._z)) continue; // 深度测试
-		// 	Device::getInstance().setPixel(pixel.pos._x, pixel.pos._y, color);
-		// }
 
 		pixels.clear();
 		pixels.shrink_to_fit();

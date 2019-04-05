@@ -12,10 +12,28 @@
 #include "../common/texture.h"
 #include <vector>
 
-// /*
-//  * 设置颜色
-//  */
-// __device__ void SetPixel()
+/*
+ * 设置颜色
+ */
+__device__ void SetPixel(int x, int y, const Color& color, Uint8* pixelColors, int screenWidth, int screenHeight) {
+	auto r = color.r;
+	auto g = color.g;
+	auto b = color.b;
+	auto a = color.a;
+	CLAMP01(a);
+	CLAMP01(b);
+	CLAMP01(g);
+	CLAMP01(r);
+
+	auto i = (y * screenWidth + x) * 4;
+
+	CLAMP(i , 0 , screenWidth * screenHeight * 4 - 1);
+
+	pixelColors[i - 1] = static_cast<Uint8>(a * 255);
+	pixelColors[i - 2] = static_cast<Uint8>(b * 255);
+	pixelColors[i - 3] = static_cast<Uint8>(g * 255);
+	pixelColors[i - 4] = static_cast<Uint8>(r * 255);
+}
 
 
 /*
@@ -29,24 +47,7 @@ __global__ void KernelMixed(Pixel* pixels , Color* colors , Uint8* pixelColors ,
 		const int x = pixels[idx].pos._x;
 		const int y = pixels[idx].pos._y;	
 
-		auto r = colors[idx].r;
-		auto g = colors[idx].g;
-		auto b = colors[idx].b;
-		auto a = colors[idx].a;
-		CLAMP01(a);
-		CLAMP01(b);
-		CLAMP01(g);
-		CLAMP01(r);
-
-		auto i = (y * screenWidth + x) * 4;
-		
-		CLAMP(i , 0 , screenWidth * screenHeight * 4 - 1);
-
-		pixelColors[i - 1] = static_cast<Uint8>(a * 255);
-		pixelColors[i - 2] = static_cast<Uint8>(b * 255);
-		pixelColors[i - 3] = static_cast<Uint8>(g * 255);
-		pixelColors[i - 4] = static_cast<Uint8>(r * 255);
-
+		SetPixel(x , y , colors[idx] , pixelColors , screenWidth , screenHeight);
 	}
 }
 
