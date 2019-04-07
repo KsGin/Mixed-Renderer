@@ -62,11 +62,7 @@ public:
 		std::vector<Pixel> pixels;
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces){
-				std::vector<Pixel> tPixels;
-				doRasterizeFace(face , shader , type , tPixels);
-				pixels.insert(pixels.end() , tPixels.begin() , tPixels.end());
-				tPixels.clear();
-				tPixels.shrink_to_fit();
+				doRasterizeFace(face , shader , type , pixels);
 			}
 		}
 		doRenderPixel(shader , pixels);
