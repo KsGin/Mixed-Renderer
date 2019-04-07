@@ -15,7 +15,7 @@
 
 class Render
 {
-	static void doRenderFace(const Model::Mesh::Face& face, Shader &shader , const TYPE &type) {
+	static void doRasterizeFace(const Model::Mesh::Face& face, Shader &shader , const TYPE &type , std::vector<Pixel>& pixels) {
 		Vertex vertex1 , vertex2 , vertex3;
 
 		vertex1.pos = face.v1.pos;
@@ -40,11 +40,11 @@ class Render
 		shader.vertexShader(vertex2 , pixel2);
 		shader.vertexShader(vertex3 , pixel3);
 
-		std::vector<Pixel> pixels;
-
 		//CPU
 		Raster::rasterize(pixel1 , pixel2 , pixel3 , pixels , type);
+	}
 
+	static void doRenderPixel(Shader &shader , std::vector<Pixel> &pixels) {
 		std::vector<Color> colors(pixels.size());
 
 		//GPU
@@ -53,19 +53,25 @@ class Render
 		//GPU
 		Device::getInstance().mixed(pixels , colors);
 
-		pixels.clear();
-		pixels.shrink_to_fit();
-
 		colors.clear();
 		colors.shrink_to_fit();
 	}
 
 public:
 	static void render(const Model &model , Shader &shader, const TYPE &type = TYPE::SOLID) {
+		std::vector<Pixel> pixels;
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces){
-				doRenderFace(face , shader , type);
+				std::vector<Pixel> tPixels;
+				doRasterizeFace(face , shader , type , tPixels);
+				pixels.insert(pixels.end() , tPixels.begin() , tPixels.end());
+				tPixels.clear();
+				tPixels.shrink_to_fit();
 			}
 		}
+		doRenderPixel(shader , pixels);
+
+		pixels.clear();
+		pixels.shrink_to_fit();
 	}
 };

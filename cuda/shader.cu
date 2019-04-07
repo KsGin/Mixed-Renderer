@@ -32,10 +32,6 @@ __global__ void KernelPixelShader(Color* colors , Pixel* pixels  , Texture* text
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if(idx < numElements) 
 	{
-		colors[idx].r = 1.0f;
-		colors[idx].g = 0.0f;
-		colors[idx].b = 1.0f;
-		colors[idx].a = 1.0f;
 		TexSampler2D(textures[0] , texturesPixels , pixels[idx].uv._x, pixels[idx].uv._y, &colors[idx]);
 	}
 }
