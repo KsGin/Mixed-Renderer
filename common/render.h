@@ -60,6 +60,7 @@ class Render
 public:
 	static void render(const Model &model , Shader &shader, const TYPE &type = TYPE::SOLID) {
 		std::vector<Pixel> pixels;
+
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces){
 				doRasterizeFace(face , shader , type , pixels);
