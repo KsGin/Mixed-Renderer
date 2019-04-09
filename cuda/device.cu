@@ -43,7 +43,6 @@ __device__ void TestDepth(int x , int y , float depth , float* depths , bool& is
 	const auto cdp = depths[idx];
 
 	if (cdp == 0 || depth <= cdp) {
-		
 		depths[idx] = depth;
 		isSuccess = true;
 	}
@@ -70,7 +69,7 @@ __global__ void KernelMixed(Pixel* pixels , Color* colors , Uint8* pixelColors ,
 }
 
 
-extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors , Uint8* pixelColors , float* depths , int screenWidth , int screenHeight) {
+extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors , Uint8* pixelColors , int screenWidth , int screenHeight) {
 	const int numPixels = pixels.size();
 	const int screenPixelSize = screenWidth * screenHeight;
 	
