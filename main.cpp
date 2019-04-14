@@ -36,6 +36,7 @@ int main()
 
 	auto cube1 = Model::cube();
 	auto cube2 = Model::cube();
+	auto cube3 = Model::cube();
 
 	auto shader = Shader();
 	shader.setMat(view, VIEW);
@@ -52,11 +53,14 @@ int main()
 
 		rotation = rotation * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
 
-		shader.setMat(model1 * rotation * Matrix::translate(-0.5 , 0 , 0), MODEL);
+		shader.setMat(model1 * rotation * Matrix::translate(-0.3 , 0 , 0), MODEL);
 		Render::render(cube1, shader, SOLID);
-		
-		shader.setMat(model1 * rotation * Matrix::translate(  0.5 , 0 , 0), MODEL);
+
+		shader.setMat(model1 * rotation * Matrix::translate(0.3 , 0 , 0), MODEL);
 		Render::render(cube2, shader, SOLID);
+		
+		shader.setMat(model1 * rotation * Matrix::translate(  0 , 0 , -1), MODEL);
+		Render::render(cube3, shader, SOLID);
 
 		d.handleEvent();
 		d.updateRender();

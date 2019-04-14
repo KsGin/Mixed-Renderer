@@ -69,7 +69,7 @@ __global__ void KernelMixed(Pixel* pixels , Color* colors , Uint8* pixelColors ,
 }
 
 
-extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors , Uint8* pixelColors , int screenWidth , int screenHeight) {
+extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors , Uint8* pixelColors , float *depths , int screenWidth , int screenHeight) {
 	const int numPixels = pixels.size();
 	const int screenPixelSize = screenWidth * screenHeight;
 	
@@ -87,6 +87,7 @@ extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors
 	CUDA_CALL(cudaMemset(dDepths , 0 , sizeof(float) * screenPixelSize));
 
 	CUDA_CALL(cudaMemcpy(dPixelColors , pixelColors , sizeof(Uint8) * screenPixelSize  * 4 , cudaMemcpyHostToDevice));
+	CUDA_CALL(cudaMemcpy(dDepths , depths , sizeof(float) * screenPixelSize , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , sizeof(Pixel) * numPixels , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dColors , &colors[0] , sizeof(Color) * numPixels , cudaMemcpyHostToDevice));
 
@@ -94,8 +95,9 @@ extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors
 
 	KernelMixed<<<(numPixels + 15) / 16 , 16>>>(dPixels , dColors , dPixelColors , dDepths , screenWidth , screenHeight , numPixels);
 
+	CUDA_CALL(cudaMemcpy(depths , dDepths , sizeof(float) * screenPixelSize , cudaMemcpyDeviceToHost));
 	CUDA_CALL(cudaMemcpy(pixelColors , dPixelColors , sizeof(Uint8) * screenPixelSize  * 4, cudaMemcpyDeviceToHost));
-
+	
 	CUDA_CALL(cudaFree(dDepths));
 	CUDA_CALL(cudaFree(dPixels));
 	CUDA_CALL(cudaFree(dColors));
