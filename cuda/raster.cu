@@ -13,52 +13,51 @@
 #include <cmath>
 #include <vector>
 
+/*
+ * INTERPOLATE FLOAT VALUE DEFINED
+ */
+#define INTERPOLATE(a , b , g , r) {								\
+	CLAMP01(g);													\
+	int d = a > b;													\
+	r = d * (a - (a - b) * g) + (1-d) * (a + (b - a) * g);		\
+}
+
+/*
+ * INTERPOLATE VECTOR2 VALUE DEFINED
+ */
+#define INTERPOLATEV2(v1 , v2 , gad , result) {								\
+	INTERPOLATE(v1._x, v2._x, gad , result._x);								\
+	INTERPOLATE(v1._y, v2._y, gad , result._y);								\
+}
+
+/*
+ * INTERPOLATE VECTOR3 VALUE DEFINED
+ */
+#define INTERPOLATEV3(v1 , v2 , gad , result) {								\
+	INTERPOLATE(v1._x, v2._x, gad , result._x);								\
+	INTERPOLATE(v1._y, v2._y, gad , result._y);								\
+	INTERPOLATE(v1._z, v2._z, gad , result._z);								\
+}
+
+/*
+ * INTERPOLATE COLOR VALUE DEFINED
+ */
+#define INTERPOLATEC(v1 , v2 , gad , result) {								\
+	INTERPOLATE(v1.r, v2.r, gad , result.r);								\
+	INTERPOLATE(v1.g, v2.g, gad , result.g);								\
+	INTERPOLATE(v1.b, v2.b, gad , result.b);								\
+	INTERPOLATE(v1.a, v2.a, gad , result.a);								\
+}
+
+#define INTERPOLATEP(p1 , p2 , gad , result) {								\
+	INTERPOLATEV3(p1.pos , p2.pos , gad , result.pos);						\
+	INTERPOLATEV3(p1.normal , p2.normal , gad , result.normal);				\
+	INTERPOLATEV2(p1.uv , p2.uv , gad , result.uv);							\
+	INTERPOLATEC(p1.color , p2.color , gad , result.color);					\
+}
+
 class Raster {
 private:
-	/*
-	 * Interpolate float value
-	 */
-	static float Interpolate(float v1, float v2, float gad) {
-		CLAMP01(gad);
-		if (v1 > v2) { return v1 - (v1 - v2) * gad; }
-		return v1 + (v2 - v1) * gad;
-	}
-
-	/*
-	 * Interpolate vec3 value
-	 */
-	static Math::Vector3 Interpolate(const Math::Vector3& v1, const Math::Vector3& v2, float gad) {
-		return Math::Vector3(Interpolate(v1._x, v2._x, gad), Interpolate(v1._y, v2._y, gad),
-		                     Interpolate(v1._z, v2._z, gad));
-	}
-
-	/*
-	 * Interpolate vec2 value
-	 */
-	static Math::Vector2 Interpolate(const Math::Vector2& v1, const Math::Vector2& v2, float gad) {
-		return Math::Vector2(Interpolate(v1._x, v2._x, gad), Interpolate(v1._y, v2._y, gad));
-	}
-
-	/*
-	 * Interpolate color value
-	 */
-	static Color Interpolate(const Color& v1, const Color& v2, float gad) {
-		return Color(Interpolate(v1.r, v2.r, gad), Interpolate(v1.g, v2.g, gad), Interpolate(v1.b, v2.b, gad),
-		             Interpolate(v1.a, v2.a, gad));
-	}
-
-	/*
-	 * Interpolate pixel value
-	 */
-	static Pixel Interpolate(const Pixel& p1, const Pixel& p2, float gad) {
-		Pixel p;
-		p.pos = Interpolate(p1.pos, p2.pos, gad);
-		p.normal = Interpolate(p1.normal, p2.normal, gad);
-		p.uv = Interpolate(p1.uv, p2.uv, gad);
-		p.color = Interpolate(p1.color, p2.color, gad);
-		return p;
-	}
-
 	/*
 	 * Bresenham Line Algorithm
 	 */
@@ -76,9 +75,11 @@ private:
 		float disy = abs(end.pos._y - start.pos._y);
 		float dis = disx > disy ? disx : disy;
 
+		Pixel p;
 		for (auto i = 0; i < dis; i++) {
 			gad = i / dis;
-			pixels.push_back(Interpolate(p1, p2, gad));
+			INTERPOLATEP(p1 , p2 , gad , p);
+			pixels.emplace_back(p);
 		}
 	}
 
@@ -89,14 +90,14 @@ private:
 			if (y >= mid.pos._y) {
 				sgad = (y - top.pos._y) / (mid.pos._y - top.pos._y);
 				egad = (y - top.pos._y) / (btm.pos._y - top.pos._y);
-				sp = Interpolate(top, mid, sgad);
-				ep = Interpolate(top, btm, egad);
+				INTERPOLATEP(top , mid , sgad , sp);
+				INTERPOLATEP(top , btm , egad , ep);
 			}
 			else {
 				sgad = (y - mid.pos._y) / (btm.pos._y - mid.pos._y);
 				egad = (y - top.pos._y) / (btm.pos._y - top.pos._y);
-				sp = Interpolate(mid, btm, sgad);
-				ep = Interpolate(top, btm, egad);
+				INTERPOLATEP(mid , btm , sgad , sp);
+				INTERPOLATEP(top , btm , egad , ep);
 			}
 
 
@@ -108,11 +109,13 @@ private:
 
 			float sx = sp.pos._x, ex = ep.pos._x; // x×ø±ê	
 
+			Pixel p;
 			for (auto x = sx; x <= ex; ++x) {
 				float gad = 0;
 				if (ex - sx < 1.0f) { gad = 0; }
 				else gad = (x - sx) / (ex - sx);
-				pixels.push_back(Interpolate(sp, ep, gad));
+				INTERPOLATEP(sp , ep , gad , p);
+				pixels.emplace_back(p);
 			}
 		}
 	}

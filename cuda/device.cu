@@ -86,6 +86,7 @@ extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors
 	CUDA_CALL(cudaMalloc(&dDepths , sizeof(float) * screenPixelSize));
 	CUDA_CALL(cudaMemset(dDepths , 0 , sizeof(float) * screenPixelSize));
 
+	CUDA_CALL(cudaMemcpy(dPixelColors , pixelColors , sizeof(Uint8) * screenPixelSize  * 4 , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , sizeof(Pixel) * numPixels , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dColors , &colors[0] , sizeof(Color) * numPixels , cudaMemcpyHostToDevice));
 

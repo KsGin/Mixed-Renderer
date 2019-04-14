@@ -27,11 +27,15 @@ int main()
 	Device::initialize(SCREEN_WIDTH, SCREEN_HEIGHT, IS_FULL_SCREEN, "Mixed-Renderer");
 	auto d = Device::getInstance();
 
-	auto model = Matrix::identity() * Matrix::scale(0.25 , 0.25 , 0.25);
+	auto model1 = Matrix::identity() * Matrix::scale(0.15 , 0.15 , 0.15);
+	auto model2 = Matrix::identity() * Matrix::scale(0.15 , 0.15 , 0.15);
+
+	auto rotation = Matrix::identity();
 	auto view = Matrix::lookAtLH(Vector3(0, 0, 5), Vector3(0, 0, 0), Vector3(0, 1, 0));
 	auto perspective = Matrix::perspectiveFovLH( 1 , SCREEN_WIDTH / SCREEN_HEIGHT, 0.1, 1000);
 
-	auto cube = Model::cube();
+	auto cube1 = Model::cube();
+	auto cube2 = Model::cube();
 
 	auto shader = Shader();
 	shader.setMat(view, VIEW);
@@ -46,10 +50,13 @@ int main()
 	while (!d.windowShouldClose()) {
 		d.clear();
 
-		model = model * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
-		shader.setMat(model, MODEL);
+		rotation = rotation * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
 
-		Render::render(cube, shader, SOLID);
+		shader.setMat(model1 * rotation * Matrix::translate(-0.5 , 0 , 0), MODEL);
+		Render::render(cube1, shader, SOLID);
+		
+		shader.setMat(model1 * rotation * Matrix::translate(  0.5 , 0 , 0), MODEL);
+		Render::render(cube2, shader, SOLID);
 
 		d.handleEvent();
 		d.updateRender();
