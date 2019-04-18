@@ -126,8 +126,7 @@ public:
 			}
 		}
 
-		std::vector<Pixel> pixels;
-		pixels.resize(numPixels * 1.5);
+		std::vector<Pixel> pixels(numPixels * 1.5);
 		size_t index = 0;
 		for (auto& triangle : triangles) {
 			Raster::rasterize(triangle, pixels, index, type);
