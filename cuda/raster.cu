@@ -61,8 +61,8 @@ private:
 	/*
 	 * Bresenham Line Algorithm
 	 */
-	static void RasterizeLine(const Pixel& p1, const Pixel& p2, std::vector<Pixel>& pixels) {
-
+	static void RasterizeLine(const Pixel& p1, const Pixel& p2, std::vector<Pixel>& pixels, size_t& index) {
+		int maxSize = pixels.size();
 		auto start = p1, end = p2;
 
 		if (p1.pos._x > p2.pos._x) {
@@ -79,11 +79,15 @@ private:
 		for (auto i = 0; i < dis; i++) {
 			gad = i / dis;
 			INTERPOLATEP(p1 , p2 , gad , p);
-			pixels.emplace_back(p);
+			if (index >= maxSize) {
+				pixels.resize(maxSize * 1.5);
+			}
+			pixels[index++] = p;
 		}
 	}
 
-	static void RasterizeTriangle(const Pixel& top, const Pixel& mid, const Pixel& btm, std::vector<Pixel>& pixels) {
+	static void RasterizeTriangle(const Pixel& top, const Pixel& mid, const Pixel& btm, std::vector<Pixel>& pixels , size_t& index) {
+		int maxSize = pixels.size();
 		for (auto y = top.pos._y; y >= btm.pos._y; --y) {
 			Pixel sp, ep;
 			float sgad = 0.0f, egad = 0.0f;
@@ -115,7 +119,10 @@ private:
 				if (ex - sx < 1.0f) { gad = 0; }
 				else gad = (x - sx) / (ex - sx);
 				INTERPOLATEP(sp , ep , gad , p);
-				pixels.emplace_back(p);
+				if (index >= maxSize) {
+					pixels.resize(maxSize * 1.5);
+				}
+				pixels[index++] = p;
 			}
 		}
 	}
@@ -136,14 +143,14 @@ public:
 		int numPixels;
 	};
 
-	static void rasterize(Triangle& triangle, std::vector<Pixel>& pixels, const TYPE type) {
+	static void rasterize(Triangle& triangle, std::vector<Pixel>& pixels , size_t& index , const TYPE type) {
 		if (type == SOLID) {
-			RasterizeTriangle(triangle.top, triangle.mid, triangle.btm, pixels);
+			RasterizeTriangle(triangle.top, triangle.mid, triangle.btm, pixels , index);
 		}
 		else {
-			RasterizeLine(triangle.top, triangle.mid, pixels);
-			RasterizeLine(triangle.top, triangle.btm, pixels);
-			RasterizeLine(triangle.mid, triangle.btm, pixels);
+			RasterizeLine(triangle.top, triangle.mid, pixels , index);
+			RasterizeLine(triangle.top, triangle.btm, pixels , index);
+			RasterizeLine(triangle.mid, triangle.btm, pixels , index);
 		}
 	}
 };
