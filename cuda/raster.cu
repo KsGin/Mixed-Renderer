@@ -75,7 +75,7 @@ private:
 		float dis = disx > disy ? disx : disy;
 
 		Pixel p;
-		for (auto i = 0; i < dis; i++) {
+		for (auto i = 0; i <= dis; i++) {
 			gad = i / dis;
 			INTERPOLATEP(p1 , p2 , gad , p);
 			if (index >= maxSize) {
