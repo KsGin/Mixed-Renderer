@@ -8,7 +8,6 @@
 #pragma once
 #include "../common/device.h"
 #include "../common/model.h"
-#include "../common/color.h"
 #include "../common/define.h"
 #include "../common/shader.h"
 #include "../cuda/raster.cu"

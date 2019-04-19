@@ -39,9 +39,6 @@
     <ClInclude Include="common\render.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="common\color.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="common\shader.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -73,6 +70,9 @@
       <Filter>Cuda</Filter>
     </CudaCompile>
     <CudaCompile Include="cuda\device.cu">
+      <Filter>Cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="cuda\color.cu">
       <Filter>Cuda</Filter>
     </CudaCompile>
   </ItemGroup>

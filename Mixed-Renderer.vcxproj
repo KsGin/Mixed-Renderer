@@ -135,7 +135,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="common\camera.h" />
-    <ClInclude Include="common\color.h" />
     <ClInclude Include="common\define.h" />
     <ClInclude Include="common\device.h" />
     <ClInclude Include="common\model.h" />
@@ -148,6 +147,7 @@
   <ItemGroup>
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
+    <CudaCompile Include="cuda\color.cu" />
     <CudaCompile Include="cuda\device.cu" />
     <CudaCompile Include="cuda\raster.cu">
       <FileType>Document</FileType>

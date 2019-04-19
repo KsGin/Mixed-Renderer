@@ -21,7 +21,7 @@ namespace Math {
 		/*
 		 * 空构造函数 禁止使用 禁止重写
 		 */
-		Matrix() {
+		__device__ __host__ Matrix() {
 		}
 
 	public:
@@ -43,7 +43,7 @@ namespace Math {
 		/*
 		 * 值构造函数
 		 */
-		Matrix(float m1, float m2, float m3, float m4,
+		__device__ __host__ Matrix(float m1, float m2, float m3, float m4,
 		       float m5, float m6, float m7, float m8,
 		       float m9, float m10, float m11, float m12,
 		       float m13, float m14, float m15, float m16) {
@@ -68,7 +68,7 @@ namespace Math {
 		/*
 		 * 引用构造函数
 		 */
-		Matrix(const Matrix& mat) {
+		__device__ __host__ Matrix(const Matrix& mat) {
 			for (int i = 0; i < 16; ++i)
 				_m[i] = mat._m[i];
 		}
@@ -76,19 +76,19 @@ namespace Math {
 		/*
 		 * 析构函数
 		 */
-		~Matrix() {
+		__device__ __host__ ~Matrix() {
 		}
 
 
 		/*
 		 * 重载 =
 		 */
-		Matrix& operator=(Matrix const& mat) = default;
+		__device__ __host__ Matrix& operator=(Matrix const& mat) = default;
 
 		/*
 		 * 重载 ==
 		 */
-		bool operator==(const Matrix& mat) const {
+		__device__ __host__ bool operator==(const Matrix& mat) const {
 			for (int i = 0; i < 16; ++i) { if (mat._m[i] != _m[i]) return false; }
 			return true;
 		}
@@ -96,7 +96,7 @@ namespace Math {
 		/*
 		 * 重载 +
 		 */
-		Matrix operator+(const Matrix& mat) const {
+		__device__ __host__ Matrix operator+(const Matrix& mat) const {
 			float tm[16];
 			for (int i = 0; i < 16; ++i) { tm[i] = _m[i] + mat._m[i]; }
 			return Matrix(
@@ -110,7 +110,7 @@ namespace Math {
 		/*
 		 * 重载 -
 		 */
-		Matrix operator-(const Matrix& mat) const {
+		__device__ __host__ Matrix operator-(const Matrix& mat) const {
 			float tm[16];
 			for (int i = 0; i < 16; ++i) { tm[i] = _m[i] - mat._m[i]; }
 			return Matrix(
@@ -124,7 +124,7 @@ namespace Math {
 		/*
 		 * 矩阵与矩阵相乘
 		 */
-		Matrix multiply(const Matrix& mat) const {
+		__device__ __host__ Matrix multiply(const Matrix& mat) const {
 			float tm[16];
 			tm[0] = _m[0] * mat._m[0] + _m[1] * mat._m[4] + _m[2] * mat._m[8] + _m[3] * mat._m[12];
 			tm[1] = _m[0] * mat._m[1] + _m[1] * mat._m[5] + _m[2] * mat._m[9] + _m[3] * mat._m[13];
@@ -153,12 +153,12 @@ namespace Math {
 		/*
 		 * 重载 *
 		 */
-		Matrix operator*(const Matrix& mat) { return multiply(mat); }
+		__device__ __host__ Matrix operator*(const Matrix& mat) { return multiply(mat); }
 
 		/*
 		 * 获得零矩阵
 		 */
-		static Matrix zero() {
+		__device__ __host__ static Matrix zero() {
 			return Matrix(0, 0, 0, 0,
 			              0, 0, 0, 0,
 			              0, 0, 0, 0,
@@ -168,7 +168,7 @@ namespace Math {
 		/*
 		 *  获得单位矩阵
 		 */
-		static Matrix identity() {
+		__device__ __host__ static Matrix identity() {
 			return Matrix(
 				1, 0, 0, 0,
 				0, 1, 0, 0,
@@ -179,7 +179,7 @@ namespace Math {
 		/*
 		 * 获得缩放矩阵
 		 */
-		static Matrix scale(float x, float y, float z) {
+		__device__ __host__ static Matrix scale(float x, float y, float z) {
 			return Matrix(
 				x, 0, 0, 0,
 				0, y, 0, 0,
@@ -191,7 +191,7 @@ namespace Math {
 		/*
 		 * 获得平移矩阵
 		 */
-		static Matrix translate(float x, float y, float z) {
+		__device__ __host__ static Matrix translate(float x, float y, float z) {
 			return Matrix(
 				1, 0, 0, 0,
 				0, 1, 0, 0,
@@ -203,7 +203,7 @@ namespace Math {
 		/*
 		 * x 轴旋转矩阵
 		 */
-		static Matrix rotationX(float angle) {
+		__device__ __host__ static Matrix rotationX(float angle) {
 			float s = sin(angle);
 			float c = cos(angle);
 			return Matrix(
@@ -217,7 +217,7 @@ namespace Math {
 		/*
 		 * y 轴旋转矩阵
 		 */
-		static Matrix rotationY(float angle) {
+		__device__ __host__ static Matrix rotationY(float angle) {
 			float s = sin(angle);
 			float c = cos(angle);
 			return Matrix(
@@ -231,7 +231,7 @@ namespace Math {
 		/*
 		 * z 轴旋转矩阵
 		 */
-		static Matrix rotationZ(float angle) {
+		__device__ __host__ static Matrix rotationZ(float angle) {
 			float s = sin(angle);
 			float c = cos(angle);
 			return Matrix(
@@ -245,7 +245,7 @@ namespace Math {
 		/*
 		 * 矩阵转置
 		 */
-		static Matrix transpose(const Matrix& mat) {
+		__device__ __host__ static Matrix transpose(const Matrix& mat) {
 			float tm[16];
 			tm[0] = mat._m[0];
 			tm[1] = mat._m[4];
@@ -274,7 +274,7 @@ namespace Math {
 		/*
 +         * 观察矩阵 LookAt
 +         */
-		static Matrix lookAtLH(const Vector3& eye, const Vector3& target, const Vector3& up) {
+		__device__ __host__ static Matrix lookAtLH(const Vector3& eye, const Vector3& target, const Vector3& up) {
 			Vector3 z = target - eye;
 			z.normalize();
 			Vector3 x = Vector3::cross(up, z);
@@ -296,7 +296,7 @@ namespace Math {
 		/*
 		 * 透视投影矩阵
 		 */
-		static Matrix perspectiveFovLH(float fov, float aspect, float near, float far) {
+		__device__ __host__ static Matrix perspectiveFovLH(float fov, float aspect, float near, float far) {
 			float t = static_cast<float>(1 / (tan(fov * 0.5)));
 			return Matrix(
 				t / aspect, 0, 0, 0,
@@ -309,7 +309,7 @@ namespace Math {
 		/*
 		 * 正交投影矩阵
 		 */
-		static Matrix orthoLH(float width, float height, float near, float far) {
+		__device__ __host__ static Matrix orthoLH(float width, float height, float near, float far) {
 			return Matrix(
 				2 / width, 0, 0, 0,
 				0, 2 / height, 0, 0,
@@ -321,7 +321,7 @@ namespace Math {
 		/**
 		 * 变换二维向量
 		 */
-		static Vector2 transfrom(const Vector2& v, const Matrix& transMat) {
+		__device__ __host__ static Vector2 transfrom(const Vector2& v, const Matrix& transMat) {
 			float x = v._x * transMat._m[0] + v._x * transMat._m[4];
 			float y = v._y * transMat._m[1] + v._y * transMat._m[5];
 			return Vector2(x, y);
@@ -330,7 +330,7 @@ namespace Math {
 		/*
 		* 变换三维向量
 		*/
-		static Vector3 transform(const Vector3& v3, const Matrix& transMat) {
+		__device__ __host__ static Vector3 transform(const Vector3& v3, const Matrix& transMat) {
 			float x = v3._x * transMat._m[0] + v3._y * transMat._m[4] + v3._z * transMat._m[8];
 			float y = v3._x * transMat._m[1] + v3._y * transMat._m[5] + v3._z * transMat._m[9];
 			float z = v3._x * transMat._m[2] + v3._y * transMat._m[6] + v3._z * transMat._m[10];
@@ -340,7 +340,7 @@ namespace Math {
 		/*
 		 * 齐次变换三维向量
 		 */
-		static Vector3 transformCoordinates(const Vector3& v3, const Matrix& transMat) {
+		__device__ __host__ static Vector3 transformCoordinates(const Vector3& v3, const Matrix& transMat) {
 			float x = v3._x * transMat._m[0] + v3._y * transMat._m[4] + v3._z * transMat._m[8] + transMat._m[12];
 			float y = v3._x * transMat._m[1] + v3._y * transMat._m[5] + v3._z * transMat._m[9] + transMat._m[13];
 			float z = v3._x * transMat._m[2] + v3._y * transMat._m[6] + v3._z * transMat._m[10] + transMat._m[14];

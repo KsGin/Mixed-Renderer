@@ -9,7 +9,6 @@
 
 #include "../includes/math/vector.hpp"
 #include "../common/define.h"
-#include "../common/color.h"
 #include <cmath>
 #include <vector>
 

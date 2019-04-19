@@ -7,11 +7,11 @@
 
 #pragma once
 
+#include "../cuda/color.cu"
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <iostream>
 #include <cassert>
-#include "../common/color.h"
 #include "../includes/math/vector.hpp"
 
 /**

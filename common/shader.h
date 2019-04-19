@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../includes/math/matrix.hpp"
-#include "../common/color.h"
+#include "../common/define.h"
 #include "../common/texture.h"
 #include <vector>
 

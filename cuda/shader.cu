@@ -12,35 +12,59 @@
 #include <vector>
 
 
-__device__ void TexSampler2D(const Texture& texture, unsigned char* texturesPixels, const float x, const float y, Color* color)
-{
-	const int tx = x * texture.width;
-	const int ty = y * texture.height;
+__device__ Color& TexSampler2D(const Texture& texture, unsigned char* texturesPixels , const Math::Vector2& uv) {
+
+	Color color;
+
+	const int tx = uv._x * texture.width;
+	const int ty = uv._y * texture.height;
 
 	auto idx = (ty * texture.width + tx) * 4;
 
 	CLAMP(idx, 4, texture.width * texture.height * 4);
 
-	color->a = texturesPixels[idx - 1] / 255.0f;
-	color->b = texturesPixels[idx - 2] / 255.0f;
-	color->g = texturesPixels[idx - 3] / 255.0f;
-	color->r = texturesPixels[idx - 4] / 255.0f;
+	color.a = texturesPixels[idx - 1] / 255.0f;
+	color.b = texturesPixels[idx - 2] / 255.0f;
+	color.g = texturesPixels[idx - 3] / 255.0f;
+	color.r = texturesPixels[idx - 4] / 255.0f;
+
+	return color;
 }
 
-__global__ void KernelPixelShader(Color* colors , Pixel* pixels  , Texture* textures , unsigned char* texturesPixels, const int numElements)
-{
+/*
+ * Pixel Shader
+ */
+__device__ Color& PixelShader(Pixel& pixel , const Texture& texture , unsigned char* texturesPixels) {
+	// »·¾³¹â
+	const auto ambient = 0.1;
+
+	auto texColor = TexSampler2D(texture, texturesPixels, pixel.uv);
+
+	const auto directionLight = Math::Vector3(0 , 1 , -1).normalize();
+	const auto normal = pixel.normal.normalize();
+
+	auto nd = Math::Vector3::dot(directionLight , normal);
+
+	CLAMP01(nd);
+
+	auto color = texColor * (ambient + nd);
+
+	return color;
+}
+
+__global__ void KernelPixelShader(Color* colors, Pixel* pixels, Texture* textures, unsigned char* texturesPixels,
+                                  const int numElements) {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
-	if(idx < numElements) 
-	{
-		TexSampler2D(textures[0] , texturesPixels , pixels[idx].uv._x, pixels[idx].uv._y, &colors[idx]);
+	if (idx < numElements) {
+		colors[idx] = PixelShader(pixels[idx] , textures[0] , texturesPixels);
 	}
 }
 
-extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vector<Texture>& textures, std::vector<Color>& colors)
-{
+extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vector<Texture>& textures,
+                                std::vector<Color>& colors) {
 	const int numPixels = pixels.size();
 	const int numTextures = textures.size();
-	
+
 	Pixel* dPixels;
 	CUDA_CALL(cudaMalloc(&dPixels , sizeof(Pixel) * numPixels));
 	CUDA_CALL(cudaMemset(dPixels , 0 , sizeof(Pixel) * numPixels));

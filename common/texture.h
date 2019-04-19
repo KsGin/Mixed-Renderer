@@ -8,7 +8,6 @@
 #pragma once
 #include <SDL_image.h>
 #include "../common/define.h"
-#include "../common/color.h"
 
 /*
  *	Texture class
@@ -91,16 +90,19 @@ public:
 
 		CLAMP(idx, 0, width * height * 4 - 1);
 
-		auto col = color;
-		CLAMP01(col.a);
-		CLAMP01(col.b);
-		CLAMP01(col.g);
-		CLAMP01(col.r);
+		auto r = color.r;
+		auto g = color.g;
+		auto b = color.b;
+		auto a = color.a;
+		CLAMP01(a);
+		CLAMP01(b);
+		CLAMP01(g);
+		CLAMP01(r);
 
-		this->pixels[idx - 1] = static_cast<unsigned char>(col.a * 255);
-		this->pixels[idx - 2] = static_cast<unsigned char>(col.b * 255);
-		this->pixels[idx - 3] = static_cast<unsigned char>(col.g * 255);
-		this->pixels[idx - 4] = static_cast<unsigned char>(col.r * 255);
+		this->pixels[idx - 1] = static_cast<unsigned char>(a * 255);
+		this->pixels[idx - 2] = static_cast<unsigned char>(b * 255);
+		this->pixels[idx - 3] = static_cast<unsigned char>(g * 255);
+		this->pixels[idx - 4] = static_cast<unsigned char>(r * 255);
 	}
 
 
