@@ -21,7 +21,7 @@ class Raster {
 		for (auto y = top.pos._y; y >= btm.pos._y; --y) {
 			Line tLine;
 
-			float sgad = 0.0f, egad = 0.0f;
+			auto sgad = 0.0f, egad = 0.0f;
 			if (y >= mid.pos._y) {
 				sgad = (y - top.pos._y) / (mid.pos._y - top.pos._y);
 				egad = (y - top.pos._y) / (btm.pos._y - top.pos._y);
@@ -42,7 +42,7 @@ class Raster {
 				tLine.right = tp;
 			}
 
-			tLine.numPixels = tLine.right.pos._x - tLine.left.pos._x;
+			tLine.numPixels = tLine.right.pos._x - tLine.left.pos._x + 1;
 			if (tLine.numPixels >= 0) {
 				lines.push_back(tLine);
 			}
