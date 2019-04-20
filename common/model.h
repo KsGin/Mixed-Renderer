@@ -8,7 +8,9 @@
 #pragma once
 
 #include <vector>
-#include "../common/define.h"
+#include "define.h"
+#include "../includes/math/vector.hpp"
+#include "../includes/color.hpp"
 
 
 class Model

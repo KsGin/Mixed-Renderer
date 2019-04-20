@@ -24,16 +24,16 @@
     <ClInclude Include="common\camera.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="common\define.h">
+      <Filter>Common</Filter>
+    </ClInclude>
     <ClInclude Include="common\device.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="includes\math\matrix.hpp">
-      <Filter>Includes\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="includes\math\vector.hpp">
-      <Filter>Includes\Math</Filter>
-    </ClInclude>
     <ClInclude Include="common\model.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\raster.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="common\render.h">
@@ -45,8 +45,14 @@
     <ClInclude Include="common\texture.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="common\define.h">
-      <Filter>Common</Filter>
+    <ClInclude Include="includes\math\matrix.hpp">
+      <Filter>Includes\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\math\vector.hpp">
+      <Filter>Includes\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\color.hpp">
+      <Filter>Includes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -63,16 +69,13 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="cuda\device.cu">
+      <Filter>Cuda</Filter>
+    </CudaCompile>
     <CudaCompile Include="cuda\raster.cu">
       <Filter>Cuda</Filter>
     </CudaCompile>
     <CudaCompile Include="cuda\shader.cu">
-      <Filter>Cuda</Filter>
-    </CudaCompile>
-    <CudaCompile Include="cuda\device.cu">
-      <Filter>Cuda</Filter>
-    </CudaCompile>
-    <CudaCompile Include="cuda\color.cu">
       <Filter>Cuda</Filter>
     </CudaCompile>
   </ItemGroup>

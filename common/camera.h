@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "define.h"
 #include "../includes/math/vector.hpp"
 
 class Camera {

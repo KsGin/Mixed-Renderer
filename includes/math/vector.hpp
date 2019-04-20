@@ -47,7 +47,7 @@ namespace Math {
 		/**
 		 * 重载 =
 		 */
-		__device__ __host__ Vector2& operator=(Vector2 const& v2) = default;
+		Vector2& operator=(Vector2 const& v2) = default;
 
 		/**
 		 * 重载 +
@@ -139,7 +139,7 @@ namespace Math {
 		/**
 		 * 重载 =
 		 */
-		__device__ __host__ Vector3& operator=(Vector3 const& v3) = default;
+		Vector3& operator=(Vector3 const& v3) = default;
 
 		/**
 		 * 重载 +

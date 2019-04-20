@@ -1,5 +1,5 @@
 /**
- * File Name : define.cu
+ * File Name : define.h
  * Author : Yang Fan
  * Date : 2018/11/27
  * define some functions
@@ -7,12 +7,16 @@
 
 #pragma once
 
-#include "../cuda/color.cu"
+
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <iostream>
 #include <cassert>
+#include <SDL.h>
+#include <ctime>
 #include "../includes/math/vector.hpp"
+#include "../includes/color.hpp"
+
 
 /**
  * define a cuda call
@@ -110,4 +114,19 @@ enum TYPE
 {
 	SOLID,
 	WIREFRAME
+};
+
+
+/*
+ * 定义临时数据结构
+ */
+struct Triangle {
+	/*
+	 * 三个顶点
+	 */
+	Pixel top, mid, btm;
+	/*
+	 * 像素个数
+	 */
+	int numPixels;
 };

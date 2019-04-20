@@ -11,6 +11,7 @@
 #include "../common/define.h"
 #include "../common/texture.h"
 #include <vector>
+#include "../includes/color.hpp"
 
 extern "C" void CallPixelShader(const std::vector<Pixel>& pixels,const std::vector<Texture>& textures, std::vector<Color>& colors);
 

@@ -9,8 +9,9 @@
 #include <device_launch_parameters.h>
 #include "../common/define.h"
 #include "../common/texture.h"
+#include "../includes/color.hpp"
+#include "../includes/math/vector.hpp"
 #include <vector>
-
 
 __device__ Color& TexSampler2D(const Texture& texture, unsigned char* texturesPixels , const Math::Vector2& uv) {
 

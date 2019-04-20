@@ -138,23 +138,17 @@
     <ClInclude Include="common\define.h" />
     <ClInclude Include="common\device.h" />
     <ClInclude Include="common\model.h" />
+    <ClInclude Include="common\raster.h" />
     <ClInclude Include="common\render.h" />
     <ClInclude Include="common\shader.h" />
     <ClInclude Include="common\texture.h" />
+    <ClInclude Include="includes\color.hpp" />
     <ClInclude Include="includes\math\matrix.hpp" />
     <ClInclude Include="includes\math\vector.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
-    <CudaCompile Include="cuda\color.cu" />
-    <CudaCompile Include="cuda\device.cu" />
-    <CudaCompile Include="cuda\raster.cu">
-      <FileType>Document</FileType>
-    </CudaCompile>
-    <CudaCompile Include="cuda\shader.cu">
-      <FileType>Document</FileType>
-    </CudaCompile>
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +156,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\TD1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="cuda\device.cu" />
+    <CudaCompile Include="cuda\raster.cu" />
+    <CudaCompile Include="cuda\shader.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
