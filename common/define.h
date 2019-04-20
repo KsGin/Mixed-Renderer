@@ -75,6 +75,47 @@
 }
 
 /*
+ * INTERPOLATE FLOAT VALUE DEFINED
+ */
+#define INTERPOLATE(a , b , g , r) {										\
+	CLAMP01(g);																\
+	int d = a > b;															\
+	r = d * (a - (a - b) * g) + (1-d) * (a + (b - a) * g);					\
+}
+
+/*
+ * INTERPOLATE VECTOR2 VALUE DEFINED
+ */
+#define INTERPOLATEV2(v1 , v2 , gad , result) {								\
+	INTERPOLATE(v1._x, v2._x, gad , result._x);								\
+	INTERPOLATE(v1._y, v2._y, gad , result._y);								\
+}
+
+/*
+ * INTERPOLATE VECTOR3 VALUE DEFINED
+ */
+#define INTERPOLATEV3(v1 , v2 , gad , result) {								\
+	INTERPOLATE(v1._x, v2._x, gad , result._x);								\
+	INTERPOLATE(v1._y, v2._y, gad , result._y);								\
+	INTERPOLATE(v1._z, v2._z, gad , result._z);								\
+}
+
+#define INTERPOLATEC(v1 , v2 , gad , result) {								\
+	INTERPOLATE(v1.r, v2.r, gad , result.r);								\
+	INTERPOLATE(v1.g, v2.g, gad , result.g);								\
+	INTERPOLATE(v1.b, v2.b, gad , result.b);								\
+	INTERPOLATE(v1.a, v2.a, gad , result.a);								\
+}
+
+#define INTERPOLATEP(p1 , p2 , gad , result) {								\
+	INTERPOLATEV3(p1.pos , p2.pos , gad , result.pos);						\
+	INTERPOLATEV3(p1.normal , p2.normal , gad , result.normal);				\
+	INTERPOLATEV2(p1.uv , p2.uv , gad , result.uv);							\
+	INTERPOLATEC(p1.color , p2.color , gad , result.color);					\
+}
+
+
+/*
  * Shader Matrix Type
  */
 enum MatType
@@ -118,7 +159,7 @@ enum TYPE
 
 
 /*
- * 定义临时数据结构
+ * 定义三角形数据结构
  */
 struct Triangle {
 	/*
@@ -130,3 +171,26 @@ struct Triangle {
 	 */
 	int numPixels;
 };
+
+/*
+ * 定义线段数据结构
+ */
+struct Line {
+	/*
+	 * 两个顶点
+	 */
+	Pixel left , right;
+
+	/*
+	 * 像素个数
+	 */
+	int numPixels;
+};
+
+
+/*
+ * Distance of two points
+ */
+static int Distance(const Math::Vector3& p1, const Math::Vector3& p2) {
+	return sqrt(pow(p2._x - p1._x, 2) + pow(p2._y - p1._y, 2));
+}
