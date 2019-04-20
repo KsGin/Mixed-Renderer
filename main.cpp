@@ -30,7 +30,8 @@ int main()
 	auto model1 = Matrix::identity() * Matrix::scale(0.15 , 0.15 , 0.15);
 	auto model2 = Matrix::identity() * Matrix::scale(0.15 , 0.15 , 0.15);
 
-	auto rotation = Matrix::identity();
+	auto rotation1 = Matrix::identity();
+	auto rotation2 = Matrix::identity();
 	auto view = Matrix::lookAtLH(Vector3(0, 0, 5), Vector3(0, 0, 0), Vector3(0, 1, 0));
 	auto perspective = Matrix::perspectiveFovLH( 1 , SCREEN_WIDTH / SCREEN_HEIGHT, 0.1, 1000);
 
@@ -51,12 +52,13 @@ int main()
 	while (!d.windowShouldClose()) {
 		d.clear();
 
-		rotation = rotation * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
+		rotation1 = rotation1 * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
+		rotation2 = rotation2 * Matrix::rotationY( 0.02f) * Matrix::rotationZ( 0.02f) * Matrix::rotationX( 0.02f);
 
-		shader.setMat(model1 * rotation * Matrix::translate(-0.3 , 0 , 0), MODEL);
+		shader.setMat(model1 * rotation1 * Matrix::translate(-0.3 , 0 , 0), MODEL);
 		Render::render(cube1, shader, SOLID);
 
-		shader.setMat(model1 * rotation * Matrix::translate(0.3 , 0 , 0), MODEL);
+		shader.setMat(model1 * rotation2 * Matrix::translate(0.3 , 0 , 0), MODEL);
 		Render::render(cube2, shader, SOLID);
 		
 		// shader.setMat(model1 * rotation * Matrix::translate(  0 , 0 , -1), MODEL);
