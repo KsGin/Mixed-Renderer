@@ -26,8 +26,9 @@ __device__ void SetPixel(int x, int y, const Color& color, Uint8* pixelColors, i
 	CLAMP01(r);
 
 	auto i = (y * screenWidth + x) * 4;
+	const auto size = (screenWidth - 1) * (screenHeight - 1) * 4;
 
-	CLAMP(i , 0 , screenWidth * screenHeight * 4 - 1);
+	CLAMP(i , 4 , size);
 
 	pixelColors[i - 1] = static_cast<Uint8>(a * 255);
 	pixelColors[i - 2] = static_cast<Uint8>(b * 255);
@@ -39,6 +40,8 @@ __device__ void SetPixel(int x, int y, const Color& color, Uint8* pixelColors, i
  * 深度测试
  */
 __device__ void TestDepth(int x , int y , float depth , float* depths , bool& isSuccess , int screenWidth , int screenHeight) {
+	if (x >= screenWidth || x <= 0 || y <= 0 || y >= screenHeight ) return;
+
 	const auto idx = y * screenWidth + x;
 	const auto cdp = depths[idx];
 
@@ -70,6 +73,8 @@ __global__ void KernelMixed(Pixel* pixels , Color* colors , Uint8* pixelColors ,
 
 
 extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors , Uint8* pixelColors , float *depths , int screenWidth , int screenHeight) {
+	if (pixels.empty()) return;
+	
 	const int numPixels = pixels.size();
 	const int screenPixelSize = screenWidth * screenHeight;
 	
@@ -93,7 +98,7 @@ extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors
 
 	// 流水线执行
 
-	KernelMixed<<<(numPixels + 15) / 16 , 16>>>(dPixels , dColors , dPixelColors , dDepths , screenWidth , screenHeight , numPixels);
+	KernelMixed<<<(numPixels + 63) / 64 , 64>>>(dPixels , dColors , dPixelColors , dDepths , screenWidth , screenHeight , numPixels);
 
 	CUDA_CALL(cudaMemcpy(depths , dDepths , sizeof(float) * screenPixelSize , cudaMemcpyDeviceToHost));
 	CUDA_CALL(cudaMemcpy(pixelColors , dPixelColors , sizeof(Uint8) * screenPixelSize  * 4, cudaMemcpyDeviceToHost));

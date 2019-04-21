@@ -13,7 +13,8 @@
 extern "C" void CallRasterizeLines(const std::vector<Line>& lines, std::vector<Pixel>& pixels);
 
 class Raster {
-	static void doRasterizeSolidTriangle(Triangle& triangle , std::vector<Line>& lines) {
+
+	static void doRasterizeSolidTriangle(Triangle& triangle) {
 		auto top = triangle.top;
 		auto mid = triangle.mid;
 		auto btm = triangle.btm;
@@ -44,7 +45,7 @@ class Raster {
 
 			tLine.numPixels = tLine.right.pos._x - tLine.left.pos._x + 1;
 			if (tLine.numPixels >= 0) {
-				lines.push_back(tLine);
+				lines.emplace_back(tLine);
 			}
 		}
 	}
@@ -83,7 +84,7 @@ class Raster {
 		}
 	}
 	
-	static void doRasterizeWireframeTriangle(Triangle& triangle, std::vector<Line>& lines) {
+	static void doRasterizeWireframeTriangle(Triangle& triangle) {
 		Line line1 , line2 , line3;
 		line1.left = triangle.top;
 		line1.right = triangle.btm;
@@ -118,39 +119,49 @@ class Raster {
 		return Math::Vector3::dot(d , lhr) < 0;
 	}
 
+	static void doReset() {
+		lines.clear();
+		lines.shrink_to_fit();
+	}
+
 public:
 
-	static void doRasterize(std::vector<Triangle>& triangles, std::vector<Pixel>& pixels,const TYPE& type = SOLID ) {
+	static std::vector<Line> lines;
+
+	static void doRasterize(std::vector<Triangle>& triangles , std::vector<Pixel>& pixels ,const TYPE& type = SOLID ) {
+		
+		doReset();
+		
 		if (type == SOLID) {
 			auto numPixels = 0;
 			doComputeTriangle(triangles, type , numPixels);
 
-			pixels.resize(numPixels * 1.5);
-
-			std::vector<Line> lines;
+			if (numPixels >= pixels.size()) {
+				pixels.resize(numPixels * 1.5);
+			}
+			
 			for (auto& triangle : triangles) {				
-				doRasterizeSolidTriangle(triangle ,  lines);
+				doRasterizeSolidTriangle(triangle );
 			}
 				
 			CallRasterizeLines(lines , pixels);
 
-			lines.clear();
-			lines.shrink_to_fit();
 		} else {
 			auto numPixels = 0;
 			doComputeTriangle(triangles, type , numPixels);
 
-			pixels.resize(numPixels * 1.5);
+			if (numPixels >= pixels.size()) {
+				pixels.resize(numPixels * 1.5);
+			}
 
-			std::vector<Line> lines;
 			for (auto& triangle : triangles) {
-				doRasterizeWireframeTriangle(triangle ,  lines);
+				doRasterizeWireframeTriangle(triangle);
 			}	
 
 			CallRasterizeLines(lines , pixels);
-
-			lines.clear();
-			lines.shrink_to_fit();
 		}
 	}
 };
+
+
+std::vector<Line> Raster::lines = std::vector<Line>(2560);

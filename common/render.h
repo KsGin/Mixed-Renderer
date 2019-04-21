@@ -8,14 +8,14 @@
 #pragma once
 
 #include "../common/define.h"
-#include "../includes/math/vector.hpp"
 #include "device.h"
 #include "model.h"
 #include "shader.h"
 #include "raster.h"
 
 class Render {
-	static void doRenderVertex(const Model& model, Shader& shader, std::vector<Triangle>& triangles) {
+	static void doRenderVertex(const Model& model, Shader& shader) {
+		auto idx = 0;
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces) {
 				Triangle triangle;
@@ -29,41 +29,76 @@ class Render {
 				shader.vertexShader(vertex2, triangle.mid);
 				shader.vertexShader(vertex3, triangle.btm);
 
-				triangles.emplace_back(triangle);
+				if (idx >= triangles.size()) {
+					triangles.resize(idx * 1.5);
+				}
+				triangles[idx++] = triangle;
 			}
 		}
 	}
 
-	static void doRasterize(std::vector<Triangle>& triangles, std::vector<Pixel>& pixels,const TYPE& type = SOLID ) {
-		Raster::doRasterize(triangles, pixels);
+	static void doRasterize(const TYPE& type = SOLID ) {
+		//GPU
+		Raster::doRasterize(triangles , pixels , type);
+
 	}
 
-	static void doRenderPixel(Shader& shader, std::vector<Pixel>& pixels) {
-		std::vector<Color> colors(pixels.size());
-
+	static void doRenderPixel(Shader& shader) {
 		//GPU
 		shader.pixelShader(pixels, colors);
 
+	}
+
+	static void doMixed() {
 		//GPU
 		Device::getInstance().mixed(pixels, colors);
-
-		colors.clear();
-		colors.shrink_to_fit();
 	}
+
+	/*
+	 * 为效率妥协使用 memset
+	 */
+	static void doReset() {
+		memset(&pixels[0] , 0 , sizeof(Pixel) * pixels.size());
+		memset(&colors[0] , 0 , sizeof(Color) * colors.size());
+		memset(&triangles[0] , 0 , sizeof(Triangle) * triangles.size());
+	}
+
 public:
-	static void render(const Model& model, Shader& shader, const TYPE& type = TYPE::SOLID) {
-		std::vector<Triangle> triangles;
-		doRenderVertex(model , shader , triangles);
+	
+	static std::vector<Pixel> pixels;
 
-		std::vector<Pixel> pixels;
-		doRasterize(triangles, pixels);
+	static std::vector<Color> colors;
 
-		doRenderPixel(shader, pixels);
+	static std::vector<Triangle> triangles;
 
-		pixels.clear();
-		pixels.shrink_to_fit();
+	static bool isInit;
 
-		triangles.clear();
-		triangles.shrink_to_fit();
+	static void initialize() {
+		pixels.resize(25600);
+		colors.resize(25600);
+		triangles.resize(256);
+	}
+
+	static void render(const Model& model, Shader& shader, const TYPE& type = SOLID) {
+
+		if(!isInit) {
+			initialize();
+			isInit = true;
+		}
+				
+		doReset();
+
+		doRenderVertex(model , shader);
+
+		doRasterize(type);
+
+		doRenderPixel(shader);
+
+		doMixed();
 	}
 };
+
+std::vector<Pixel> Render::pixels;
+std::vector<Color> Render::colors;
+std::vector<Triangle> Render::triangles;
+bool Render::isInit = false;

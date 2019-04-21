@@ -28,41 +28,38 @@ int main()
 	auto d = Device::getInstance();
 
 	auto model1 = Matrix::identity() * Matrix::scale(0.15 , 0.15 , 0.15);
-	auto model2 = Matrix::identity() * Matrix::scale(0.15 , 0.15 , 0.15);
+	auto model2 = Matrix::identity() * Matrix::scale(1.5 , 1 , 0.5);
 
-	auto rotation1 = Matrix::identity();
-	auto rotation2 = Matrix::identity();
-	auto view = Matrix::lookAtLH(Vector3(0, 0, 5), Vector3(0, 0, 0), Vector3(0, 1, 0));
+	auto rotation = Matrix::identity();
+	auto view = Matrix::lookAtLH(Vector3(0, 3, 5), Vector3(0, 1, 0), Vector3(0, 1, 0));
 	auto perspective = Matrix::perspectiveFovLH( 1 , SCREEN_WIDTH / SCREEN_HEIGHT, 0.1, 1000);
 
 	auto cube1 = Model::cube();
-	auto cube2 = Model::cube();
-	// auto cube3 = Model::cube();
+	auto floor = Model::floor();
 
-	auto shader = Shader();
-	shader.setMat(view, VIEW);
-	shader.setMat(perspective, PERSPECTIVE);
+	auto cubeShader = Shader();
+	cubeShader.setMat(view, VIEW);
+	cubeShader.setMat(perspective, PERSPECTIVE);
 
-	auto texture = Texture::LoadFromFile("resources/TD1.png" , true);
+	auto floorShader = Shader();
+	floorShader.setMat(view , VIEW);
+	floorShader.setMat(perspective , PERSPECTIVE);
 
-	shader.setTexture(texture, 0);
+	cubeShader.setTexture(Texture::LoadFromFile("resources/TD2.png" , true), 0);
+	floorShader.setTexture(Texture::LoadFromFile("resources/TD1.png" , true), 0);
 
 	d.show();
 	 
 	while (!d.windowShouldClose()) {
 		d.clear();
 
-		rotation1 = rotation1 * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
-		rotation2 = rotation2 * Matrix::rotationY( 0.02f) * Matrix::rotationZ( 0.02f) * Matrix::rotationX( 0.02f);
+		rotation = rotation * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
 
-		shader.setMat(model1 * rotation1 * Matrix::translate(-0.3 , 0 , 0), MODEL);
-		Render::render(cube1, shader, SOLID);
-
-		shader.setMat(model1 * rotation2 * Matrix::translate(0.3 , 0 , 0), MODEL);
-		Render::render(cube2, shader, SOLID);
+		cubeShader.setMat(model1 * rotation * Matrix::translate(0 , 0.8 , 0), MODEL);
+		Render::render(cube1, cubeShader, SOLID);
 		
-		// shader.setMat(model1 * rotation * Matrix::translate(  0 , 0 , -1), MODEL);
-		// Render::render(cube3, shader, SOLID);
+		floorShader.setMat(model2 * Matrix::translate(0 , 0 , 0.5), MODEL);
+		Render::render(floor, floorShader, SOLID);
 
 		d.handleEvent();
 		d.updateRender();

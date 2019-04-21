@@ -13,6 +13,9 @@
 #include "../includes/math/vector.hpp"
 #include <vector>
 
+#define MAX_TEXTURE_SIZE 8 
+
+/****************************************************************通用区************************************************************************************************/
 __device__ Color& TexSampler2D(const Texture& texture, unsigned char* texturesPixels , const Math::Vector2& uv) {
 
 	Color color;
@@ -32,14 +35,10 @@ __device__ Color& TexSampler2D(const Texture& texture, unsigned char* texturesPi
 	return color;
 }
 
-/*
- * Pixel Shader
- */
-__device__ Color& PixelShader(Pixel& pixel , const Texture& texture , unsigned char* texturesPixels) {
-	// 环境光
-	const auto ambient = 0.1;
+/*************************************************************Pixel Shader*************************************************************************************************/
+__device__ Color& CubePixelShader(Pixel& pixel , Texture* texture , unsigned char** texturesPixels) {
 
-	auto texColor = TexSampler2D(texture, texturesPixels, pixel.uv);
+	const auto ambient = 0.2;
 
 	const auto directionLight = Math::Vector3(0 , 1 , -1).normalize();
 	const auto normal = pixel.normal.normalize();
@@ -48,51 +47,78 @@ __device__ Color& PixelShader(Pixel& pixel , const Texture& texture , unsigned c
 
 	CLAMP01(nd);
 
+	auto texColor = TexSampler2D(texture[0] , texturesPixels[0] , pixel.uv);
 	auto color = texColor * (ambient + nd);
 
 	return color;
 }
 
-__global__ void KernelPixelShader(Color* colors, Pixel* pixels, Texture* textures, unsigned char* texturesPixels,
+/***********************************************************Shader 调用******************************************************************************************************/
+__global__ void KernelPixelShader(Color* colors, Pixel* pixels, Texture* textures, unsigned char** texturesPixels, 
                                   const int numElements) {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < numElements) {
-		colors[idx] = PixelShader(pixels[idx] , textures[0] , texturesPixels);
+		colors[idx] = CubePixelShader(pixels[idx] , textures , texturesPixels);
 	}
 }
 
 extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vector<Texture>& textures,
                                 std::vector<Color>& colors) {
+	if (pixels.empty()) return;
+
 	const int numPixels = pixels.size();
 	const int numTextures = textures.size();
 
-	Pixel* dPixels;
+	Pixel* dPixels = nullptr;
 	CUDA_CALL(cudaMalloc(&dPixels , sizeof(Pixel) * numPixels));
 	CUDA_CALL(cudaMemset(dPixels , 0 , sizeof(Pixel) * numPixels));
-	Color* dColors;
+	Color* dColors = nullptr;
 	CUDA_CALL(cudaMalloc(&dColors , sizeof(Color) * numPixels));
 	CUDA_CALL(cudaMemset(dColors , 0 , sizeof(Color) * numPixels));
-	Texture* dTextures;
+	Texture* dTextures = nullptr;
 	CUDA_CALL(cudaMalloc(&dTextures , sizeof(Texture) * numTextures));
 	CUDA_CALL(cudaMemset(dTextures , 0 , sizeof(Texture) * numTextures));
 
-	// 以下拷贝第一个纹理的 pixels 数组
-	unsigned char* dTexturesPixels;
-	CUDA_CALL(cudaMalloc(&dTexturesPixels, sizeof(unsigned char) * textures[0].width * textures[0].height * 4));
-	CUDA_CALL(cudaMemcpy(dTexturesPixels, textures[0].pixels, sizeof(unsigned char) * textures[0].width * textures[0].height * 4, cudaMemcpyHostToDevice));
+	auto texturePixels = new unsigned char*[MAX_TEXTURE_SIZE];
+	auto numAvailableTex = 0;
+	for (auto i = 0 ; i < MAX_TEXTURE_SIZE; ++i) {
+
+		const auto tex = textures[i];
+		const auto size = tex.width * tex.height * 4;
+
+		if (size == 0) continue;
+
+		unsigned char* texturePixel;
+
+		CUDA_CALL(cudaMalloc(&texturePixel , sizeof(unsigned char) * size));
+		CUDA_CALL(cudaMemcpy(texturePixel, tex.pixels, sizeof(unsigned char) * size, cudaMemcpyHostToDevice));
+
+		texturePixels[i] = texturePixel;
+		numAvailableTex += 1;
+	}
+
+	unsigned char** dTexturePixels = nullptr;
+	CUDA_CALL(cudaMalloc(reinterpret_cast<void**>(&dTexturePixels) , sizeof(unsigned char*) * MAX_TEXTURE_SIZE));
+	CUDA_CALL(cudaMemcpy(dTexturePixels , texturePixels , sizeof(unsigned char*) * MAX_TEXTURE_SIZE , cudaMemcpyHostToDevice));
 
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , numPixels * sizeof(Pixel) , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dTextures , &textures[0] , numTextures * sizeof(Texture) , cudaMemcpyHostToDevice))
 
 	// 64
-	KernelPixelShader<<<(numPixels + 15) / 16 , 16>>>(dColors, dPixels, dTextures, dTexturesPixels, numPixels);
+	KernelPixelShader<<<(numPixels + 63) / 64 , 64>>>(dColors, dPixels, dTextures, dTexturePixels , numPixels);
 
 	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , numPixels * sizeof(Color) , cudaMemcpyDeviceToHost));
 
 	CUDA_CALL(cudaFree(dPixels));
 	CUDA_CALL(cudaFree(dColors));
 	CUDA_CALL(cudaFree(dTextures));
-	CUDA_CALL(cudaFree(dTexturesPixels));
+	CUDA_CALL(cudaFree(dTexturePixels));
+
+	for (auto i = 0 ; i < numAvailableTex; ++i) {
+		CUDA_CALL(cudaFree(texturePixels[i]));
+	}
+
+	delete[] texturePixels;
 }
 
  

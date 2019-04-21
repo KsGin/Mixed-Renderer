@@ -88,6 +88,10 @@ public:
 
 	void pixelShader(const std::vector<Pixel>& pixels , std::vector<Color>& colors)
 	{
+		if (pixels.size() >= colors.size()) {
+			colors.resize(pixels.size());
+		}
+
 		CallPixelShader(pixels ,  textures , colors);
 	}
 };

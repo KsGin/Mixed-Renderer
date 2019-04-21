@@ -118,41 +118,27 @@
 /*
  * Shader Matrix Type
  */
-enum MatType
-{
+enum MatType {
 	MODEL,
 	VIEW,
 	PERSPECTIVE
 };
 
 /*
- * Vertex Shader Input
+ * defined Vertex & Pixel
  */
-struct Vertex
-{
+typedef struct Vertex {
 	Math::Vector3 pos;
 	Math::Vector3 normal;
 	Math::Vector2 uv;
 	Color color;
-};
-
-/*
- * Pixel Shader Input
- */
-struct Pixel
-{
-	Math::Vector3 pos;
-	Math::Vector3 normal;
-	Math::Vector2 uv;
-	Color color;
-};
+} Pixel;
 
 
 /*
  * Draw Type
  */
-enum TYPE
-{
+enum TYPE {
 	SOLID,
 	WIREFRAME
 };
@@ -179,7 +165,7 @@ struct Line {
 	/*
 	 * 两个顶点
 	 */
-	Pixel left , right;
+	Pixel left, right;
 
 	/*
 	 * 像素个数

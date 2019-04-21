@@ -38,6 +38,8 @@ __global__ void RasterizeLines(Line* lines, int* baseIdx, Pixel* pixels , const 
 }
 
 extern "C" void CallRasterizeLines(const std::vector<Line>& lines, std::vector<Pixel>& pixels) {
+	if (lines.empty() || pixels.empty()) return;
+
 	const int numLines = lines.size();
 	const int numPixels = pixels.size();
 
@@ -63,7 +65,7 @@ extern "C" void CallRasterizeLines(const std::vector<Line>& lines, std::vector<P
 	CUDA_CALL(cudaMemcpy(dLines , &lines[0] , sizeof(Line) * numLines , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , sizeof(Pixel) * numPixels , cudaMemcpyHostToDevice));
 
-	RasterizeLines<<<(numLines + 15) / 16, 16>>>(dLines , dBaseIdx , dPixels , numPixels , numLines);
+	RasterizeLines<<<(numLines + 63) / 64, 64>>>(dLines , dBaseIdx , dPixels , numPixels , numLines);
 
 	CUDA_CALL(cudaMemcpy(&pixels[0] , dPixels , sizeof(Pixel) * numPixels , cudaMemcpyDeviceToHost));
 
