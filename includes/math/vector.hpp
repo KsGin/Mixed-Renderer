@@ -64,6 +64,11 @@ namespace Math {
 		 */
 		__device__ __host__ Vector2 operator*(const float val) const { return Vector2(_x * val, _y * val); }
 
+		/*
+		 * 重载 *
+		 */
+		__device__ __host__ Vector2 operator/(const float val) const { return Vector2(_x / val, _y / val); }
+
 		/**
 		 * 判断相等
 		 */

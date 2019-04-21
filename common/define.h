@@ -173,6 +173,20 @@ struct Line {
 	int numPixels;
 };
 
+/*
+ * 定义多个Shader
+ */
+enum SHADER_TYPE {
+	WATER ,
+	CUBE
+};
+
+/*
+ * 定义 Shader 多余参数
+ */
+struct Args {
+	float bis;
+};
 
 /*
  * Distance of two points

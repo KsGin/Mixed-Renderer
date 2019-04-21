@@ -37,19 +37,21 @@ int main()
 	auto cube1 = Model::cube();
 	auto floor = Model::floor();
 
-	auto cubeShader = Shader();
+	auto cubeShader = Shader(CUBE);
 	cubeShader.setMat(view, VIEW);
 	cubeShader.setMat(perspective, PERSPECTIVE);
 
-	auto floorShader = Shader();
-	floorShader.setMat(view , VIEW);
-	floorShader.setMat(perspective , PERSPECTIVE);
+	auto waterShader = Shader(WATER);
+	waterShader.setMat(view , VIEW);
+	waterShader.setMat(perspective , PERSPECTIVE);
 
-	cubeShader.setTexture(Texture::LoadFromFile("resources/TD2.png" , true), 0);
-	floorShader.setTexture(Texture::LoadFromFile("resources/TD1.png" , true), 0);
+	cubeShader.setTexture(Texture::LoadFromFile("resources/cube.png" , true), 0);
+	waterShader.setTexture(Texture::LoadFromFile("resources/water.png" , true), 0);
 
 	d.show();
-	 
+
+	Args args{0.0f};
+	float bis = 0.001;
 	while (!d.windowShouldClose()) {
 		d.clear();
 
@@ -57,9 +59,13 @@ int main()
 
 		cubeShader.setMat(model1 * rotation * Matrix::translate(0 , 0.8 , 0), MODEL);
 		Render::render(cube1, cubeShader, SOLID);
-		
-		floorShader.setMat(model2 * Matrix::translate(0 , 0 , 0.5), MODEL);
-		Render::render(floor, floorShader, SOLID);
+
+		args.bis += bis;
+		if (args.bis >= 0.1f || args.bis <= -0.1f) {bis = -bis;}
+		waterShader.setArgs(args);
+
+		waterShader.setMat(model2 * Matrix::translate(0 , 0 , 0.5), MODEL);
+		Render::render(floor, waterShader, SOLID);
 
 		d.handleEvent();
 		d.updateRender();

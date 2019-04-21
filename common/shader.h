@@ -13,10 +13,14 @@
 #include <vector>
 #include "../includes/color.hpp"
 
-extern "C" void CallPixelShader(const std::vector<Pixel>& pixels,const std::vector<Texture>& textures, std::vector<Color>& colors);
+extern "C" void CallPixelShader(const std::vector<Pixel>& pixels,const std::vector<Texture>& textures , const SHADER_TYPE& sType , std::vector<Color>& colors , const Args& args);
 
 class Shader
 {
+	/*
+	 * shader type
+	 */
+	SHADER_TYPE sType;
 	/*
 	 * modelMat
 	 */
@@ -33,14 +37,18 @@ class Shader
 	 * textures
 	 */
 	std::vector<Texture> textures = std::vector<Texture>(8);
-
+	/*
+	 * args
+	 */
+	Args args;
 public:
 
 	/*
 	* Constructor
 	*/
-	Shader()
+	Shader(const SHADER_TYPE& shaderType)
 	{
+		sType = shaderType;
 	}
 
 	/*
@@ -48,6 +56,10 @@ public:
 	 */
 	~Shader()
 	{
+	}
+
+	void setArgs(const Args& shaderArgs) {
+		args = shaderArgs;
 	}
 
 	/*
@@ -92,6 +104,6 @@ public:
 			colors.resize(pixels.size());
 		}
 
-		CallPixelShader(pixels ,  textures , colors);
+		CallPixelShader(pixels , textures , sType , colors , args);
 	}
 };

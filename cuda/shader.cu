@@ -36,7 +36,7 @@ __device__ Color& TexSampler2D(const Texture& texture, unsigned char* texturesPi
 }
 
 /*************************************************************Pixel Shader*************************************************************************************************/
-__device__ Color& CubePixelShader(Pixel& pixel , Texture* texture , unsigned char** texturesPixels) {
+__device__ Color& CubePixelShader(Pixel& pixel , Texture* texture , unsigned char** texturesPixels , Args args) {
 
 	const auto ambient = 0.2;
 
@@ -53,17 +53,42 @@ __device__ Color& CubePixelShader(Pixel& pixel , Texture* texture , unsigned cha
 	return color;
 }
 
+__device__ Color& WaterPixelShader(Pixel& pixel , Texture* texture , unsigned char** texturesPixels , Args args) {
+
+	const auto ambient = 0.3;
+
+	const auto directionLight = Math::Vector3(0 , 1 , -1).normalize();
+	const auto normal = pixel.normal.normalize();
+
+	auto nd = Math::Vector3::dot(directionLight , normal);
+
+	CLAMP01(nd);
+
+	auto uv = pixel.uv / 2 + Math::Vector2(args.bis + 0.25 , 0);
+
+	CLAMP01(uv._x);
+
+	auto texColor = TexSampler2D(texture[0] , texturesPixels[0] , uv);
+	auto color = pixel.color * 0.1 + texColor * (ambient + nd);
+
+	return color;
+}
+
 /***********************************************************Shader µ÷ÓÃ******************************************************************************************************/
-__global__ void KernelPixelShader(Color* colors, Pixel* pixels, Texture* textures, unsigned char** texturesPixels, 
-                                  const int numElements) {
+__global__ void KernelPixelShader(SHADER_TYPE sType , Color* colors, Pixel* pixels, Texture* textures, unsigned char** texturesPixels, 
+                                  const int numElements , Args args) {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < numElements) {
-		colors[idx] = CubePixelShader(pixels[idx] , textures , texturesPixels);
+		switch (sType) {
+			case WATER : colors[idx] = WaterPixelShader(pixels[idx] , textures , texturesPixels , args); break;
+			case CUBE : colors[idx] = CubePixelShader(pixels[idx] , textures , texturesPixels , args); break;
+		}
+		
 	}
 }
 
-extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vector<Texture>& textures,
-                                std::vector<Color>& colors) {
+extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vector<Texture>& textures , 
+								const SHADER_TYPE& sType , std::vector<Color>& colors, const Args& args) {
 	if (pixels.empty()) return;
 
 	const int numPixels = pixels.size();
@@ -91,7 +116,7 @@ extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vec
 		unsigned char* texturePixel;
 
 		CUDA_CALL(cudaMalloc(&texturePixel , sizeof(unsigned char) * size));
-		CUDA_CALL(cudaMemcpy(texturePixel, tex.pixels, sizeof(unsigned char) * size, cudaMemcpyHostToDevice));
+		CUDA_CALL(cudaMemcpy(texturePixel , tex.pixels, sizeof(unsigned char) * size, cudaMemcpyHostToDevice));
 
 		texturePixels[i] = texturePixel;
 		numAvailableTex += 1;
@@ -105,7 +130,7 @@ extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vec
 	CUDA_CALL(cudaMemcpy(dTextures , &textures[0] , numTextures * sizeof(Texture) , cudaMemcpyHostToDevice))
 
 	// 64
-	KernelPixelShader<<<(numPixels + 63) / 64 , 64>>>(dColors, dPixels, dTextures, dTexturePixels , numPixels);
+	KernelPixelShader<<<(numPixels + 63) / 64 , 64>>>(sType , dColors, dPixels, dTextures, dTexturePixels , numPixels, args);
 
 	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , numPixels * sizeof(Color) , cudaMemcpyDeviceToHost));
 
