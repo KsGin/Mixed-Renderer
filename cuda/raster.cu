@@ -13,36 +13,6 @@
 #include <device_launch_parameters.h>
 #include "../common/device.h"
 
-
-/*
- * Bresenham Line Algorithm
- */
-extern "C" void CallRasterizeLine(const Pixel& p1, const Pixel& p2, std::vector<Pixel>& pixels, size_t& index) {
-	int maxSize = pixels.size();
-	auto start = p1, end = p2;
-
-	if (p1.pos._x > p2.pos._x) {
-		start = p2;
-		end = p1;
-	}
-
-	auto gad = 0.0f;
-	auto disx = abs(end.pos._x - start.pos._x);
-	auto disy = abs(end.pos._y - start.pos._y);
-	auto dis = disx > disy ? disx : disy;
-
-	Pixel p;
-	for (auto i = 0; i <= dis; i++) {
-		gad = i / dis;
-		INTERPOLATEP(p1 , p2 , gad , p);
-		if (index >= maxSize) {
-			pixels.resize(maxSize * 1.5);
-		}
-		pixels[index++] = p;
-	}
-}
-
-
 __global__ void RasterizeLines(Line* lines, int* baseIdx, Pixel* pixels , const int numPixels , const int numThreads) {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < numThreads) {

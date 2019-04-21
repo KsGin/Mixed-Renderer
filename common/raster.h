@@ -51,6 +51,9 @@ class Raster {
 
 	static void doComputeTriangle(std::vector<Triangle>& triangles, const TYPE& type, int& numPixels) {
 		for (auto& triangle : triangles) {
+			// ±³ÃæÌÞ³ý
+			if (doCcwJudge(triangle)) continue;
+
 			auto top = triangle.top;
 			top.pos = Device::FixedPoint(top.pos);
 			auto mid = triangle.mid;
@@ -103,6 +106,18 @@ class Raster {
 		lines.emplace_back(line3);
 	}
 
+	static bool doCcwJudge(const Triangle& triangle) {
+		auto d1 = triangle.top.pos - triangle.mid.pos;
+		auto d2 = triangle.btm.pos - triangle.mid.pos;
+		d1._z = 0;
+		d2._z = 0;
+
+		const auto d = Math::Vector3::cross(d1 , d2).normalize();
+		const auto lhr = Math::Vector3(0 , 0 , 1);
+
+		return Math::Vector3::dot(d , lhr) < 0;
+	}
+
 public:
 
 	static void doRasterize(std::vector<Triangle>& triangles, std::vector<Pixel>& pixels,const TYPE& type = SOLID ) {
@@ -113,9 +128,10 @@ public:
 			pixels.resize(numPixels * 1.5);
 
 			std::vector<Line> lines;
-			for (auto& triangle : triangles)
+			for (auto& triangle : triangles) {				
 				doRasterizeSolidTriangle(triangle ,  lines);
-
+			}
+				
 			CallRasterizeLines(lines , pixels);
 
 			lines.clear();
@@ -127,8 +143,9 @@ public:
 			pixels.resize(numPixels * 1.5);
 
 			std::vector<Line> lines;
-			for (auto& triangle : triangles)
+			for (auto& triangle : triangles) {
 				doRasterizeWireframeTriangle(triangle ,  lines);
+			}	
 
 			CallRasterizeLines(lines , pixels);
 
