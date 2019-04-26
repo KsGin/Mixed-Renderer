@@ -89,7 +89,7 @@ public:
 	/*
 	 * Vertex Shader
 	 */
-	void vertexShader(const Vertex& vsInput, Pixel& psInput)
+	void vertexShader(const Vertex& vsInput, Pixel& psInput) const
 	{
 		auto transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
 		psInput.pos = Math::Matrix::transformCoordinates(vsInput.pos, transMat);
@@ -98,7 +98,7 @@ public:
 		psInput.color = vsInput.color;
 	}
 
-	void pixelShader(const std::vector<Pixel>& pixels , std::vector<Color>& colors)
+	void pixelShader(const std::vector<Pixel>& pixels , std::vector<Color>& colors) const
 	{
 		if (pixels.size() >= colors.size()) {
 			colors.resize(pixels.size());

@@ -12,9 +12,10 @@
 #include "model.h"
 #include "shader.h"
 #include "raster.h"
+#include "camera.h"
 
 class Render {
-	static void doRenderVertex(const Model& model, Shader& shader) {
+	static void doRenderVertex(const Model& model,const Shader& shader) {
 		auto idx = 0;
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces) {
@@ -43,7 +44,7 @@ class Render {
 
 	}
 
-	static void doRenderPixel(Shader& shader) {
+	static void doRenderPixel(const Shader& shader) {
 		//GPU
 		shader.pixelShader(pixels, colors);
 
@@ -79,7 +80,7 @@ public:
 		triangles.resize(256);
 	}
 
-	static void render(const Model& model, Shader& shader, const TYPE& type = SOLID) {
+	static void render(const Model& model , const Camera& camera , Shader& shader , const TYPE& type = SOLID) {
 
 		if(!isInit) {
 			initialize();

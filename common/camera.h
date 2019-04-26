@@ -16,73 +16,106 @@
  */
 class Camera {
 public:
-    /*
-     * 近平面
-     */
-    float near;
-    /*
-     * 远平面
-     */
-    float far;
+	/*
+	 * 近平面
+	 */
+	float near;
+	/*
+	 * 远平面
+	 */
+	float far;
 
-    /*
-     * eye 坐标
-     */
-    Math::Vector3 eye;
+	/*
+	 * 缩放
+	 */
+	float fovScale;
 
-    /*
-     * 空构造方法
-     */
-    virtual ~Camera();
+	/*
+	 * eye 坐标
+	 */
+	Math::Vector3 eye;
 
-    /*
-     * 定义虚函数
-     */
-    virtual Ray generateRay(float x, float y) = 0;
+	/*
+	 * 观察点
+	 */
+	Math::Vector3 target;
+
+	/*
+	 * 空构造方法
+	 */
+	virtual ~Camera() {
+		
+	}
+
+	/*
+	 * 定义虚函数
+	 */
+	virtual Ray generateRay(float x, float y) = 0;
 };
 
 /*
  * 透视投影摄像机
  */
 class PerspectiveCamera : public Camera {
-    /*
-     * 缩放
-     */
-    float fovScale;
-    /*
-     * 方向向量 up
-     */
-    Math::Vector3 up;
-    /*
-     * 方向向量 right
-     */
-    Math::Vector3 right;
-    /*
-     * 方向向量 front
-     */
-    Math::Vector3 front;
+private:
+	/*
+	 * 方向向量 right
+	 */
+	Math::Vector3 right;
 
-    /*
-     * 空构造方法
-     */
-    PerspectiveCamera();
+	/*
+	 * 方向向量 up
+	 */
+	Math::Vector3 up;
+
+	/*
+	 * 方向向量 front
+	 */
+	Math::Vector3 front;
+
+	/*
+	 * 空构造方法
+	 */
+	PerspectiveCamera() {
+		
+	}
 
 public:
-    /*
-     * 构造方法
-     */
-    PerspectiveCamera(float fov, const Math::Vector3 &eye, const Math::Vector3 &lookAt, const Math::Vector3 &up,
-                      float near, float far);
+	/*
+	 * 构造方法
+	 */
+	PerspectiveCamera(float fov, const Math::Vector3& eye, const Math::Vector3& target, const Math::Vector3& up,
+	                  float near, float far) {
+		this->near = near;
+		this->far = far;
+		this->eye = eye;
+		this->target = target;
+		this->front = (target - this->eye).normalize();
+		this->right = Math::Vector3::cross(front, up).normalize();
+		this->up = Math::Vector3::cross(right, front).normalize();
+		this->fovScale = static_cast<float>(tan(fov * 0.5 * M_PI / 180) * 2);
+	}
 
-    /*
-     * 析构方法
-     */
-    ~PerspectiveCamera();
+	/*
+	 * 析构方法
+	 */
+	~PerspectiveCamera() {
 
-    /*
-     * 根据 x y 位置生成光线
-     */
-    Ray generateRay(float x, float y);
+	}
+
+	/*
+	 * 根据 x y 位置生成光线
+	 */
+	Ray generateRay(float x, float y) {
+
+		auto scaleX = static_cast<float>((x - 0.5) * this->fovScale);
+		auto r = this->right * scaleX;
+
+		auto scaleY = static_cast<float>((y - 0.5) * this->fovScale);
+		auto u = this->up * scaleY;
+
+		return Ray(eye, (front + r + u).normalize());
+	}
 };
 
 /*
