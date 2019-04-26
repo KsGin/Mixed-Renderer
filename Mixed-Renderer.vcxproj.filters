@@ -54,6 +54,9 @@
     <ClInclude Include="includes\color.hpp">
       <Filter>Includes</Filter>
     </ClInclude>
+    <ClInclude Include="common\ray.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitattributes" />
@@ -64,7 +67,10 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\TD1.png">
+    <Image Include="resources\cube.png">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="resources\water.png">
       <Filter>Resources</Filter>
     </Image>
   </ItemGroup>

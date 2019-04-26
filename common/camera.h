@@ -9,72 +9,85 @@
 
 #include "define.h"
 #include "../includes/math/vector.hpp"
+#include "ray.h"
 
+/*
+ * 摄像机类基类
+ */
 class Camera {
-	/**
-	 * camera position
-	 */
-	Math::Vector3 position;
+public:
+    /*
+     * 近平面
+     */
+    float near;
+    /*
+     * 远平面
+     */
+    float far;
 
-	/**
-	 * camera look at 
-	 */
-	Math::Vector3 target;
+    /*
+     * eye 坐标
+     */
+    Math::Vector3 eye;
 
-	/**
-	 * near
-	 */
-	float near;
+    /*
+     * 空构造方法
+     */
+    virtual ~Camera();
 
-	/**
-	 * far
-	 */
-	float far;
-
-protected:
-	/**
-	 * private camera
-	 */
-	Camera() {
-		position = Math::Vector3();
-		target = Math::Vector3();
-		far = 0;
-		near = 0;
-	}
-
-	/**
-	 * public ~camera
-	 */
-	~Camera() {
-		// do something
-	}
+    /*
+     * 定义虚函数
+     */
+    virtual Ray generateRay(float x, float y) = 0;
 };
 
-class OrthographicCamera : Camera {
-	/*
-	 * view width
-	 */
-	float width;
+/*
+ * 透视投影摄像机
+ */
+class PerspectiveCamera : public Camera {
+    /*
+     * 缩放
+     */
+    float fovScale;
+    /*
+     * 方向向量 up
+     */
+    Math::Vector3 up;
+    /*
+     * 方向向量 right
+     */
+    Math::Vector3 right;
+    /*
+     * 方向向量 front
+     */
+    Math::Vector3 front;
 
-	/*
-	 * view height
-	 */
-	float height;
+    /*
+     * 空构造方法
+     */
+    PerspectiveCamera();
 
 public:
+    /*
+     * 构造方法
+     */
+    PerspectiveCamera(float fov, const Math::Vector3 &eye, const Math::Vector3 &lookAt, const Math::Vector3 &up,
+                      float near, float far);
 
-	OrthographicCamera() : Camera() {
-		width = 0;
-		height = 0;
-	}
+    /*
+     * 析构方法
+     */
+    ~PerspectiveCamera();
+
+    /*
+     * 根据 x y 位置生成光线
+     */
+    Ray generateRay(float x, float y);
 };
 
-class PerspectiveCamera : Camera {
-	/*
-	 * view fov
-	 */
-	float fov;
+/*
+ * 正交投影摄像机
+ */
+class OrthoCamera : public Camera {
 
-public:
-	PerspectiveCamera() : Camera() { fov = 0; }
 };

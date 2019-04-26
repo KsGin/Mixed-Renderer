@@ -139,6 +139,7 @@
     <ClInclude Include="common\device.h" />
     <ClInclude Include="common\model.h" />
     <ClInclude Include="common\raster.h" />
+    <ClInclude Include="common\ray.h" />
     <ClInclude Include="common\render.h" />
     <ClInclude Include="common\shader.h" />
     <ClInclude Include="common\texture.h" />
@@ -155,7 +156,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\TD1.png" />
+    <Image Include="resources\cube.png" />
+    <Image Include="resources\water.png" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="cuda\device.cu" />
