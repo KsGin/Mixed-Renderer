@@ -1,8 +1,8 @@
 /**
- * File Name : render.h
+ * File Name : doRenderPipe.h
  * Author : Yang Fan
  * Date : 2018/12/20
- * render pipe
+ * doRenderPipe pipe
  */
 
 #pragma once
@@ -14,8 +14,15 @@
 #include "raster.h"
 #include "camera.h"
 
-class Render {
-	static void doRenderVertex(const Model& model,const Shader& shader) {
+class Renderer {
+
+	std::vector<Pixel> pixels;
+	
+	std::vector<Color> colors;
+	
+	std::vector<Triangle> triangles;
+
+	void doRenderVertex(const Model& model,const Shader& shader) {
 		auto idx = 0;
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces) {
@@ -38,56 +45,56 @@ class Render {
 		}
 	}
 
-	static void doRasterize(const TYPE& type = SOLID ) {
+	void doRasterize(const TYPE& type = SOLID ) {
 		//GPU
 		Raster::doRasterize(triangles , pixels , type);
 
 	}
 
-	static void doRenderPixel(const Shader& shader) {
+	void doRenderPixel(const Shader& shader) {
 		//GPU
 		shader.pixelShader(pixels, colors);
 
 	}
 
-	static void doMixed() {
+	void doMixed() {
 		//GPU
 		Device::getInstance().mixed(pixels, colors);
+	}
+
+public:
+
+	/*
+	 * 单例
+	 */
+	static Renderer& getInstance() {
+		static Renderer instance;
+		return instance;
+	}
+
+	static void initialize(const int & numPixels , const int & numColors , const int & numTriangles) {
+		auto& r = getInstance();
+		r.pixels = std::vector<Pixel>(numPixels);
+		r.colors = std::vector<Color>(numColors);
+		r.triangles = std::vector<Triangle>(numTriangles);
+
+		r.pixels.resize(numPixels);
+		r.colors.resize(numColors);
+		r.triangles.resize(numTriangles);
 	}
 
 	/*
 	 * 为效率妥协使用 memset
 	 */
-	static void doReset() {
+	void doResetPipe() {
 		memset(&pixels[0] , 0 , sizeof(Pixel) * pixels.size());
 		memset(&colors[0] , 0 , sizeof(Color) * colors.size());
 		memset(&triangles[0] , 0 , sizeof(Triangle) * triangles.size());
 	}
 
-public:
-	
-	static std::vector<Pixel> pixels;
+	void doAddPipe(const Model& model , const Camera& camera , Shader& shader , const TYPE& type = SOLID) {
 
-	static std::vector<Color> colors;
-
-	static std::vector<Triangle> triangles;
-
-	static bool isInit;
-
-	static void initialize() {
-		pixels.resize(25600);
-		colors.resize(25600);
-		triangles.resize(256);
-	}
-
-	static void render(const Model& model , const Camera& camera , Shader& shader , const TYPE& type = SOLID) {
-
-		if(!isInit) {
-			initialize();
-			isInit = true;
-		}
-				
-		doReset();
+		doResetPipe();
 
 		doRenderVertex(model , shader);
 
@@ -97,9 +104,20 @@ public:
 
 		doMixed();
 	}
-};
 
-std::vector<Pixel> Render::pixels;
-std::vector<Color> Render::colors;
-std::vector<Triangle> Render::triangles;
-bool Render::isInit = false;
+	void doRenderPipe() {
+
+	
+	}
+
+	void destory() {
+		pixels.clear();
+		pixels.shrink_to_fit();
+
+		colors.clear();
+		colors.shrink_to_fit();
+
+		triangles.clear();
+		triangles.shrink_to_fit();
+	}
+};

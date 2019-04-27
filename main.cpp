@@ -28,6 +28,9 @@ int main()
 	Device::initialize(SCREEN_WIDTH, SCREEN_HEIGHT, IS_FULL_SCREEN, "Mixed-Renderer");
 	auto d = Device::getInstance();
 
+	Renderer::initialize(25600 , 25600 , 25600);
+	auto r = Renderer::getInstance();
+
 	auto model1 = Matrix::identity() * Matrix::scale(0.15 , 0.15 , 0.15);
 	auto model2 = Matrix::identity() * Matrix::scale(1.5 , 1 , 0.5);
 
@@ -60,21 +63,27 @@ int main()
 
 		rotation = rotation * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
 
+		r.doResetPipe();
+
 		cubeShader.setMat(model1 * rotation * Matrix::translate(0 , 0.8 , 0), MODEL);
-		Render::render(cube1, camera , cubeShader , SOLID);
+		r.doAddPipe(cube1, camera , cubeShader , SOLID);
 
 		args.bis += bis;
 		if (args.bis >= 0.1f || args.bis <= -0.1f) {bis = -bis;}
 		waterShader.setArgs(args);
 
 		waterShader.setMat(model2 * Matrix::translate(0 , 0 , 0.5), MODEL);
-		Render::render(floor, camera , waterShader, SOLID);
+		r.doAddPipe(floor, camera , waterShader, SOLID);
+
+
+		r.doRenderPipe();
 
 		d.handleEvent();
 		d.updateRender();
 	}
 
 	d.destory();
+	r.destory();
 
 	return 0;
 }

@@ -2,7 +2,7 @@
  * File Name : raster.h
  * Author : Yang Fan
  * Date : 2019/4/20
- * render pipe
+ * doRenderPipe pipe
  */
 
 
@@ -56,11 +56,11 @@ class Raster {
 			if (doCcwJudge(triangle)) continue;
 
 			auto top = triangle.top;
-			top.pos = Device::FixedPoint(top.pos);
+			Device::FixedPoint(top.pos);
 			auto mid = triangle.mid;
-			mid.pos = Device::FixedPoint(mid.pos);
+			Device::FixedPoint(mid.pos);
 			auto btm = triangle.btm;
-			btm.pos = Device::FixedPoint(btm.pos);
+			Device::FixedPoint(btm.pos);
 
 			// 修正三个点的位置 
 			if (btm.pos._y > mid.pos._y) { std::swap(btm, mid); }

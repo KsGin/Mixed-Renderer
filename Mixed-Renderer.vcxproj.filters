@@ -36,9 +36,6 @@
     <ClInclude Include="common\raster.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="common\render.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="common\shader.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -55,6 +52,9 @@
       <Filter>Includes</Filter>
     </ClInclude>
     <ClInclude Include="common\ray.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\render.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
