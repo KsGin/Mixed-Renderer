@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../includes/math/matrix.hpp"
-#include "../common/define.h"
+#include "define.h"
 #include "../common/texture.h"
 #include <vector>
 #include "../includes/color.hpp"
@@ -42,11 +42,10 @@ class Shader
 	 */
 	Args args;
 public:
-
 	/*
 	* Constructor
 	*/
-	Shader(const SHADER_TYPE& shaderType)
+	Shader(const SHADER_TYPE& shaderType = CUBE)
 	{
 		sType = shaderType;
 	}

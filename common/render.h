@@ -13,8 +13,15 @@
 #include "shader.h"
 #include "raster.h"
 #include "camera.h"
+#include <unordered_map>
 
 class Renderer {
+
+	struct RenderModel {
+		Model model;
+		Shader shader;
+		TYPE type;
+	};
 
 	std::vector<Pixel> pixels;
 	
@@ -22,7 +29,11 @@ class Renderer {
 	
 	std::vector<Triangle> triangles;
 
-	void doRenderVertex(const Model& model,const Shader& shader) {
+	std::vector<RenderModel> renderModels;
+
+	Camera mainCamera;
+
+	void renderVertex(const Model& model,const Shader& shader) {
 		auto idx = 0;
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces) {
@@ -45,21 +56,30 @@ class Renderer {
 		}
 	}
 
-	void doRasterize(const TYPE& type = SOLID ) {
+	void rasterize(const TYPE& type = SOLID ) {
 		//GPU
 		Raster::doRasterize(triangles , pixels , type);
 
 	}
 
-	void doRenderPixel(const Shader& shader) {
+	void renderPixel(const Shader& shader) {
 		//GPU
 		shader.pixelShader(pixels, colors);
 
 	}
 
-	void doMixed() {
+	void mixed() {
 		//GPU
 		Device::getInstance().mixed(pixels, colors);
+	}
+
+	/*
+	 * 为效率妥协使用 memset
+	 */
+	void reset() {
+		memset(&pixels[0] , 0 , sizeof(Pixel) * pixels.size());
+		memset(&colors[0] , 0 , sizeof(Color) * colors.size());
+		memset(&triangles[0] , 0 , sizeof(Triangle) * triangles.size());
 	}
 
 public:
@@ -72,44 +92,71 @@ public:
 		return instance;
 	}
 
-	static void initialize(const int & numPixels , const int & numColors , const int & numTriangles) {
+	/*
+	 * 初始化
+	 */
+	static void initialize(const int & numPixels , const int & numColors , const int & numTriangles , const int & numModels) {
 		auto& r = getInstance();
 		r.pixels = std::vector<Pixel>(numPixels);
 		r.colors = std::vector<Color>(numColors);
 		r.triangles = std::vector<Triangle>(numTriangles);
-
+		
 		r.pixels.resize(numPixels);
 		r.colors.resize(numColors);
 		r.triangles.resize(numTriangles);
+
+		r.renderModels = std::vector<RenderModel>(0);
+		r.renderModels.reserve(numModels);
 	}
 
 	/*
-	 * 为效率妥协使用 memset
+	 * 设置摄像机
 	 */
-	void doResetPipe() {
-		memset(&pixels[0] , 0 , sizeof(Pixel) * pixels.size());
-		memset(&colors[0] , 0 , sizeof(Color) * colors.size());
-		memset(&triangles[0] , 0 , sizeof(Triangle) * triangles.size());
+	void setCamera(const Camera& camera) {
+		mainCamera = camera;
 	}
 
-	void doAddPipe(const Model& model , const Camera& camera , Shader& shader , const TYPE& type = SOLID) {
-
-		doResetPipe();
-
-		doRenderVertex(model , shader);
-
-		doRasterize(type);
-
-		doRenderPixel(shader);
-
-		doMixed();
+	/*
+	 * 获得摄像机
+	 */
+	Camera getCamera() {
+		return mainCamera;
 	}
 
-	void doRenderPipe() {
 
-	
+	/*
+	 * 将模型添加至管线中
+	 */
+	void add(const Model& model , const Shader& shader , const TYPE& type = SOLID) {
+		renderModels.emplace_back(RenderModel {model , shader , type});
 	}
 
+	void clear() {	
+		renderModels.clear();
+	}
+
+	/*
+	 * 管线渲染
+	 */
+	void render() {
+
+		for (auto & m : renderModels) {
+
+			reset();
+
+			renderVertex(m.model , m.shader);
+
+			rasterize(m.type);
+
+			renderPixel(m.shader);
+
+			mixed();
+		}
+	}
+
+	/*
+	 * 销毁
+	 */
 	void destory() {
 		pixels.clear();
 		pixels.shrink_to_fit();

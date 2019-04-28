@@ -41,16 +41,29 @@ public:
 	Math::Vector3 target;
 
 	/*
+	 * 构造方法
+	 */
+	Camera() {
+		near = 0;
+		far = 0;
+		fovScale = 0;
+		eye = Math::Vector3(0 , 0 , 0);
+		target = Math::Vector3(0 , 0 , 0);
+	}
+
+	/*
 	 * 空构造方法
 	 */
-	virtual ~Camera() {
+	~Camera() {
 		
 	}
 
 	/*
 	 * 定义虚函数
 	 */
-	virtual Ray generateRay(float x, float y) = 0;
+	Ray generateRay(float x, float y) {
+		
+	};
 };
 
 /*

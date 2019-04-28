@@ -33,6 +33,9 @@ public:
 
 	std::vector<Mesh> meshes;
 
+	Model() {
+		
+	}
 
 	static Model triangle() {
 		Model triangle;

@@ -18,6 +18,7 @@
 #include "../includes/color.hpp"
 
 
+
 /**
  * define a cuda call
  */
@@ -37,6 +38,14 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define IS_FULL_SCREEN false
+
+/*
+ * define default pixels & colors & triangles & model count
+ */
+#define NUM_PIXELS 25600
+#define NUM_COLORS 25600
+#define NUM_TRIANGLES 256
+#define NUM_MODELS 16
 
 /*
  * print device information 
@@ -172,6 +181,7 @@ struct Line {
 	 */
 	int numPixels;
 };
+
 
 /*
  * 定义多个Shader

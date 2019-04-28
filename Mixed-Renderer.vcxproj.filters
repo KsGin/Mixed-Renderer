@@ -24,9 +24,6 @@
     <ClInclude Include="common\camera.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="common\define.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="common\device.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -55,6 +52,9 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="common\render.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\define.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
