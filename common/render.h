@@ -20,7 +20,7 @@ class Renderer {
 	struct RenderModel {
 		Model model;
 		Shader shader;
-		TYPE type;
+		RenderType type;
 	};
 
 	std::vector<Pixel> pixels;
@@ -56,7 +56,7 @@ class Renderer {
 		}
 	}
 
-	void rasterize(const TYPE& type = SOLID ) {
+	void rasterize(const RenderType& type = SOLID ) {
 		//GPU
 		Raster::doRasterize(triangles , pixels , type);
 
@@ -127,7 +127,7 @@ public:
 	/*
 	 * 将模型添加至管线中
 	 */
-	void add(const Model& model , const Shader& shader , const TYPE& type = SOLID) {
+	void add(const Model& model , const Shader& shader , const RenderType& type = SOLID) {
 		renderModels.emplace_back(RenderModel {model , shader , type});
 	}
 
@@ -139,9 +139,7 @@ public:
 	 * 管线渲染
 	 */
 	void render() {
-
 		for (auto & m : renderModels) {
-
 			reset();
 
 			renderVertex(m.model , m.shader);

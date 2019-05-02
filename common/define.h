@@ -134,6 +134,23 @@ enum MatType {
 };
 
 /*
+ * Draw Type
+ */
+enum RenderType {
+	SOLID,
+	WIREFRAME
+};
+
+
+/*
+ * 定义多个Shader
+ */
+enum ShaderType {
+	WATER ,
+	CUBE
+};
+
+/*
  * defined Vertex & Pixel
  */
 typedef struct Vertex {
@@ -141,16 +158,8 @@ typedef struct Vertex {
 	Math::Vector3 normal;
 	Math::Vector2 uv;
 	Color color;
+	ShaderType sType;
 } Pixel;
-
-
-/*
- * Draw Type
- */
-enum TYPE {
-	SOLID,
-	WIREFRAME
-};
 
 
 /*
@@ -183,13 +192,6 @@ struct Line {
 };
 
 
-/*
- * 定义多个Shader
- */
-enum SHADER_TYPE {
-	WATER ,
-	CUBE
-};
 
 /*
  * 定义 Shader 多余参数

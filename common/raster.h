@@ -50,7 +50,7 @@ class Raster {
 		}
 	}
 
-	static void doComputeTriangle(std::vector<Triangle>& triangles, const TYPE& type, int& numPixels) {
+	static void doComputeTriangle(std::vector<Triangle>& triangles, const RenderType& type, int& numPixels) {
 		for (auto& triangle : triangles) {
 			// ±³ÃæÌÞ³ý
 			if (doCcwJudge(triangle)) continue;
@@ -128,7 +128,7 @@ public:
 
 	static std::vector<Line> lines;
 
-	static void doRasterize(std::vector<Triangle>& triangles , std::vector<Pixel>& pixels ,const TYPE& type = SOLID ) {
+	static void doRasterize(std::vector<Triangle>& triangles , std::vector<Pixel>& pixels ,const RenderType& type = SOLID ) {
 		
 		doReset();
 		

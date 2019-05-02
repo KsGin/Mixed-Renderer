@@ -13,14 +13,14 @@
 #include <vector>
 #include "../includes/color.hpp"
 
-extern "C" void CallPixelShader(const std::vector<Pixel>& pixels,const std::vector<Texture>& textures , const SHADER_TYPE& sType , std::vector<Color>& colors , const Args& args);
+extern "C" void CallPixelShader(const std::vector<Pixel>& pixels,const std::vector<Texture>& textures , const ShaderType& sType , std::vector<Color>& colors , const Args& args);
 
 class Shader
 {
 	/*
 	 * shader type
 	 */
-	SHADER_TYPE sType;
+	ShaderType sType;
 	/*
 	 * modelMat
 	 */
@@ -45,7 +45,7 @@ public:
 	/*
 	* Constructor
 	*/
-	Shader(const SHADER_TYPE& shaderType = CUBE)
+	Shader(const ShaderType& shaderType = CUBE)
 	{
 		sType = shaderType;
 	}

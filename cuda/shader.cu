@@ -75,7 +75,7 @@ __device__ Color& WaterPixelShader(Pixel& pixel , Texture* texture , unsigned ch
 }
 
 /***********************************************************Shader µ÷ÓÃ******************************************************************************************************/
-__global__ void KernelPixelShader(SHADER_TYPE sType , Color* colors, Pixel* pixels, Texture* textures, unsigned char** texturesPixels, 
+__global__ void KernelPixelShader(ShaderType sType , Color* colors, Pixel* pixels, Texture* textures, unsigned char** texturesPixels, 
                                   const int numElements , Args args) {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < numElements) {
@@ -88,7 +88,7 @@ __global__ void KernelPixelShader(SHADER_TYPE sType , Color* colors, Pixel* pixe
 }
 
 extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vector<Texture>& textures , 
-								const SHADER_TYPE& sType , std::vector<Color>& colors, const Args& args) {
+								const ShaderType& sType , std::vector<Color>& colors, const Args& args) {
 	if (pixels.empty()) return;
 
 	const int numPixels = pixels.size();
