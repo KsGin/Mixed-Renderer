@@ -46,6 +46,7 @@
 #define NUM_COLORS 25600
 #define NUM_TRIANGLES 256
 #define NUM_MODELS 16
+#define NUM_RAYS (SCREEN_HEIGHT * SCREEN_WIDTH)
 
 /*
  * print device information 

@@ -143,6 +143,7 @@
     <ClInclude Include="common\render.h" />
     <ClInclude Include="common\shader.h" />
     <ClInclude Include="common\texture.h" />
+    <ClInclude Include="common\tracer.h" />
     <ClInclude Include="includes\color.hpp" />
     <ClInclude Include="includes\math\matrix.hpp" />
     <ClInclude Include="includes\math\vector.hpp" />

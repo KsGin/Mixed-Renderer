@@ -35,7 +35,7 @@ int main()
 	auto model2 = Matrix::identity() * Matrix::scale(1.5 , 1 , 0.5);
 
 	auto camera = PerspectiveCamera(1 , Vector3(0, 3, 5) , Vector3(0, 1, 0) , Vector3(0, 1, 0) , 0.1 , 1000);
-	r.setCamera(camera);
+	r.setPerspectiveCamera(camera);
 
 	auto rotation = Matrix::identity();
 	auto view = Matrix::lookAtLH(camera.eye, camera.target, Vector3(0, 1, 0));

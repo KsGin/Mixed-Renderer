@@ -14,7 +14,9 @@ extern "C" void CallRasterizeLines(const std::vector<Line>& lines, std::vector<P
 
 class Raster {
 
-	static void doRasterizeSolidTriangle(Triangle& triangle) {
+	std::vector<Line> lines;
+
+	void doRasterizeSolidTriangle(Triangle& triangle) {
 		auto top = triangle.top;
 		auto mid = triangle.mid;
 		auto btm = triangle.btm;
@@ -50,7 +52,7 @@ class Raster {
 		}
 	}
 
-	static void doComputeTriangle(std::vector<Triangle>& triangles, const RenderType& type, int& numPixels) {
+	void doComputeTriangle(std::vector<Triangle>& triangles, const RenderType& type, int& numPixels) {
 		for (auto& triangle : triangles) {
 			// ±³ÃæÌÞ³ý
 			if (doCcwJudge(triangle)) continue;
@@ -84,7 +86,7 @@ class Raster {
 		}
 	}
 	
-	static void doRasterizeWireframeTriangle(Triangle& triangle) {
+	void doRasterizeWireframeTriangle(Triangle& triangle) {
 		Line line1 , line2 , line3;
 		line1.left = triangle.top;
 		line1.right = triangle.btm;
@@ -107,7 +109,7 @@ class Raster {
 		lines.emplace_back(line3);
 	}
 
-	static bool doCcwJudge(const Triangle& triangle) {
+	bool doCcwJudge(const Triangle& triangle) {
 		auto d1 = triangle.top.pos - triangle.mid.pos;
 		auto d2 = triangle.btm.pos - triangle.mid.pos;
 		d1._z = 0;
@@ -119,17 +121,25 @@ class Raster {
 		return Math::Vector3::dot(d , lhr) < 0;
 	}
 
-	static void doReset() {
+	void doReset() {
+
+		static bool isInitLines = false;
+		if (!isInitLines) {
+			lines = std::vector<Line>(25600);
+			isInitLines = true;
+		}
+
 		lines.clear();
-		lines.shrink_to_fit();
 	}
 
 public:
 
-	static std::vector<Line> lines;
+	static Raster& getInstance() {
+		static Raster raster;
+		return raster;
+	}
 
-	static void doRasterize(std::vector<Triangle>& triangles , std::vector<Pixel>& pixels ,const RenderType& type = SOLID ) {
-		
+	void doRasterize(std::vector<Triangle>& triangles , std::vector<Pixel>& pixels ,const RenderType& type = SOLID ) {
 		doReset();
 		
 		if (type == SOLID) {
@@ -162,6 +172,3 @@ public:
 		}
 	}
 };
-
-
-std::vector<Line> Raster::lines = std::vector<Line>(2560);

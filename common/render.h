@@ -14,6 +14,7 @@
 #include "raster.h"
 #include "camera.h"
 #include <unordered_map>
+#include "tracer.h"
 
 class Renderer {
 
@@ -23,16 +24,19 @@ class Renderer {
 		RenderType type;
 	};
 
-	std::vector<Pixel> pixels;
+	std::vector<Pixel> pixels{};
 	
-	std::vector<Color> colors;
+	std::vector<Color> colors{};
 	
-	std::vector<Triangle> triangles;
+	std::vector<Triangle> triangles{};
 
-	std::vector<RenderModel> renderModels;
+	std::vector<Ray> rays{};
 
-	Camera mainCamera;
+	std::vector<RenderModel> renderModels{};
 
+	PerspectiveCamera mainPerspectiveCamera{};
+
+private:
 	void renderVertex(const Model& model,const Shader& shader) {
 		auto idx = 0;
 		for (auto& mesh : model.meshes) {
@@ -58,7 +62,7 @@ class Renderer {
 
 	void rasterize(const RenderType& type = SOLID ) {
 		//GPU
-		Raster::doRasterize(triangles , pixels , type);
+		Raster::getInstance().doRasterize(triangles , pixels , type);
 
 	}
 
@@ -69,8 +73,17 @@ class Renderer {
 	}
 
 	void mixed() {
+
+		if (rays.size() < pixels.size()) {
+			rays.resize(pixels.size());
+		}
+
 		//GPU
-		Device::getInstance().mixed(pixels, colors);
+		Device::getInstance().mixed(pixels, colors , rays , getPerspectiveCamera());
+	}
+
+	void tracing() {
+		
 	}
 
 	/*
@@ -80,6 +93,12 @@ class Renderer {
 		memset(&pixels[0] , 0 , sizeof(Pixel) * pixels.size());
 		memset(&colors[0] , 0 , sizeof(Color) * colors.size());
 		memset(&triangles[0] , 0 , sizeof(Triangle) * triangles.size());
+		memset(&rays[0] , 0 , sizeof(Ray) * rays.size());
+	}
+
+	
+	Renderer() {
+		
 	}
 
 public:
@@ -100,10 +119,12 @@ public:
 		r.pixels = std::vector<Pixel>(numPixels);
 		r.colors = std::vector<Color>(numColors);
 		r.triangles = std::vector<Triangle>(numTriangles);
+		r.rays = std::vector<Ray>(numPixels);
 		
 		r.pixels.resize(numPixels);
 		r.colors.resize(numColors);
 		r.triangles.resize(numTriangles);
+		r.rays.resize(numPixels);
 
 		r.renderModels = std::vector<RenderModel>(0);
 		r.renderModels.reserve(numModels);
@@ -112,15 +133,15 @@ public:
 	/*
 	 * 设置摄像机
 	 */
-	void setCamera(const Camera& camera) {
-		mainCamera = camera;
+	void setPerspectiveCamera(const PerspectiveCamera& camera) {
+		mainPerspectiveCamera = camera;
 	}
 
 	/*
 	 * 获得摄像机
 	 */
-	Camera getCamera() {
-		return mainCamera;
+	PerspectiveCamera getPerspectiveCamera() const {
+		return mainPerspectiveCamera;
 	}
 
 
@@ -139,6 +160,7 @@ public:
 	 * 管线渲染
 	 */
 	void render() {
+		// 光栅过程
 		for (auto & m : renderModels) {
 			reset();
 
@@ -150,12 +172,18 @@ public:
 
 			mixed();
 		}
+
+		// 光线追踪过程
+		tracing();
 	}
 
 	/*
 	 * 销毁
 	 */
 	void destory() {
+		rays.clear();
+		rays.shrink_to_fit();
+
 		pixels.clear();
 		pixels.shrink_to_fit();
 

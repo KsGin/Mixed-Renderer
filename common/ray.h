@@ -23,29 +23,36 @@ public:
 	 * 光线方向 direction
 	 */
 	Math::Vector3 direction;
+	/*
+	 * 是否激活
+	 */
+	bool isActive;
 
 	/*
 	 * 空构造方法
 	 */
-	Ray() {
+	__device__ __host__ Ray() {
 		this->origin = Math::Vector3(0, 0, 0);
 		this->direction = Math::Vector3(0, 0, -1);
+		this->isActive = false;
 	}
 
 	/*
 	 * 值拷贝构造方法
 	 */
-	Ray(const Math::Vector3& origin, const Math::Vector3& direction) {
+	__device__ __host__ Ray(const Math::Vector3& origin, const Math::Vector3& direction) {
 		this->origin = origin;
 		this->direction = direction;
+		this->isActive = true;
 	}
 
 	/*
 	 * 对象拷贝构造方法
 	 */
-	Ray(const Ray& r) {
+	__device__ __host__ Ray(const Ray& r) {
 		this->origin = r.origin;
 		this->direction = r.direction;
+		this->isActive = r.isActive;
 	}
 
 	/*
@@ -54,6 +61,11 @@ public:
 	Ray& operator=(const Ray& r) {
 		this->direction = r.direction;
 		this->origin = r.origin;
+		this->isActive = r.isActive;
 		return *this;
+	}
+
+	__device__ __host__ void active() {
+		this->isActive = true;
 	}
 };

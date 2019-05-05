@@ -13,6 +13,13 @@
 #include <vector>
 
 /*
+ * 生成光线
+ */
+__device__ void GenerateRay(const PerspectiveCamera& camera, const int& x , const int& y , Ray& ray) {
+	camera.generateRay(x , y , ray);
+}
+
+/*
  * 设置颜色
  */
 __device__ void SetPixel(int x, int y, const Color& color, Uint8* pixelColors, int screenWidth, int screenHeight) {
@@ -55,7 +62,7 @@ __device__ void TestDepth(int x , int y , float depth , float* depths , bool& is
 /*
  * 渲染管线混合阶段
  */
-__global__ void KernelMixed(Pixel* pixels , Color* colors , Uint8* pixelColors , float* depths , int screenWidth , int screenHeight , int numElements) {
+__global__ void KernelMixed(Pixel* pixels , Color* colors , Uint8* pixelColors , float* depths , Ray* rays , PerspectiveCamera camera , int screenWidth , int screenHeight , int numElements) {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	
 	if (idx < numElements) {
@@ -66,13 +73,14 @@ __global__ void KernelMixed(Pixel* pixels , Color* colors , Uint8* pixelColors ,
 		auto isFirst = false;
 		TestDepth(x , y , pixels[idx].pos._z , depths , isFirst , screenWidth , screenHeight);
 		if (isFirst) {
+			GenerateRay(camera , x , y , rays[idx]);
 			SetPixel(x , y , colors[idx] , pixelColors , screenWidth , screenHeight);
 		}
 	}
 }
 
 
-extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors , Uint8* pixelColors , float *depths , int screenWidth , int screenHeight) {
+extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors , Uint8* pixelColors , float *depths , Ray* rays , PerspectiveCamera camera , int screenWidth , int screenHeight) {
 	if (pixels.empty()) return;
 	
 	const int numPixels = pixels.size();
@@ -90,19 +98,25 @@ extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors
 	float* dDepths;
 	CUDA_CALL(cudaMalloc(&dDepths , sizeof(float) * screenPixelSize));
 	CUDA_CALL(cudaMemset(dDepths , 0 , sizeof(float) * screenPixelSize));
+	Ray* dRays;
+	CUDA_CALL(cudaMalloc(&dRays , sizeof(Ray) * numPixels));
+	CUDA_CALL(cudaMemset(dRays , 0 , sizeof(Ray) * numPixels));
 
 	CUDA_CALL(cudaMemcpy(dPixelColors , pixelColors , sizeof(Uint8) * screenPixelSize  * 4 , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dDepths , depths , sizeof(float) * screenPixelSize , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , sizeof(Pixel) * numPixels , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dColors , &colors[0] , sizeof(Color) * numPixels , cudaMemcpyHostToDevice));
+	CUDA_CALL(cudaMemcpy(dRays , rays ,  sizeof(Ray) * numPixels , cudaMemcpyHostToDevice));
 
 	// 流水线执行
 
-	KernelMixed<<<(numPixels + 63) / 64 , 64>>>(dPixels , dColors , dPixelColors , dDepths , screenWidth , screenHeight , numPixels);
+	KernelMixed<<<(numPixels + 63) / 64 , 64>>>(dPixels , dColors , dPixelColors , dDepths , dRays , camera , screenWidth , screenHeight , numPixels);
 
 	CUDA_CALL(cudaMemcpy(depths , dDepths , sizeof(float) * screenPixelSize , cudaMemcpyDeviceToHost));
 	CUDA_CALL(cudaMemcpy(pixelColors , dPixelColors , sizeof(Uint8) * screenPixelSize  * 4, cudaMemcpyDeviceToHost));
-	
+	CUDA_CALL(cudaMemcpy(rays , dRays ,  sizeof(Ray) * numPixels , cudaMemcpyDeviceToHost));
+
+	CUDA_CALL(cudaFree(dRays));
 	CUDA_CALL(cudaFree(dDepths));
 	CUDA_CALL(cudaFree(dPixels));
 	CUDA_CALL(cudaFree(dColors));
