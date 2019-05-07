@@ -7,10 +7,21 @@
 
 #pragma once
 
+/*
+ *
+ */
+class IntersectResult {
+	
+};
+
+
 class Tracer {
 	
 
 public:
+
+
+
 	static Tracer& getInstance() {
 		static Tracer tracer;
 		return tracer;
