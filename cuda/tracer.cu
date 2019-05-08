@@ -56,18 +56,18 @@ __device__ void intersect(const Ray& ray, const Triangle& triangle, IntersectRes
 	intersectResult.isSucceed = true;
 }
 
-__global__ void KernelTracing(Ray* rays , Triangle* triangles , IntersectResult* intersectResults , const int& numRays , const int& numTriangles , const int& numIntersectResults) {
+__global__ void KernelTracing(Ray* rays , Triangle* triangles , IntersectResult* intersectResults , int numRays , int numTriangles , int numIntersectResults) {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (idx < numRays) {
 		float min_distance = INT_MAX;
 		IntersectResult tmpIntersectResult {false};
 		for (auto i = 0 ; i < numTriangles; ++i) {
-			// intersect(rays[idx] , triangles[i] , tmpIntersectResult);
-			// if (tmpIntersectResult.isSucceed && tmpIntersectResult.distance < min_distance) {
-			// 	intersectResults[idx] = tmpIntersectResult;
-			// 	min_distance = tmpIntersectResult.distance;
-			// }
+			intersect(rays[idx] , triangles[i] , tmpIntersectResult);
+			if (tmpIntersectResult.isSucceed && tmpIntersectResult.distance < min_distance) {
+				intersectResults[idx] = tmpIntersectResult;
+				min_distance = tmpIntersectResult.distance;
+			}
 		}
 	}
 }
