@@ -34,6 +34,8 @@ class Renderer {
 
 	std::vector<RenderModel> renderModels{};
 
+	std::vector<IntersectResult> intersectResults{};
+
 	PerspectiveCamera mainPerspectiveCamera{};
 
 private:
@@ -83,7 +85,7 @@ private:
 	}
 
 	void tracing() {
-		Tracer::getInstance();
+		Tracer::getInstance().tracing(rays , triangles , intersectResults);
 	}
 
 	/*
@@ -94,6 +96,7 @@ private:
 		memset(&colors[0] , 0 , sizeof(Color) * colors.size());
 		memset(&triangles[0] , 0 , sizeof(Triangle) * triangles.size());
 		memset(&rays[0] , 0 , sizeof(Ray) * rays.size());
+		memset(&intersectResults[0] , 0 , sizeof(IntersectResult) * intersectResults.size());
 	}
 
 	
@@ -120,10 +123,12 @@ public:
 		r.colors = std::vector<Color>(numColors);
 		r.triangles = std::vector<Triangle>(numTriangles);
 		r.rays = std::vector<Ray>(numPixels);
+		r.intersectResults = std::vector<IntersectResult>(numPixels);
 		
 		r.pixels.resize(numPixels);
 		r.colors.resize(numColors);
 		r.triangles.resize(numTriangles);
+		r.rays.resize(numPixels);
 		r.rays.resize(numPixels);
 
 		r.renderModels = std::vector<RenderModel>(0);
@@ -175,12 +180,17 @@ public:
 
 		// 光线追踪过程
 		tracing();
+
+		
 	}
 
 	/*
 	 * 销毁
 	 */
 	void destory() {
+		intersectResults.clear();
+		intersectResults.shrink_to_fit();
+
 		rays.clear();
 		rays.shrink_to_fit();
 

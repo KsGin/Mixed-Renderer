@@ -6,21 +6,18 @@
  */
 
 #pragma once
+#include "define.h"
 
-/*
- *
- */
-class IntersectResult {
-	
-};
-
+extern "C" void CallTracing(const std::vector<Ray>& rays, const std::vector<Triangle>& triangles, std::vector<IntersectResult>& intersectResults);
 
 class Tracer {
 	
 
 public:
 
-
+	void tracing(const std::vector<Ray>& rays , const std::vector<Triangle>& triangles , std::vector<IntersectResult>& intersectResults) {
+		CallTracing(rays , triangles , intersectResults);
+	}
 
 	static Tracer& getInstance() {
 		static Tracer tracer;

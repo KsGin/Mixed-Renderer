@@ -192,13 +192,20 @@ struct Line {
 	int numPixels;
 };
 
-
-
 /*
  * 定义 Shader 多余参数
  */
 struct Args {
 	float bis;
+};
+
+/*
+ * 相交检测结果
+ */
+struct IntersectResult {
+	bool isSucceed;
+	float distance;
+	Math::Vector3 intersectPoint;
 };
 
 /*

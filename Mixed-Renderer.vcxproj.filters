@@ -87,5 +87,8 @@
     <CudaCompile Include="cuda\shader.cu">
       <Filter>Cuda</Filter>
     </CudaCompile>
+    <CudaCompile Include="cuda\tracer.cu">
+      <Filter>Cuda</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
