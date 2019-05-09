@@ -32,8 +32,6 @@ class Renderer {
 
 	std::vector<Triangle> preTriangles;
 
-	std::vector<Ray> rays;
-
 	std::vector<RenderModel> renderModels;
 
 	std::vector<IntersectResult> intersectResults;
@@ -78,17 +76,16 @@ private:
 	}
 
 	void mixed() {
-
-		if (rays.size() < pixels.size()) {
-			rays.resize(pixels.size());
-		}
-
 		//GPU
-		Device::getInstance().mixed(pixels, colors, rays, getPerspectiveCamera());
+		Device::getInstance().mixed(pixels, colors);
+	}
+
+	void generateRay() {
+		
 	}
 
 	void tracing() {
-		Tracer::getInstance().tracing(rays, triangles, intersectResults);
+		Tracer::getInstance().tracing(getPerspectiveCamera() , triangles, intersectResults);
 	}
 
 	/*
@@ -100,8 +97,6 @@ private:
 
 		memset(&pixels[0], 0, sizeof(Pixel) * pixels.size());
 		memset(&colors[0], 0, sizeof(Color) * colors.size());
-		memset(&rays[0], 0, sizeof(Ray) * rays.size());
-		memset(&intersectResults[0], 0, sizeof(IntersectResult) * intersectResults.size());
 	}
 
 
@@ -123,18 +118,19 @@ public:
 	 * ³õÊ¼»¯
 	 */
 	static void initialize(const int& numPixels, const int& numColors, const int& numTriangles, const int& numModels) {
+
+		auto& d = Device::getInstance();
+
 		auto& r = getInstance();
 		r.pixels = std::vector<Pixel>(numPixels);
 		r.colors = std::vector<Color>(numColors);
 		r.triangles = std::vector<Triangle>(numTriangles);
 		r.preTriangles = std::vector<Triangle>(numTriangles);
-		r.rays = std::vector<Ray>(numPixels);
-		r.intersectResults = std::vector<IntersectResult>(numPixels);
+		r.intersectResults = std::vector<IntersectResult>(d.width * d.height);
 
 		r.pixels.resize(numPixels);
 		r.colors.resize(numColors);
-		r.rays.resize(numPixels);
-		r.rays.resize(numPixels);
+		r.intersectResults.resize(d.width * d.height);
 
 		r.renderModels = std::vector<RenderModel>(0);
 		r.renderModels.reserve(numModels);
@@ -165,6 +161,8 @@ public:
 	void clear() {
 		renderModels.clear();
 		preTriangles.clear();
+
+		memset(&intersectResults[0], 0, sizeof(IntersectResult) * intersectResults.size());
 	}
 
 	/*
@@ -194,9 +192,6 @@ public:
 	void destory() {
 		intersectResults.clear();
 		intersectResults.shrink_to_fit();
-
-		rays.clear();
-		rays.shrink_to_fit();
 
 		pixels.clear();
 		pixels.shrink_to_fit();

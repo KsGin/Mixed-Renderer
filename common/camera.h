@@ -84,11 +84,11 @@ public:
 	 */
 	__device__ __host__ void generateRay(const float& x, const float& y , Ray &ray) const{
 
-		auto scaleX = static_cast<float>((x - 0.5) * this->fovScale);
-		auto r = this->right * scaleX;
+		const auto scaleX = static_cast<float>((x - 0.5) * this->fovScale);
+		const auto r = this->right * scaleX;
 
-		auto scaleY = static_cast<float>((y - 0.5) * this->fovScale);
-		auto u = this->up * scaleY;
+		const auto scaleY = static_cast<float>((y - 0.5) * this->fovScale);
+		const auto u = this->up * scaleY;
 
 		ray.origin = eye;
 		ray.direction = (front + r + u).normalize();

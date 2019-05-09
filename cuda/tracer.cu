@@ -10,9 +10,9 @@
 #include <vector>
 #include "../common/ray.h"
 #include <device_launch_parameters.h>
+#include "../common/camera.h"
 
 __device__ void intersect(const Ray& ray, const Triangle& triangle, IntersectResult& intersectResult) {
-	if (!ray.isActive) return;
 
 	const auto origin = ray.origin;
 	const auto direction = ray.direction;
@@ -27,7 +27,7 @@ __device__ void intersect(const Ray& ray, const Triangle& triangle, IntersectRes
 
 	const auto w0 = origin - triangle.btm.pos;
 
-	const auto a = Math::Vector3::dot(normal, w0);
+	const auto a = -Math::Vector3::dot(normal, w0);
 
 	const auto r = a / b;
 	if (r < 0.0f) return;
@@ -60,6 +60,7 @@ __global__ void KernelTracing(Ray* rays , Triangle* triangles , IntersectResult*
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (idx < numRays) {
+		if (!rays[idx].isActive) return;
 		float minDistance = INT_MAX;
 		IntersectResult tmpIntersectResult {false};
 		for (auto i = 0 ; i < numTriangles; ++i) {
@@ -72,16 +73,12 @@ __global__ void KernelTracing(Ray* rays , Triangle* triangles , IntersectResult*
 	}
 }
 
-extern "C" void CallTracing(const std::vector<Ray>& rays, const std::vector<Triangle>& triangles, std::vector<IntersectResult>& intersectResults) {
-	if (rays.empty() || triangles.empty() || intersectResults.empty()) return;
+extern "C" void CallTracing(const PerspectiveCamera& perspectiveCamera , const std::vector<Triangle>& triangles, std::vector<IntersectResult>& intersectResults) {
+	if (triangles.empty() || intersectResults.empty()) return;
 
-	const auto numRays = rays.size();
 	const auto numTriangles = triangles.size();
 	const auto numIntersectResults = intersectResults.size();
 
-	Ray* dRays;
-	CUDA_CALL(cudaMalloc(&dRays , sizeof(Ray) * numRays));
-	CUDA_CALL(cudaMemset(dRays , 0 , sizeof(Ray) * numRays));
 	Triangle* dTriangles;
 	CUDA_CALL(cudaMalloc(&dTriangles , sizeof(Triangle) * numTriangles));
 	CUDA_CALL(cudaMemset(dTriangles , 0 , sizeof(Triangle) * numTriangles));
@@ -89,15 +86,13 @@ extern "C" void CallTracing(const std::vector<Ray>& rays, const std::vector<Tria
 	CUDA_CALL(cudaMalloc(&dIntersectResults , sizeof(IntersectResult) * numIntersectResults));
 	CUDA_CALL(cudaMemset(dIntersectResults , 0 , sizeof(IntersectResult) * numIntersectResults));
 
-	CUDA_CALL(cudaMemcpy(dRays , &rays[0] , sizeof(Ray) * numRays , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dTriangles , &triangles[0] , sizeof(Triangle) * numTriangles , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dIntersectResults , &intersectResults[0] , sizeof(IntersectResult) * numIntersectResults , cudaMemcpyHostToDevice));
 
-	KernelTracing<<<(numRays + 63) / 64 , 64>>>(dRays , dTriangles , dIntersectResults , numRays , numTriangles , numIntersectResults);
+	// KernelTracing<<<(numRays + 63) / 64 , 64>>>(dTriangles , dIntersectResults , numTriangles , numIntersectResults);
 
 	CUDA_CALL(cudaMemcpy(&intersectResults[0] , dIntersectResults , sizeof(IntersectResult) * numIntersectResults , cudaMemcpyDeviceToHost));
 
-	CUDA_CALL(cudaFree(dRays));
 	CUDA_CALL(cudaFree(dTriangles));
 	CUDA_CALL(cudaFree(dIntersectResults));
 }
