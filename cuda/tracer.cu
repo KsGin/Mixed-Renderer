@@ -60,13 +60,13 @@ __global__ void KernelTracing(Ray* rays , Triangle* triangles , IntersectResult*
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (idx < numRays) {
-		float min_distance = INT_MAX;
+		float minDistance = INT_MAX;
 		IntersectResult tmpIntersectResult {false};
 		for (auto i = 0 ; i < numTriangles; ++i) {
 			intersect(rays[idx] , triangles[i] , tmpIntersectResult);
-			if (tmpIntersectResult.isSucceed && tmpIntersectResult.distance < min_distance) {
+			if (tmpIntersectResult.isSucceed && tmpIntersectResult.distance < minDistance) {
 				intersectResults[idx] = tmpIntersectResult;
-				min_distance = tmpIntersectResult.distance;
+				minDistance = tmpIntersectResult.distance;
 			}
 		}
 	}
@@ -91,6 +91,7 @@ extern "C" void CallTracing(const std::vector<Ray>& rays, const std::vector<Tria
 
 	CUDA_CALL(cudaMemcpy(dRays , &rays[0] , sizeof(Ray) * numRays , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dTriangles , &triangles[0] , sizeof(Triangle) * numTriangles , cudaMemcpyHostToDevice));
+	CUDA_CALL(cudaMemcpy(dIntersectResults , &intersectResults[0] , sizeof(IntersectResult) * numIntersectResults , cudaMemcpyHostToDevice));
 
 	KernelTracing<<<(numRays + 63) / 64 , 64>>>(dRays , dTriangles , dIntersectResults , numRays , numTriangles , numIntersectResults);
 

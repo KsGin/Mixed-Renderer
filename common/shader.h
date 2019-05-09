@@ -90,8 +90,10 @@ public:
 	 */
 	void vertexShader(const Vertex& vsInput, Pixel& psInput) const
 	{
-		auto transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
+		const auto transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
+		const auto trans3DMat = modelMat;
 		psInput.pos = Math::Matrix::transformCoordinates(vsInput.pos, transMat);
+		psInput.pos3D = Math::Matrix::transformCoordinates(vsInput.pos, trans3DMat);
 		psInput.normal = Math::Matrix::transform(vsInput.normal, transMat);
 		psInput.uv = vsInput.uv;
 		psInput.color = vsInput.color;

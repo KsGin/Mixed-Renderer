@@ -18,7 +18,6 @@
 #include "../includes/color.hpp"
 
 
-
 /**
  * define a cuda call
  */
@@ -147,7 +146,7 @@ enum RenderType {
  * 定义多个Shader
  */
 enum ShaderType {
-	WATER ,
+	WATER,
 	CUBE
 };
 
@@ -156,6 +155,7 @@ enum ShaderType {
  */
 typedef struct Vertex {
 	Math::Vector3 pos;
+	Math::Vector3 pos3D;
 	Math::Vector3 normal;
 	Math::Vector2 uv;
 	Color color;

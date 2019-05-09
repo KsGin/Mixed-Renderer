@@ -8,12 +8,12 @@
 #pragma once
 
 #include <vector>
-#include "define.h"
 #include "../includes/math/vector.hpp"
 #include "../includes/color.hpp"
 
 
 class Model {
+
 public:
 	/*
      * Mesh
