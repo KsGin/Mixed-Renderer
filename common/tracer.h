@@ -62,28 +62,28 @@ public:
 	void tracing(const PerspectiveCamera& perspectiveCamera , const std::vector<Triangle>& triangles,
 	             std::vector<IntersectResult>& intersectResults) {
 
-		//CallTracing(perspectiveCamera , triangles , intersectResults);
-
-		const auto w = Device::getInstance().width;
-		const auto h = Device::getInstance().height;
-			
-		for (auto i = 0 ; i < w; ++i) {
-			auto dx = i / static_cast<float>(w);
-			for (auto j = 0 ; j < h; ++j) {
-				auto dy = 1 - j / static_cast<float>(h);
-				Ray ray;
-				perspectiveCamera.generateRay(dx , dy , ray);
-				float min = INT_MAX;
-				for (auto& triangle : triangles) {
-					IntersectResult intersectResult{false, 0};
-					intersect(ray, triangle, intersectResult);
-					if (intersectResult.isSucceed && intersectResult.distance < min) {
-						min = intersectResult.distance;
-						intersectResults[i * w + j] = intersectResult;
-					}
-				}
-			}
-		}
+		CallTracing(perspectiveCamera , triangles , intersectResults);
+		//
+		// const auto w = Device::getInstance().width;
+		// const auto h = Device::getInstance().height;
+		// 	
+		// for (auto i = 0 ; i < w; ++i) {
+		// 	auto dx = i / static_cast<float>(w);
+		// 	for (auto j = 0 ; j < h; ++j) {
+		// 		auto dy = 1 - j / static_cast<float>(h);
+		// 		Ray ray;
+		// 		perspectiveCamera.generateRay(dx , dy , ray);
+		// 		float min = INT_MAX;
+		// 		for (auto& triangle : triangles) {
+		// 			IntersectResult intersectResult{false, 0};
+		// 			intersect(ray, triangle, intersectResult);
+		// 			if (intersectResult.isSucceed && intersectResult.distance < min) {
+		// 				min = intersectResult.distance;
+		// 				intersectResults[i * w + j] = intersectResult;
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 
 	static Tracer& getInstance() {

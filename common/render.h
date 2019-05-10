@@ -85,7 +85,7 @@ private:
 	}
 
 	void tracing() {
-		Tracer::getInstance().tracing(getPerspectiveCamera() , triangles, intersectResults);
+		Tracer::getInstance().tracing(getPerspectiveCamera() , preTriangles, intersectResults);
 	}
 
 	/*

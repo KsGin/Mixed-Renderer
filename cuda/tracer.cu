@@ -56,20 +56,25 @@ __device__ void intersect(const Ray& ray, const Triangle& triangle, IntersectRes
 	intersectResult.isSucceed = true;
 }
 
-__global__ void KernelTracing(Ray* rays , Triangle* triangles , IntersectResult* intersectResults , int numRays , int numTriangles , int numIntersectResults) {
+__global__ void KernelTracing(PerspectiveCamera perspectiveCamera , Triangle* triangles , IntersectResult* intersectResults , int numTriangles , int numIntersectResults) {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
-	if (idx < numRays) {
-		if (!rays[idx].isActive) return;
+	if (idx < numIntersectResults) {
+		const auto dy = blockIdx.x;
+		const auto dx = threadIdx.x;
+
+		Ray ray;
+		perspectiveCamera.generateRay(dx / static_cast<float>(SCREEN_WIDTH) , dy / static_cast<float>(SCREEN_HEIGHT) , ray);
+
 		float minDistance = INT_MAX;
-		IntersectResult tmpIntersectResult {false};
-		for (auto i = 0 ; i < numTriangles; ++i) {
-			intersect(rays[idx] , triangles[i] , tmpIntersectResult);
-			if (tmpIntersectResult.isSucceed && tmpIntersectResult.distance < minDistance) {
-				intersectResults[idx] = tmpIntersectResult;
-				minDistance = tmpIntersectResult.distance;
-			}
-		}
+		 IntersectResult tmpIntersectResult {false};
+		 for (auto i = 0 ; i < numTriangles; ++i) {
+		 	intersect(ray , triangles[i] , tmpIntersectResult);
+		 	if (tmpIntersectResult.isSucceed && tmpIntersectResult.distance < minDistance) {
+		 		intersectResults[dy * SCREEN_WIDTH + dx] = tmpIntersectResult;
+		 		minDistance = tmpIntersectResult.distance;
+		 	}
+		 }
 	}
 }
 
@@ -89,7 +94,9 @@ extern "C" void CallTracing(const PerspectiveCamera& perspectiveCamera , const s
 	CUDA_CALL(cudaMemcpy(dTriangles , &triangles[0] , sizeof(Triangle) * numTriangles , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dIntersectResults , &intersectResults[0] , sizeof(IntersectResult) * numIntersectResults , cudaMemcpyHostToDevice));
 
-	// KernelTracing<<<(numRays + 63) / 64 , 64>>>(dTriangles , dIntersectResults , numTriangles , numIntersectResults);
+	KernelTracing<<<SCREEN_HEIGHT , SCREEN_WIDTH>>>(perspectiveCamera, dTriangles , dIntersectResults , numTriangles , numIntersectResults);
+
+	cudaDeviceSynchronize();
 
 	CUDA_CALL(cudaMemcpy(&intersectResults[0] , dIntersectResults , sizeof(IntersectResult) * numIntersectResults , cudaMemcpyDeviceToHost));
 

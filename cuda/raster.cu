@@ -67,6 +67,8 @@ extern "C" void CallRasterizeLines(const std::vector<Line>& lines, std::vector<P
 
 	RasterizeLines<<<(numLines + 63) / 64, 64>>>(dLines , dBaseIdx , dPixels , numPixels , numLines);
 
+	cudaDeviceSynchronize();
+
 	CUDA_CALL(cudaMemcpy(&pixels[0] , dPixels , sizeof(Pixel) * numPixels , cudaMemcpyDeviceToHost));
 
 	CUDA_CALL(cudaFree(dLines));

@@ -132,6 +132,8 @@ extern "C" void CallPixelShader(const std::vector<Pixel>& pixels, const std::vec
 	// 64
 	KernelPixelShader<<<(numPixels + 63) / 64 , 64>>>(sType , dColors, dPixels, dTextures, dTexturePixels , numPixels, args);
 
+	cudaDeviceSynchronize();
+
 	CUDA_CALL(cudaMemcpy(&colors[0] , dColors , numPixels * sizeof(Color) , cudaMemcpyDeviceToHost));
 
 	CUDA_CALL(cudaFree(dPixels));

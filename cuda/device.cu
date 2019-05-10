@@ -100,6 +100,8 @@ extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors
 
 	KernelMixed<<<(numPixels + 63) / 64 , 64>>>(dPixels , dColors , dPixelColors , dDepths , screenWidth , screenHeight , numPixels);
 
+	cudaDeviceSynchronize();
+
 	CUDA_CALL(cudaMemcpy(depths , dDepths , sizeof(float) * screenPixelSize , cudaMemcpyDeviceToHost));
 	CUDA_CALL(cudaMemcpy(pixelColors , dPixelColors , sizeof(Uint8) * screenPixelSize  * 4, cudaMemcpyDeviceToHost));
 
