@@ -75,6 +75,7 @@ __device__ Color& WaterPixelShader(Pixel& pixel , Texture* texture , unsigned ch
 	return texColor;
 }
 
+
 /***********************************************************Shader µ÷ÓÃ******************************************************************************************************/
 __global__ void KernelPixelShader(Color* colors, Pixel* pixels, Texture* cubeTextures, unsigned char** cubeTexturesPixels, 
                                   Args cubeArgs , Texture* waterTextures, unsigned char** waterTexturesPixels, Args waterArgs , const int numElements ) {
@@ -83,6 +84,7 @@ __global__ void KernelPixelShader(Color* colors, Pixel* pixels, Texture* cubeTex
 		switch (pixels[idx].sType) {
 			case CUBE : colors[idx] = CubePixelShader(pixels[idx] , cubeTextures , cubeTexturesPixels , cubeArgs); break;
 			case WATER : colors[idx] = WaterPixelShader(pixels[idx] , waterTextures , waterTexturesPixels , waterArgs); break;
+			case LIGHT : colors[idx] = Color::white(); break;
 		}
 		
 	}

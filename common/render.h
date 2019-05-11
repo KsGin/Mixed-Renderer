@@ -31,7 +31,7 @@ class Renderer {
 
 private:
 
-	void renderVertex(const Model& model, const Shader& shader) {
+	void renderVertex(const Model& model, const Shader& shader , float reflectiveness) {
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces) {
 				Triangle triangle;
@@ -41,6 +41,8 @@ private:
 				vertexShader(shaderMap , face.v3, triangle.btm , shader.sData.sType);
 
 				triangle.top.sType = triangle.mid.sType = triangle.btm.sType = shader.sData.sType;
+				triangle.top.reflectiveness = triangle.mid.reflectiveness = triangle.btm.reflectiveness = reflectiveness;
+
 				triangles.emplace_back(triangle);
 			}
 		}
@@ -128,9 +130,9 @@ public:
 	/*
 	 * 将模型添加至管线中
 	 */
-	void add(const Model& model, const Shader& shader, const RenderType& type = SOLID) {	
+	void add(const Model& model, const Shader& shader , float reflectiveness , const RenderType& type = SOLID) {	
 		shaderMap[shader.sData.sType] = shader.sData;
-		renderVertex(model , shader);
+		renderVertex(model , shader , reflectiveness);
 	}
 
 	/*
@@ -159,5 +161,7 @@ public:
 
 		triangles.clear();
 		triangles.shrink_to_fit();
+
+		shaderMap.clear();
 	}
 };

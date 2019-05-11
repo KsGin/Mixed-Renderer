@@ -82,8 +82,7 @@ __device__ void SetPixel(int x, int y, const Color& color, Uint8* pixelColors, i
 /*
  * 深度测试
  */
-__device__ void TestDepth(int x, int y, float depth, float* depths, bool& isSuccess, int screenWidth,
-                          int screenHeight) {
+__device__ void TestDepth(int x, int y, float depth, float* depths, bool& isSuccess, int screenWidth, int screenHeight) {
 	if (x >= screenWidth || x <= 0 || y <= 0 || y >= screenHeight) return;
 
 	const auto idx = y * screenWidth + x;
@@ -99,8 +98,14 @@ __device__ void TestDepth(int x, int y, float depth, float* depths, bool& isSucc
  * 计算光照
  */
 __device__ void SampleLight(Pixel& pixel, Triangle* triangles, Color& color, int numTriangles) {
+	if (pixel.sType == LIGHT) return;
 
-	const auto lightDirection = Math::Vector3(0, 1, -1).normalize();
+	const auto lightOrigin = Math::Vector3(0 , 2 , 0);
+
+	const auto lightDirection = (lightOrigin - pixel.pos3D).normalize();
+
+	const auto distance = (lightOrigin - pixel.pos3D).length();
+
 	const Math::Vector3 normal = pixel.normal.normalize();
 
 	// 处理阴影
@@ -114,13 +119,11 @@ __device__ void SampleLight(Pixel& pixel, Triangle* triangles, Color& color, int
 	for (auto i = 0; i < numTriangles; ++i) {
 		IntersectResult iTmp{false};
 		intersect(ray, triangles[i], iTmp);
-		if (iTmp.isSucceed && iTmp.distance > 0.01f) {
+		if (iTmp.isSucceed && iTmp.distance > 0.01f && iTmp.distance < distance - 0.5) {
 			isShadow = true;
 			break;
 		}
 	}
-
-	// printf("%.2f %.2f %.2f\n" , ray.origin._x , ray.origin._y , ray.origin._z);
 
 	// 处理光照	
 	float ambient = 0.2;
@@ -134,7 +137,28 @@ __device__ void SampleLight(Pixel& pixel, Triangle* triangles, Color& color, int
 /*
  * 计算反射
  */
-__device__ void SampleReflect() {
+__device__ void SampleReflect(Pixel& pixel, Triangle* triangles, Color& color, int numTriangles) {
+	if (pixel.sType == LIGHT || pixel.sType == CUBE) return;
+
+	// 处理阴影
+	Ray ray;
+	ray.isActive = true;
+	ray.origin = pixel.pos3D;
+	ray.direction = pixel.normal.normalize();
+
+	float minDistance = INT_MAX;
+
+	// IntersectResult itRet;
+	for (auto i = 0; i < numTriangles; ++i) {
+		IntersectResult iTmp{false};
+		intersect(ray, triangles[i], iTmp);
+		if (iTmp.isSucceed && iTmp.distance < minDistance) {
+
+			minDistance = iTmp.distance;
+			// itRet = iTmp;
+			color = triangles[i].mid.color;
+		}
+	}
 
 }
 
@@ -154,9 +178,18 @@ __global__ void KernelMixed(Pixel* pixels, Color* colors, Triangle* triangles, U
 		auto isFirst = false;
 		TestDepth(x, y, pixels[idx].pos._z, depths, isFirst, screenWidth, screenHeight);
 		if (isFirst) {
+			/*计算光照*/
+			auto lightColor = Color::white();
+			SampleLight(pixels[idx], triangles , lightColor , numTriangles);
+			
+			/*计算反射*/
+			auto reflectColor = Color::black();
+			SampleReflect(pixels[idx] , triangles , reflectColor , numTriangles);
 
-			SampleLight(pixels[idx], triangles, colors[idx], numTriangles);
+			/*混合颜色*/
+			colors[idx] = colors[idx] * lightColor * (1 - pixels->reflectiveness) + reflectColor * pixels->reflectiveness;
 
+			/*着色*/
 			SetPixel(x, y, colors[idx], pixelColors, screenWidth, screenHeight);
 		}
 	}
@@ -198,7 +231,7 @@ extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors
 
 	// 流水线执行
 
-	KernelMixed<<<(numPixels + 63) / 64 , 64>>>(dPixels, dColors, dTriangles, dPixelColors, dDepths, screenWidth,
+	KernelMixed<<<(numPixels + 255) / 256 , 256>>>(dPixels, dColors, dTriangles, dPixelColors, dDepths, screenWidth,
 	                                            screenHeight, numTriangles, numPixels);
 
 	cudaDeviceSynchronize();

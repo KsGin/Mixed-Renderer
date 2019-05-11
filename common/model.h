@@ -165,9 +165,9 @@ public:
 		face3.v2.normal = Math::Vector3(0, 1, 0);
 		face3.v3.normal = Math::Vector3(0, 1, 0);
 
-		face3.v1.color = Color::green();
-		face3.v2.color = Color::green();
-		face3.v3.color = Color::green();
+		face3.v1.color = Color::red();
+		face3.v2.color = Color::red();
+		face3.v3.color = Color::red();
 
 		face3.v1.uv = Math::Vector2(0, 1);
 		face3.v2.uv = Math::Vector2(1, 1);
@@ -185,9 +185,9 @@ public:
 		face4.v2.normal = Math::Vector3(0, 1, 0);
 		face4.v3.normal = Math::Vector3(0, 1, 0);
 
-		face4.v1.color = Color::green();
-		face4.v2.color = Color::green();
-		face4.v3.color = Color::green();
+		face4.v1.color = Color::red();
+		face4.v2.color = Color::red();
+		face4.v3.color = Color::red();
 
 		face4.v1.uv = Math::Vector2(0, 0);
 		face4.v2.uv = Math::Vector2(1, 1);
@@ -206,9 +206,9 @@ public:
 		face5.v2.normal = Math::Vector3(-1, 0, 0);
 		face5.v3.normal = Math::Vector3(-1, 0, 0);
 
-		face5.v1.color = Color::blue();
-		face5.v2.color = Color::blue();
-		face5.v3.color = Color::blue();
+		face5.v1.color = Color::red();
+		face5.v2.color = Color::red();
+		face5.v3.color = Color::red();
 
 		face5.v1.uv = Math::Vector2(1, 0);
 		face5.v2.uv = Math::Vector2(0, 0);
@@ -226,9 +226,9 @@ public:
 		face6.v2.normal = Math::Vector3(-1, 0, 0);
 		face6.v3.normal = Math::Vector3(-1, 0, 0);
 
-		face6.v1.color = Color::blue();
-		face6.v2.color = Color::blue();
-		face6.v3.color = Color::blue();
+		face6.v1.color = Color::red();
+		face6.v2.color = Color::red();
+		face6.v3.color = Color::red();
 
 		face6.v1.uv = Math::Vector2(1, 1);
 		face6.v2.uv = Math::Vector2(0, 0);
@@ -287,9 +287,9 @@ public:
 		face9.v2.normal = Math::Vector3(0, -1, 0);
 		face9.v3.normal = Math::Vector3(0, -1, 0);
 
-		face9.v1.color = Color::green();
-		face9.v2.color = Color::green();
-		face9.v3.color = Color::green();
+		face9.v1.color = Color::red();
+		face9.v2.color = Color::red();
+		face9.v3.color = Color::red();
 
 		face9.v1.uv = Math::Vector2(0, 1);
 		face9.v2.uv = Math::Vector2(1, 1);
@@ -307,9 +307,9 @@ public:
 		face10.v2.normal = Math::Vector3(0, -1, 0);
 		face10.v3.normal = Math::Vector3(0, -1, 0);
 
-		face10.v1.color = Color::green();
-		face10.v2.color = Color::green();
-		face10.v3.color = Color::green();
+		face10.v1.color = Color::red();
+		face10.v2.color = Color::red();
+		face10.v3.color = Color::red();
 
 		face10.v1.uv = Math::Vector2(0, 0);
 		face10.v2.uv = Math::Vector2(1, 1);
@@ -327,9 +327,9 @@ public:
 		face11.v2.normal = Math::Vector3(1, 0, 0);
 		face11.v3.normal = Math::Vector3(1, 0, 0);
 
-		face11.v1.color = Color::blue();
-		face11.v2.color = Color::blue();
-		face11.v3.color = Color::blue();
+		face11.v1.color = Color::red();
+		face11.v2.color = Color::red();
+		face11.v3.color = Color::red();
 
 		face11.v1.uv = Math::Vector2(1, 0);
 		face11.v2.uv = Math::Vector2(0, 0);
@@ -347,9 +347,9 @@ public:
 		face12.v2.normal = Math::Vector3(1, 0, 0);
 		face12.v3.normal = Math::Vector3(1, 0, 0);
 
-		face12.v1.color = Color::blue();
-		face12.v2.color = Color::blue();
-		face12.v3.color = Color::blue();
+		face12.v1.color = Color::red();
+		face12.v2.color = Color::red();
+		face12.v3.color = Color::red();
 
 		face12.v1.uv = Math::Vector2(1, 1);
 		face12.v2.uv = Math::Vector2(0, 0);

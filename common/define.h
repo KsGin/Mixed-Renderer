@@ -109,6 +109,7 @@
 	INTERPOLATEV3(p1.normal , p2.normal , gad , result.normal);				\
 	INTERPOLATEV2(p1.uv , p2.uv , gad , result.uv);							\
 	INTERPOLATEC(p1.color , p2.color , gad , result.color);					\
+	INTERPOLATE(p1.reflectiveness, p2.reflectiveness, gad , result.reflectiveness);	\
 	result.sType = p1.sType;												\
 }
 
@@ -136,7 +137,8 @@ enum RenderType {
  */
 enum ShaderType {
 	WATER,
-	CUBE
+	CUBE ,
+	LIGHT
 };
 
 /*
@@ -148,6 +150,7 @@ typedef struct Vertex {
 	Math::Vector3 normal;
 	Math::Vector2 uv;
 	Color color;
+	float reflectiveness;
 	ShaderType sType;
 } Pixel;
 
