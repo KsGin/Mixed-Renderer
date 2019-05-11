@@ -39,7 +39,7 @@ __device__ Color& TexSampler2D(const Texture& texture, unsigned char* texturesPi
 /*************************************************************Pixel Shader*************************************************************************************************/
 __device__ Color& CubePixelShader(Pixel& pixel , Texture* texture , unsigned char** texturesPixels , Args args) {
 
-	const auto ambient = 0.3;
+	// const auto ambient = 0.3;
 	//
 	// const auto directionLight = Math::Vector3(0 , 1 , -1).normalize();
 	// const auto normal = pixel.normal.normalize();
@@ -49,14 +49,14 @@ __device__ Color& CubePixelShader(Pixel& pixel , Texture* texture , unsigned cha
 	// CLAMP01(nd);
 
 	auto texColor = TexSampler2D(texture[0] , texturesPixels[0] , pixel.uv);
-	auto color = texColor * ambient;
+	// auto color = texColor * ambient;
 
-	return color;
+	return texColor;
 }
 
 __device__ Color& WaterPixelShader(Pixel& pixel , Texture* texture , unsigned char** texturesPixels , Args args) {
 
-	const auto ambient = 0.3;
+	// const auto ambient = 0.3;
 	//
 	// const auto directionLight = Math::Vector3(0 , 1 , -1).normalize();
 	// const auto normal = pixel.normal.normalize();
@@ -70,9 +70,9 @@ __device__ Color& WaterPixelShader(Pixel& pixel , Texture* texture , unsigned ch
 	CLAMP01(uv._x);
 
 	auto texColor = TexSampler2D(texture[0] , texturesPixels[0] , uv);
-	auto color = pixel.color * 0.1 + texColor * ambient;
+	// auto color = pixel.color * 0.1 + texColor * ambient;
 
-	return color;
+	return texColor;
 }
 
 /***********************************************************Shader µ÷ÓÃ******************************************************************************************************/

@@ -58,14 +58,14 @@ int main()
 	d.show();
 
 	Args args{0.0f};
-	float bis = 0.001;
+	float bis = 0.001f;
 	while (!d.windowShouldClose()) {
 		d.clear();
 		r.clear();
 
 		rotation = rotation * Matrix::rotationY(-0.02f) * Matrix::rotationZ(-0.02f) * Matrix::rotationX(-0.02f);
 
-		cubeShader.setMat(model1 * rotation * Matrix::translate(0 , 0.8 , 0), MODEL);
+		cubeShader.setMat(model1 * rotation * Matrix::translate(0 , 0.5 , 0), MODEL);
 		r.add(cube1 , cubeShader , SOLID);
 
 		args.bis += bis;

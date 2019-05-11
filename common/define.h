@@ -105,6 +105,7 @@
 
 #define INTERPOLATEP(p1 , p2 , gad , result) {								\
 	INTERPOLATEV3(p1.pos , p2.pos , gad , result.pos);						\
+	INTERPOLATEV3(p1.pos3D , p2.pos3D , gad , result.pos3D);				\
 	INTERPOLATEV3(p1.normal , p2.normal , gad , result.normal);				\
 	INTERPOLATEV2(p1.uv , p2.uv , gad , result.uv);							\
 	INTERPOLATEC(p1.color , p2.color , gad , result.color);					\

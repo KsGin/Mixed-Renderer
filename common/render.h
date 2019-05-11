@@ -12,7 +12,6 @@
 #include "raster.h"
 #include "camera.h"
 #include <unordered_map>
-#include "tracer.h"
 #include "model.h"
 #include "shader.h"
 
@@ -60,17 +59,12 @@ private:
 
 	void mixed() {
 		//GPU
-		Device::getInstance().mixed(pixels, colors);
+		Device::getInstance().mixed(pixels, colors , triangles);
 	}
 
 	void generateRay() {
 
 	}
-
-	void tracing() {
-		Tracer::getInstance().tracing(getPerspectiveCamera(), triangles, intersectResults);
-	}
-
 
 	Renderer() {
 
@@ -143,15 +137,11 @@ public:
 	 * 管线渲染
 	 */
 	void render() {
-
 		rasterize();
 
 		renderPixel();
 
 		mixed();
-
-		// // 光线追踪过程
-		// tracing();
 	}
 
 	/*

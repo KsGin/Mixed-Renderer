@@ -143,7 +143,6 @@
     <ClInclude Include="common\render.h" />
     <ClInclude Include="common\shader.h" />
     <ClInclude Include="common\texture.h" />
-    <ClInclude Include="common\tracer.h" />
     <ClInclude Include="includes\color.hpp" />
     <ClInclude Include="includes\math\matrix.hpp" />
     <ClInclude Include="includes\math\vector.hpp" />
@@ -164,7 +163,6 @@
     <CudaCompile Include="cuda\device.cu" />
     <CudaCompile Include="cuda\raster.cu" />
     <CudaCompile Include="cuda\shader.cu" />
-    <CudaCompile Include="cuda\tracer.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
