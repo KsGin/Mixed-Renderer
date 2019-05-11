@@ -18,46 +18,30 @@
 
 class Renderer {
 
-	struct RenderModel {
-		Model model;
-		Shader shader;
-		RenderType type;
-	};
-
 	std::vector<Pixel> pixels;
 
 	std::vector<Color> colors;
 
 	std::vector<Triangle> triangles;
 
-	std::vector<Triangle> preTriangles;
-
-	std::vector<RenderModel> renderModels;
-
 	std::vector<IntersectResult> intersectResults;
+
+	std::unordered_map<ShaderType , ShaderData> shaderMap;
 
 	PerspectiveCamera mainPerspectiveCamera;
 
 private:
+
 	void renderVertex(const Model& model, const Shader& shader) {
 		for (auto& mesh : model.meshes) {
 			for (auto& face : mesh.faces) {
-				Triangle preTriangle;
-				Triangle triangle;	
+				Triangle triangle;
 
-				preTriangle.top = face.v1;
-				preTriangle.mid = face.v2;
-				preTriangle.btm = face.v3;
+				vertexShader(shaderMap , face.v1, triangle.top , shader.sData.sType);
+				vertexShader(shaderMap , face.v2, triangle.mid , shader.sData.sType);
+				vertexShader(shaderMap , face.v3, triangle.btm , shader.sData.sType);
 
-				shader.vertexShader(preTriangle.top, triangle.top);
-				shader.vertexShader(preTriangle.mid, triangle.mid);
-				shader.vertexShader(preTriangle.btm, triangle.btm);
-
-				preTriangle.top.pos3D = triangle.top.pos3D;
-				preTriangle.mid.pos3D = triangle.mid.pos3D;
-				preTriangle.btm.pos3D = triangle.btm.pos3D;
-
-				preTriangles.emplace_back(preTriangle);
+				triangle.top.sType = triangle.mid.sType = triangle.btm.sType = shader.sData.sType;
 				triangles.emplace_back(triangle);
 			}
 		}
@@ -69,10 +53,9 @@ private:
 
 	}
 
-	void renderPixel(const Shader& shader) {
+	void renderPixel() {
 		//GPU
-		shader.pixelShader(pixels, colors);
-
+		pixelShader(shaderMap , pixels, colors);
 	}
 
 	void mixed() {
@@ -81,22 +64,11 @@ private:
 	}
 
 	void generateRay() {
-		
+
 	}
 
 	void tracing() {
-		Tracer::getInstance().tracing(getPerspectiveCamera() , preTriangles, intersectResults);
-	}
-
-	/*
-	 * 为效率妥协使用 memset
-	 */
-	void reset() {
-
-		triangles.clear();
-
-		memset(&pixels[0], 0, sizeof(Pixel) * pixels.size());
-		memset(&colors[0], 0, sizeof(Color) * colors.size());
+		Tracer::getInstance().tracing(getPerspectiveCamera(), triangles, intersectResults);
 	}
 
 
@@ -117,7 +89,7 @@ public:
 	/*
 	 * 初始化
 	 */
-	static void initialize(const int& numPixels, const int& numColors, const int& numTriangles, const int& numModels) {
+	static void initialize(const int& numPixels, const int& numColors, const int& numTriangles) {
 
 		auto& d = Device::getInstance();
 
@@ -125,15 +97,11 @@ public:
 		r.pixels = std::vector<Pixel>(numPixels);
 		r.colors = std::vector<Color>(numColors);
 		r.triangles = std::vector<Triangle>(numTriangles);
-		r.preTriangles = std::vector<Triangle>(numTriangles);
 		r.intersectResults = std::vector<IntersectResult>(d.width * d.height);
 
 		r.pixels.resize(numPixels);
 		r.colors.resize(numColors);
 		r.intersectResults.resize(d.width * d.height);
-
-		r.renderModels = std::vector<RenderModel>(0);
-		r.renderModels.reserve(numModels);
 	}
 
 	/*
@@ -150,40 +118,40 @@ public:
 		return mainPerspectiveCamera;
 	}
 
+	/*
+ * 为效率妥协使用 memset
+ */
+	void clear() {
+
+		triangles.clear();
+		shaderMap.clear();
+
+		memset(&intersectResults[0], 0, sizeof(IntersectResult) * intersectResults.size());
+		memset(&pixels[0], 0, sizeof(Pixel) * pixels.size());
+		memset(&colors[0], 0, sizeof(Color) * colors.size());
+	}
 
 	/*
 	 * 将模型添加至管线中
 	 */
-	void add(const Model& model, const Shader& shader, const RenderType& type = SOLID) {
-		renderModels.emplace_back(RenderModel{model, shader, type});
-	}
-
-	void clear() {
-		renderModels.clear();
-		preTriangles.clear();
-
-		memset(&intersectResults[0], 0, sizeof(IntersectResult) * intersectResults.size());
+	void add(const Model& model, const Shader& shader, const RenderType& type = SOLID) {	
+		shaderMap[shader.sData.sType] = shader.sData;
+		renderVertex(model , shader);
 	}
 
 	/*
 	 * 管线渲染
 	 */
 	void render() {
-		// 光栅过程
-		for (auto& m : renderModels) {
-			reset();
 
-			renderVertex(m.model, m.shader);
+		rasterize();
 
-			rasterize(m.type);
+		renderPixel();
 
-			renderPixel(m.shader);
+		mixed();
 
-			mixed();
-		}
-
-		// 光线追踪过程
-		tracing();
+		// // 光线追踪过程
+		// tracing();
 	}
 
 	/*
@@ -201,8 +169,5 @@ public:
 
 		triangles.clear();
 		triangles.shrink_to_fit();
-
-		preTriangles.clear();
-		preTriangles.shrink_to_fit();
 	}
 };

@@ -13,41 +13,20 @@
 #include <vector>
 #include "../includes/color.hpp"
 
-extern "C" void CallPixelShader(const std::vector<Pixel>& pixels,const std::vector<Texture>& textures , const ShaderType& sType , std::vector<Color>& colors , const Args& args);
+extern "C" void CallPixelShader(std::unordered_map<ShaderType , ShaderData>& sDataMaps , const std::vector<Pixel>& pixels, std::vector<Color>& colors);
 
 class Shader
 {
-	/*
-	 * shader type
-	 */
-	ShaderType sType;
-	/*
-	 * modelMat
-	 */
-	Math::Matrix modelMat = Math::Matrix::identity();
-	/*
-	 * viewMat
-	 */
-	Math::Matrix viewMat = Math::Matrix::identity();
-	/*
-	 * perspectiveMat
-	 */
-	Math::Matrix perspectiveMat = Math::Matrix::identity();
-	/*
-	 * textures
-	 */
-	std::vector<Texture> textures = std::vector<Texture>(8);
-	/*
-	 * args
-	 */
-	Args args;
 public:
+
+	ShaderData sData;
+
 	/*
 	* Constructor
 	*/
 	Shader(const ShaderType& shaderType = CUBE)
 	{
-		sType = shaderType;
+		sData.sType = shaderType;
 	}
 
 	/*
@@ -58,7 +37,7 @@ public:
 	}
 
 	void setArgs(const Args& shaderArgs) {
-		args = shaderArgs;
+		sData.args = shaderArgs;
 	}
 
 	/*
@@ -68,11 +47,11 @@ public:
 	{
 		switch (type)
 		{
-		case MODEL: modelMat = mat;
+		case MODEL: sData.modelMat = mat;
 			break;
-		case VIEW: viewMat = mat;
+		case VIEW: sData.viewMat = mat;
 			break;
-		case PERSPECTIVE: perspectiveMat = mat;
+		case PERSPECTIVE: sData.perspectiveMat = mat;
 			break;
 		}
 	}
@@ -82,29 +61,32 @@ public:
 	 */
 	void setTexture(const Texture& texture, const int idx)
 	{
-		this->textures[idx] = texture;
+		this->sData.textures[idx] = texture;
 	}
 
-	/*
-	 * Vertex Shader
-	 */
-	void vertexShader(const Vertex& vsInput, Pixel& psInput) const
-	{
-		const auto transMat = modelMat.multiply(viewMat).multiply(perspectiveMat);
-		const auto trans3DMat = modelMat;
-		psInput.pos = Math::Matrix::transformCoordinates(vsInput.pos, transMat);
-		psInput.pos3D = Math::Matrix::transformCoordinates(vsInput.pos, trans3DMat);
-		psInput.normal = Math::Matrix::transform(vsInput.normal, transMat);
-		psInput.uv = vsInput.uv;
-		psInput.color = vsInput.color;
-	}
-
-	void pixelShader(const std::vector<Pixel>& pixels , std::vector<Color>& colors) const
-	{
-		if (pixels.size() >= colors.size()) {
-			colors.resize(pixels.size());
-		}
-
-		CallPixelShader(pixels , textures , sType , colors , args);
-	}
+	
 };
+
+
+/*
+ * Vertex Shader
+ */
+void vertexShader(std::unordered_map<ShaderType , ShaderData>& sDataMaps , const Vertex& vsInput, Pixel& psInput , ShaderType sType)
+{
+	const auto sData = sDataMaps[sType]; 
+	const auto transMat = sData.modelMat.multiply(sData.viewMat).multiply(sData.perspectiveMat);
+	const auto trans3DMat = sData.modelMat;
+	psInput.pos = Math::Matrix::transformCoordinates(vsInput.pos, transMat);
+	psInput.pos3D = Math::Matrix::transformCoordinates(vsInput.pos, trans3DMat);
+	psInput.normal = Math::Matrix::transform(vsInput.normal, transMat);
+	psInput.uv = vsInput.uv;
+	psInput.color = vsInput.color;
+}
+
+void pixelShader(std::unordered_map<ShaderType , ShaderData>& sDataMaps , const std::vector<Pixel>& pixels , std::vector<Color>& colors) {
+	if (pixels.size() >= colors.size()) {
+		colors.resize(pixels.size());
+	}
+
+	CallPixelShader(sDataMaps , pixels , colors);
+}

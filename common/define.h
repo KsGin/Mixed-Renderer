@@ -16,6 +16,10 @@
 #include <ctime>
 #include "../includes/math/vector.hpp"
 #include "../includes/color.hpp"
+#include "../includes/math/matrix.hpp"
+#include "texture.h"
+#include <vector>
+
 
 
 /**
@@ -66,23 +70,6 @@
 	printf("name : %s \ntotalGlobalMem : %zdM\n" , devProps.name , devProps.totalGlobalMem >> 20); \
 }
 
-
-/*
- * defined clamp
- */
-#define CLAMP(x , min , max) { \
-   if (x > max) x = max;  \
-   if (x < min) x = min;  \
-}
-
-
-/*
- * defined clamp 0~1
- */
-#define CLAMP01(x) { \
-	CLAMP(x , 0 , 1) \
-}
-
 /*
  * INTERPOLATE FLOAT VALUE DEFINED
  */
@@ -121,6 +108,7 @@
 	INTERPOLATEV3(p1.normal , p2.normal , gad , result.normal);				\
 	INTERPOLATEV2(p1.uv , p2.uv , gad , result.uv);							\
 	INTERPOLATEC(p1.color , p2.color , gad , result.color);					\
+	result.sType = p1.sType;												\
 }
 
 
@@ -197,6 +185,34 @@ struct Line {
  */
 struct Args {
 	float bis;
+};
+
+struct ShaderData {
+	/*
+	 * modelMat
+	 */
+	Math::Matrix modelMat = Math::Matrix::identity();
+	/*
+	 * viewMat
+	 */
+	Math::Matrix viewMat = Math::Matrix::identity();
+	/*
+	 * perspectiveMat
+	 */
+	Math::Matrix perspectiveMat = Math::Matrix::identity();
+	/*
+	 * textures
+	 */
+	std::vector<Texture> textures = std::vector<Texture>(8);
+	/*
+	 * args
+	 */
+	Args args;
+
+	/*
+	 * shader type
+	 */
+	ShaderType sType;
 };
 
 /*

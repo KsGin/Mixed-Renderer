@@ -28,7 +28,7 @@ int main()
 	Device::initialize(SCREEN_WIDTH, SCREEN_HEIGHT, IS_FULL_SCREEN, "Mixed-Renderer");
 	auto d = Device::getInstance();
 
-	Renderer::initialize(NUM_PIXELS , NUM_COLORS , NUM_TRIANGLES , NUM_MODELS);
+	Renderer::initialize(NUM_PIXELS , NUM_COLORS , NUM_TRIANGLES);
 	auto r = Renderer::getInstance();
 
 	auto model1 = Matrix::identity() * Matrix::scale(0.15 , 0.15 , 0.15);

@@ -7,7 +7,22 @@
 
 #pragma once
 #include <SDL_image.h>
-#include "../common/define.h"
+
+
+/*
+ * defined clamp
+ */
+#define CLAMP(x , min , max) { \
+   if (x > max) x = max;  \
+   if (x < min) x = min;  \
+}
+
+/*
+ * defined clamp 0~1
+ */
+#define CLAMP01(x) { \
+	CLAMP(x , 0 , 1) \
+}
 
 /*
  *	Texture class
@@ -76,7 +91,6 @@ public:
 		texture.alpha = isAlpha;
 		return texture;
 	}
-
 
 	/*
 	 * set pixel

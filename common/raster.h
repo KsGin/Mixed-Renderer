@@ -17,6 +17,8 @@ class Raster {
 	std::vector<Line> lines;
 
 	void doRasterizeSolidTriangle(Triangle& triangle) {
+		if (triangle.numPixels == 0) return;
+
 		auto top = triangle.top;
 		auto mid = triangle.mid;
 		auto btm = triangle.btm;
@@ -44,7 +46,7 @@ class Raster {
 				tLine.left = tLine.right;
 				tLine.right = tp;
 			}
-
+			
 			tLine.numPixels = tLine.right.pos._x - tLine.left.pos._x + 1;
 			if (tLine.numPixels >= 0) {
 				lines.emplace_back(tLine);
@@ -55,7 +57,10 @@ class Raster {
 	void doComputeTriangle(std::vector<Triangle>& triangles, const RenderType& type, int& numPixels) {
 		for (auto& triangle : triangles) {
 			// ±³ÃæÌÞ³ý
-			if (doCcwJudge(triangle)) continue;
+			if (doCcwJudge(triangle)) {
+				triangle.numPixels = 0;
+				continue;
+			}
 
 			auto top = triangle.top;
 			Device::FixedPoint(top.pos);
