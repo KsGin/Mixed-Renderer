@@ -31,7 +31,7 @@ int main()
 	Renderer::initialize(NUM_PIXELS , NUM_COLORS , NUM_TRIANGLES);
 	auto r = Renderer::getInstance();
 
-	auto cubeModel = Matrix::identity() * Matrix::scale(0.15 , 0.15 , 0.15);
+	auto cubeModel = Matrix::identity() * Matrix::scale(0.1 , 0.1 , 0.1);
 	auto waterModel = Matrix::identity() * Matrix::scale(1.5 , 1 , 1);
 	auto lightModel =  Matrix::identity() * Matrix::scale( 0.02 , 0.02 , 0.02);
 
