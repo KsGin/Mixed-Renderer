@@ -119,7 +119,7 @@ __device__ void SampleLight(Pixel& pixel, Triangle* triangles, Color& color, int
 	for (auto i = 0; i < numTriangles; ++i) {
 		IntersectResult iTmp{false};
 		intersect(ray, triangles[i], iTmp);
-		if (iTmp.isSucceed && iTmp.distance > 0.01f && iTmp.distance < distance - 0.5) {
+		if (iTmp.isSucceed && iTmp.distance > 0.05f && iTmp.distance < distance - 0.05) {
 			isShadow = true;
 			break;
 		}
@@ -137,9 +137,7 @@ __device__ void SampleLight(Pixel& pixel, Triangle* triangles, Color& color, int
 /*
  * 计算反射
  */
-__device__ void SampleReflect(Pixel& pixel, Triangle* triangles, Color& color, int numTriangles) {
-	if (pixel.sType == LIGHT || pixel.sType == CUBE) return;
-
+__device__ void SampleReflect(Pixel& pixel , Color* colors , Triangle* triangles, Color& color , int screenWidth, int screenHeight , int numTriangles, int numElements) {
 	// 处理阴影
 	Ray ray;
 	ray.isActive = true;
@@ -148,18 +146,38 @@ __device__ void SampleReflect(Pixel& pixel, Triangle* triangles, Color& color, i
 
 	float minDistance = INT_MAX;
 
-	// IntersectResult itRet;
+	IntersectResult itRet;
+
 	for (auto i = 0; i < numTriangles; ++i) {
 		IntersectResult iTmp{false};
 		intersect(ray, triangles[i], iTmp);
 		if (iTmp.isSucceed && iTmp.distance < minDistance) {
 
 			minDistance = iTmp.distance;
-			// itRet = iTmp;
+			itRet = iTmp;
+
+			// const auto pos3D = iTmp.intersectPoint;
+			//
+			// auto dx = 0.0f , dy = 0.0f;
+			// if (triangles[i].btm.pos3D._x - triangles[i].top.pos3D._x != 0.0f) 
+			// 	dx = (pos3D._x - triangles[i].top.pos3D._x) /  (triangles[i].btm.pos3D._x - triangles[i].top.pos3D._x);
+			// if (triangles[i].btm.pos3D._y - triangles[i].top.pos3D._y != 0.0f)
+			// 	dy = (pos3D._y - triangles[i].top.pos3D._y) /  (triangles[i].btm.pos3D._y - triangles[i].top.pos3D._y);
+			//
+			// printf("%f %f\n" , dx , dy);
+			//
+			// const auto x = static_cast<int>(triangles[i].top.pos._x + (triangles[i].btm.pos._x - triangles[i].top.pos._x) * dx);
+			// const auto y = static_cast<int>(triangles[i].top.pos._y + (triangles[i].btm.pos._y - triangles[i].top.pos._y) * dy);
+			//
+			// const auto idxx = y * screenWidth + x;
+			// if (idxx < numElements) {	
+			// 	
+			// 	// color = colors[idxx];
+			// }		
+
 			color = triangles[i].mid.color;
 		}
 	}
-
 }
 
 
@@ -178,16 +196,17 @@ __global__ void KernelMixed(Pixel* pixels, Color* colors, Triangle* triangles, U
 		auto isFirst = false;
 		TestDepth(x, y, pixels[idx].pos._z, depths, isFirst, screenWidth, screenHeight);
 		if (isFirst) {
+
 			/*计算光照*/
 			auto lightColor = Color::white();
 			SampleLight(pixels[idx], triangles , lightColor , numTriangles);
 			
 			/*计算反射*/
 			auto reflectColor = Color::black();
-			SampleReflect(pixels[idx] , triangles , reflectColor , numTriangles);
+			SampleReflect(pixels[idx], colors , triangles , reflectColor , screenWidth , screenHeight , numTriangles, numElements);
 
 			/*混合颜色*/
-			colors[idx] = colors[idx] * lightColor * (1 - pixels->reflectiveness) + reflectColor * pixels->reflectiveness;
+			colors[idx] = (colors[idx] * (1 - pixels[idx].reflectiveness) + reflectColor * pixels[idx].reflectiveness) * lightColor;
 
 			/*着色*/
 			SetPixel(x, y, colors[idx], pixelColors, screenWidth, screenHeight);

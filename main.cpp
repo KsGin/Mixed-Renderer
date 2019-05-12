@@ -77,20 +77,20 @@ int main()
 
 
 		cubeShader.setMat(cubeModel * rotation1 * Matrix::translate(0.5 , 1 , 0), MODEL);
-		r.add(cube1 , cubeShader , 0.2 , SOLID);
+		r.add(cube1 , cubeShader , 0.1 , SOLID);
 
 		cubeShader.setMat(cubeModel * rotation2 * Matrix::translate(-0.5 , 1 , 0), MODEL);
-		r.add(cube2 , cubeShader , 0.2 , SOLID);
+		r.add(cube2 , cubeShader , 0.1 , SOLID);
 
 		args.bis += bis;
 		if (args.bis >= 0.1f || args.bis <= -0.1f) {bis = -bis;}
 		waterShader.setArgs(args);
 
 		waterShader.setMat(waterModel * Matrix::translate(0 , 0 , 0), MODEL);
-		r.add(floor , waterShader ,0.9 , SOLID);
+		r.add(floor , waterShader ,0.5 , SOLID);
 		//
 		lightShader.setMat(lightModel * rotation1 * Matrix::translate(0 , 2 , 0) , MODEL);
-		r.add(light , lightShader , 0.1 , SOLID);
+		r.add(light , lightShader , 0 , SOLID);
 
 		r.render();
 
