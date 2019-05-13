@@ -132,6 +132,7 @@ __device__ void SampleLight(Pixel& pixel, Triangle* triangles, Color& color, int
 
 	bool isShadow = false;
 
+#pragma unroll
 	for (auto i = 0; i < numTriangles; ++i) {
 		IntersectResult iTmp{false};
 		intersect(ray, triangles[i], iTmp);
@@ -153,8 +154,7 @@ __device__ void SampleLight(Pixel& pixel, Triangle* triangles, Color& color, int
 /*
  * 计算反射
  */
-__device__ void SampleReflect(Pixel& pixel, Triangle* triangles, Uint8* pixelColors, Color& color, int screenWidth,
-                              int screenHeight, int numTriangles) {
+__device__ void SampleReflect(Pixel& pixel, Triangle* triangles, Color& color, int numTriangles) {
 	// 处理阴影
 	Ray ray;
 	ray.isActive = true;
@@ -162,18 +162,19 @@ __device__ void SampleReflect(Pixel& pixel, Triangle* triangles, Uint8* pixelCol
 	ray.direction = pixel.normal.normalize();
 
 	float minDistance = INT_MAX;
-
-	IntersectResult itRet;
-	int idxTriangle = 0;
+	//
+	// IntersectResult itRet;
+	// int idxTriangle = 0;
+#pragma unroll
 	for (auto i = 0; i < numTriangles; ++i) {
 		IntersectResult iTmp{false};
 		intersect(ray, triangles[i], iTmp);
 		if (iTmp.isSucceed && iTmp.distance < minDistance) {
 			minDistance = iTmp.distance;
-			itRet = iTmp;
-			idxTriangle = i;
-			if (triangles[idxTriangle].mid.sType == LIGHT) color = Color::white();
-			else color = triangles[idxTriangle].mid.color;
+			// itRet = iTmp;
+			// idxTriangle = i;
+			if (triangles[i].mid.sType == LIGHT) color = Color::white();
+			else color = triangles[i].mid.color;
 		}
 	}
 
@@ -306,7 +307,7 @@ __global__ void KernelMixedReflect(Pixel* pixels, Color* colors, Triangle* trian
 
 			/*计算反射*/
 			auto reflectColor = Color::black();
-			SampleReflect(pixels[idx], triangles, pixelColors, reflectColor, screenWidth, screenHeight, numTriangles);
+			SampleReflect(pixels[idx], triangles, reflectColor, numTriangles);
 
 			/*混合颜色*/
 			colors[idx] = (colors[idx] * (1 - pixels[idx].reflectiveness) + reflectColor * pixels[idx].reflectiveness) *
