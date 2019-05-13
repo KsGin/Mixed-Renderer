@@ -32,10 +32,10 @@ int main()
 	auto r = Renderer::getInstance();
 
 	auto cubeModel = Matrix::identity() * Matrix::scale(0.1 , 0.1 , 0.1);
-	auto waterModel = Matrix::identity() * Matrix::scale(1.5 , 1 , 1);
+	auto waterModel = Matrix::identity() * Matrix::scale(1.5 , 1 , 1.0);
 	auto lightModel =  Matrix::identity() * Matrix::scale( 0.02 , 0.02 , 0.02);
 
-	auto camera = PerspectiveCamera(90 , Vector3(0, 4, 5) , Vector3(0, 1, 0) , Vector3(0, 1, 0) , 0.1 , 1000);
+	auto camera = PerspectiveCamera(90 , Vector3(0, 3, 5) , Vector3(0, 0, 0) , Vector3(0, 1, 0) , 0.1 , 1000);
 	r.setPerspectiveCamera(camera);
 
 	auto rotation1 = Matrix::identity();
@@ -60,9 +60,9 @@ int main()
 	auto lightShader = Shader(LIGHT);
 	lightShader.setMat(view ,VIEW);
 	lightShader.setMat(perspective , PERSPECTIVE);
-
-	cubeShader.setTexture(Texture::LoadFromFile("resources/cube.png" , true), 0);
-	waterShader.setTexture(Texture::LoadFromFile("resources/water.png" , true), 0);
+	//
+	// cubeShader.setTexture(Texture::LoadFromFile("resources/cube.png" , true), 0);
+	// waterShader.setTexture(Texture::LoadFromFile("resources/water.png" , true), 0);
 
 	d.show();
 
@@ -77,17 +77,18 @@ int main()
 
 
 		cubeShader.setMat(cubeModel * rotation1 * Matrix::translate(0.5 , 1 , 0), MODEL);
-		r.add(cube1 , cubeShader , 0.1 , SOLID);
+		r.add(cube1 , cubeShader , 0 , SOLID);
 
 		cubeShader.setMat(cubeModel * rotation2 * Matrix::translate(-0.5 , 1 , 0), MODEL);
-		r.add(cube2 , cubeShader , 0.1 , SOLID);
+		r.add(cube2 , cubeShader , 0 , SOLID);
 
 		args.bis += bis;
 		if (args.bis >= 0.1f || args.bis <= -0.1f) {bis = -bis;}
 		waterShader.setArgs(args);
 
-		waterShader.setMat(waterModel * Matrix::translate(0 , 0 , 0), MODEL);
+		waterShader.setMat(waterModel * Matrix::translate(0 , 0 , 0.6), MODEL);
 		r.add(floor , waterShader ,0.5 , SOLID);
+
 		//
 		lightShader.setMat(lightModel * rotation1 * Matrix::translate(0 , 2 , 0) , MODEL);
 		r.add(light , lightShader , 0 , SOLID);
