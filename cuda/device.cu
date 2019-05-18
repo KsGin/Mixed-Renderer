@@ -155,133 +155,24 @@ __device__ void SampleLight(Pixel& pixel, Triangle* triangles, Color& color, int
  * 计算反射
  */
 __device__ void SampleReflect(Pixel& pixel, Triangle* triangles, Color& color, int numTriangles) {
-	// 处理阴影
 	Ray ray;
 	ray.isActive = true;
 	ray.origin = pixel.pos3D;
 	ray.direction = pixel.normal.normalize();
 
 	float minDistance = INT_MAX;
-	//
-	// IntersectResult itRet;
-	// int idxTriangle = 0;
+
 #pragma unroll
 	for (auto i = 0; i < numTriangles; ++i) {
 		IntersectResult iTmp{false};
 		intersect(ray, triangles[i], iTmp);
 		if (iTmp.isSucceed && iTmp.distance < minDistance) {
 			minDistance = iTmp.distance;
-			// itRet = iTmp;
-			// idxTriangle = i;
+
 			if (triangles[i].mid.sType == LIGHT) color = Color::white();
 			else color = triangles[i].mid.color;
 		}
 	}
-
-	// const auto pos3D = itRet.intersectPoint;
-
-	// float x3DMin, x3DMax, y3DMin, y3DMax;
-	// float x2DMin, x2DMax, y2DMin, y2DMax;
-	//
-	// /*X找最大最小*/
-	// if (triangles[idxTriangle].btm.pos3D._x > triangles[idxTriangle].top.pos3D._x) {
-	// 	if (triangles[idxTriangle].btm.pos3D._x > triangles[idxTriangle].mid.pos3D._x) {
-	// 		x3DMax = triangles[idxTriangle].btm.pos3D._x;
-	// 		x2DMax = triangles[idxTriangle].btm.pos._x;
-	// 	}
-	// 	else {
-	// 		x3DMax = triangles[idxTriangle].mid.pos3D._x;
-	// 		x2DMax = triangles[idxTriangle].mid.pos._x;
-	// 	}
-	// }
-	// else {
-	// 	if (triangles[idxTriangle].top.pos3D._x > triangles[idxTriangle].mid.pos3D._x) {
-	// 		x3DMax = triangles[idxTriangle].top.pos3D._x;
-	// 		x2DMax = triangles[idxTriangle].top.pos._x;
-	// 	}
-	// 	else {
-	// 		x3DMax = triangles[idxTriangle].mid.pos3D._x;
-	// 		x2DMax = triangles[idxTriangle].mid.pos._x;
-	// 	}
-	// }
-	//
-	//
-	// if (triangles[idxTriangle].btm.pos3D._x < triangles[idxTriangle].top.pos3D._x) {
-	// 	if (triangles[idxTriangle].btm.pos3D._x < triangles[idxTriangle].mid.pos3D._x) {
-	// 		x3DMin = triangles[idxTriangle].btm.pos3D._x;
-	// 		x2DMin = triangles[idxTriangle].btm.pos._x;
-	// 	}
-	// 	else {
-	// 		x3DMin = triangles[idxTriangle].mid.pos3D._x;
-	// 		x2DMin = triangles[idxTriangle].mid.pos._x;
-	// 	}
-	// }
-	// else {
-	// 	if (triangles[idxTriangle].top.pos3D._x < triangles[idxTriangle].mid.pos3D._x) {
-	// 		x3DMin = triangles[idxTriangle].top.pos3D._x;
-	// 		x2DMin = triangles[idxTriangle].top.pos._x;
-	// 	}
-	// 	else {
-	// 		x3DMin = triangles[idxTriangle].mid.pos3D._x;
-	// 		x2DMin = triangles[idxTriangle].mid.pos._x;
-	// 	}
-	// }
-	//
-	// /*Y找最大最小*/
-	// if (triangles[idxTriangle].btm.pos3D._y > triangles[idxTriangle].top.pos3D._y) {
-	// 	if (triangles[idxTriangle].btm.pos3D._y > triangles[idxTriangle].mid.pos3D._y) {
-	// 		y3DMax = triangles[idxTriangle].btm.pos3D._y;
-	// 		y2DMax = triangles[idxTriangle].btm.pos._y;
-	// 	}
-	// 	else {
-	// 		y3DMax = triangles[idxTriangle].mid.pos3D._y;
-	// 		y2DMax = triangles[idxTriangle].mid.pos._y;
-	// 	}
-	// }
-	// else {
-	// 	if (triangles[idxTriangle].top.pos3D._y > triangles[idxTriangle].mid.pos3D._y) {
-	// 		y3DMax = triangles[idxTriangle].top.pos3D._y;
-	// 		y2DMax = triangles[idxTriangle].top.pos._y;
-	// 	}
-	// 	else {
-	// 		y3DMax = triangles[idxTriangle].mid.pos3D._y;
-	// 		y2DMax = triangles[idxTriangle].mid.pos._y;
-	// 	}
-	// }
-	//
-	//
-	// if (triangles[idxTriangle].btm.pos3D._y < triangles[idxTriangle].top.pos3D._y) {
-	// 	if (triangles[idxTriangle].btm.pos3D._y < triangles[idxTriangle].mid.pos3D._y) {
-	// 		y3DMin = triangles[idxTriangle].btm.pos3D._y;
-	// 		y2DMin = triangles[idxTriangle].btm.pos._y;
-	// 	}
-	// 	else {
-	// 		y3DMin = triangles[idxTriangle].mid.pos3D._y;
-	// 		y2DMin = triangles[idxTriangle].mid.pos._y;
-	// 	}
-	// }
-	// else {
-	// 	if (triangles[idxTriangle].top.pos3D._y < triangles[idxTriangle].mid.pos3D._y) {
-	// 		y3DMin = triangles[idxTriangle].top.pos3D._y;
-	// 		y2DMin = triangles[idxTriangle].top.pos._y;
-	// 	}
-	// 	else {
-	// 		y3DMin = triangles[idxTriangle].mid.pos3D._y;
-	// 		y2DMin = triangles[idxTriangle].mid.pos._y;
-	// 	}
-	// }
-	//
-	// auto dx = 0.0f, dy = 0.0f;
-	// if (x3DMax - x3DMin != 0.0f)
-	// 	dx = (pos3D._x - x3DMin) / (x3DMax - x3DMin);
-	// if (y3DMax - y3DMin != 0.0f)
-	// 	dy = (pos3D._y - y3DMin) / (y3DMax - y3DMin);
-	//
-	// const auto x = static_cast<int>(x2DMin + (x2DMax - x2DMin) * dx);
-	// const auto y = static_cast<int>(y2DMin + (y2DMax - y2DMin) * dy);
-	//
-	// GetPixel(x, y, pixelColors, screenWidth, screenHeight, color);
-
 }
 
 
@@ -374,16 +265,8 @@ extern "C" void CallMixed(std::vector<Pixel>& pixels, std::vector<Color>& colors
 	CUDA_CALL(cudaMemcpy(dPixels , &pixels[0] , sizeof(Pixel) * numPixels , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dColors , &colors[0] , sizeof(Color) * numPixels , cudaMemcpyHostToDevice));
 	CUDA_CALL(cudaMemcpy(dTriangles , &triangles[0] , sizeof(Triangle) * numTriangles , cudaMemcpyHostToDevice));
-	//
-	// // 流水线执行
-	//
-	// // 第一遍着色
-	// KernelMixed<<<(numPixels + 255) / 256 , 256>>>(dPixels, dColors, dPixelColors, dDepths, screenWidth,
-	//                                                screenHeight, numPixels);
-	//
-	// cudaDeviceSynchronize();
 
-	// 第二遍着色
+	// 着色
 	KernelMixedReflect<<<(numPixels + 255) / 256 , 256>>>(dPixels, dColors, dTriangles, dPixelColors, dDepths,
 	                                                      screenWidth,
 	                                                      screenHeight, numTriangles, numPixels);
