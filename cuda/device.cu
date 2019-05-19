@@ -16,39 +16,39 @@ __device__ void intersect(const Ray& ray, const Triangle& triangle, IntersectRes
 	const auto origin = ray.origin;
 	const auto direction = ray.direction;
 
-	const auto u = triangle.top.pos3D - triangle.btm.pos3D;
-	const auto v = triangle.mid.pos3D - triangle.btm.pos3D;
-	const auto norm = Math::Vector3::cross(u, v).normalize();
+	const auto edge1 = triangle.top.pos3D - triangle.btm.pos3D;
+	const auto edge2 = triangle.mid.pos3D - triangle.btm.pos3D;
+	const auto normal = Math::Vector3::cross(edge1, edge2).normalize();
 
-	const auto b = Math::Vector3::dot(norm, direction);
+	const auto nd = Math::Vector3::dot(normal, direction);
+	
+	if (fabs(nd) < 0) return;
 
-	if (fabs(b) < 0) return;
+	const auto orp = origin - triangle.btm.pos3D;
 
-	const auto w0 = origin - triangle.btm.pos3D;
+	const auto no = - Math::Vector3::dot(normal, orp);
 
-	const auto a = - Math::Vector3::dot(norm, w0);
+	const auto distance = no / nd;
+	if (distance <= 0.0f) return;
 
-	const auto r = a / b;
-	if (r <= 0.0f) return;
+	intersectResult.intersectPoint = origin + direction * distance;
+	intersectResult.distance = distance;
 
-	intersectResult.intersectPoint = origin + direction * r;
-	intersectResult.distance = r;
+	const auto edge11 = Math::Vector3::dot(edge1, edge1);
+	const auto edge12 = Math::Vector3::dot(edge1, edge2);
+	const auto edge22 = Math::Vector3::dot(edge2, edge2);
 
-	const auto uu = Math::Vector3::dot(u, u);
-	const auto uv = Math::Vector3::dot(u, v);
-	const auto vv = Math::Vector3::dot(v, v);
+	const auto ot = intersectResult.intersectPoint - triangle.btm.pos3D;
 
-	const auto w = intersectResult.intersectPoint - triangle.btm.pos3D;
+	const auto ote1 = Math::Vector3::dot(ot, edge1);
+	const auto ote2 = Math::Vector3::dot(ot, edge2);
 
-	const auto wu = Math::Vector3::dot(w, u);
-	const auto wv = Math::Vector3::dot(w, v);
+	const auto d = edge12 * edge12 - edge11 * edge22;
 
-	const auto d = uv * uv - uu * vv;
-
-	const auto s = (uv * wv - vv * wu) / d;
+	const auto s = (edge12 * ote2 - edge22 * ote1) / d;
 	if (s < 0.0f || s > 1.0f) return;
 
-	const auto t = (uv * wu - uu * wv) / d;
+	const auto t = (edge12 * ote1 - edge11 * ote2) / d;
 	if (t < 0.0f || (s + t) > 1.0f) return;
 
 
